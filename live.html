@@ -74,12 +74,14 @@
   .apl{display:flex;flex-direction:column;gap:4px}
   .ac{padding:12px;background:#fff;border-radius:12px;display:flex;flex-direction:column;gap:24px}
   .ac.cur{background:#F8F8FA}
-  .ac .r{display:flex;align-items:center;gap:12px}
+  .ac .r{display:flex;align-items:center;gap:12px;align-self:stretch}
   .ac .nb{min-width:22px;height:22px;padding:2px 6px;border-radius:6px;background:#F3F4F6;
     display:inline-flex;align-items:center;justify-content:center;
     font-size:12px;line-height:16px;font-weight:500;color:#151419;flex:none}
   .ac.cur .r.top .nb{background:#151419;color:#fff}
-  .ac .kid .nb{min-width:24px;height:24px;padding:0 8px;border-radius:8px;background:#151419;color:#fff}
+  .ac.hd{gap:0}
+  .ac .mth2{flex:none;font-size:14px;line-height:21px;color:#6B7078}
+  .ac .kid .nb{min-width:24px;height:24px;padding:0 8px;border-radius:8px;background:#F3F4F6;color:#6B7078}
   .ac .t{flex:1;min-width:0;font-size:16px;line-height:24px;font-weight:500;color:#151419}
   .ac .t.mute{color:#A7AAB1}
   .ac .st{display:flex;align-items:center;gap:4px;flex:none;font-size:12px;line-height:18px;font-weight:500}
@@ -117,29 +119,95 @@
   .file .dl{margin-left:auto;width:15px;height:15px;stroke:#737373}
 
   /* voting card */
-  .vc .cat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-weight:600}
-  .vc .nm{font-size:17px;font-weight:800;margin:8px 0 4px}
-  .vc .base{font-size:12px;color:var(--muted);margin-bottom:14px}
-  .b{display:inline-flex;align-items:center;height:20px;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600}
-  .b.spec{background:#f4f4f5;color:#525252}.b.mth{background:#eef5ff;color:#2563eb}.b.norm{background:#f4f4f5;color:#525252}
-  .choices{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .choice{height:52px;border:1.5px solid var(--border);border-radius:12px;background:#fff;font-size:15px;font-weight:700;color:#3f3f46;display:flex;align-items:center;justify-content:center;gap:6px}
-  .choice:hover{border-color:#c7d2fe}
-  .choice.sel.pro{border-color:#2563eb;background:#eff5ff;color:#2563eb}
-  .choice.sel.con{border-color:#e11d48;background:#fff1f2;color:#e11d48}
-  .choice.sel.abs{border-color:#a1a1aa;background:#f5f5f5;color:#52525b}
-  .done{margin-top:12px;height:46px;border-radius:12px;background:var(--ink);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;border:0}
-  .done.wait{background:#eef5ff;color:#2563eb}
-  .doneflag{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:12px;color:#0a8a3c;font-weight:700;font-size:14px}
-  /* result */
-  .res{display:flex;align-items:center;gap:20px;margin-top:6px}
-  .donut{width:104px;height:104px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;position:relative}
-  .donut::after{content:"";position:absolute;inset:12px;background:#fff;border-radius:50%}
-  .donut .lab{position:relative;z-index:1;text-align:center}.donut .lab b{font-size:20px;font-weight:800}.donut .lab span{display:block;font-size:11px;color:var(--muted)}
-  .bars{flex:1;display:flex;flex-direction:column;gap:9px}
-  .bar .l{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
-  .bar .l .nm{color:#3f3f46;font-weight:600}.bar .l .vv{color:#111;font-weight:700;font-variant-numeric:tabular-nums}
-  .bar .t{height:8px;border-radius:6px;background:#f0f0f2;overflow:hidden}.bar .t i{display:block;height:8px;border-radius:6px}
+  /* 의안 투표 카드 — 본문과 아래 행사 바가 한 장을 이룬다 */
+  .vc{padding:0;border:1px solid #272929;border-radius:12px;background:#fff;overflow:hidden}
+  .vc .body{display:flex;flex-direction:column;gap:12px;padding:20px}
+  .vc .cat{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .vc .cat .no3{font-size:12px;line-height:18px;font-weight:500;color:#151419}
+  .vc .rb2{height:26px;padding:4px 8px;border-radius:8px;font-size:14px;line-height:18px;
+    font-weight:500;color:#fff;margin-left:8px}
+  .vc .rb2.pass{background:#0071F3}.vc .rb2.fail{background:#E9081B}.vc .rb2.disc{background:#A7AAB1}
+  .vc .nm{font-size:18px;line-height:27px;font-weight:700;color:#151419}
+  .vc .base{font-size:12px;line-height:18px;font-weight:500;color:#6B7078}
+  .vc .det2{background:#F8F8FA;border:1px solid #EEF0F2;border-radius:8px;padding:12px;
+    display:flex;flex-direction:column;gap:8px}
+  .vc .det2 .h3{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+    border:0;background:none;padding:0;font-family:inherit;letter-spacing:inherit;cursor:pointer}
+  .vc .det2 .h3 b{font-size:12px;line-height:18px;font-weight:700;color:#151419}
+  .vc .det2 .h3 svg{width:20px;height:20px;stroke:#151419;fill:none;stroke-width:2;transition:transform .15s}
+  .vc .det2.open .h3 svg{transform:rotate(180deg)}
+  .vc .det2 .bd3{display:none;flex-direction:column;gap:12px}
+  .vc .det2.open .bd3{display:flex}
+  .vc .det2 .tx3{font-size:12px;line-height:18px;color:#151419;white-space:pre-line}
+  .vc .det2 .f3{display:flex;align-items:center;gap:8px;height:34px;padding:8px 12px;
+    background:#fff;border:1px solid #EEF0F2;border-radius:8px}
+  .vc .det2 .f3 svg{width:16px;height:16px;flex:none;stroke:#151419;fill:none;stroke-width:1.6}
+  .vc .det2 .f3 .n3{flex:1;min-width:0;font-size:12px;line-height:18px;font-weight:500;color:#151419}
+  .vc .det2 .f3 .s3{font-size:12px;line-height:18px;color:#6B7078}
+
+  /* 집계 결과 */
+  .vc .sum2{display:flex;flex-direction:column;gap:4px;text-align:center;padding-top:12px}
+  .vc .sum2 .k2{font-size:12px;line-height:16px;font-weight:500;color:#6B7078}
+  .vc .sum2 .v2{font-size:14px;line-height:18px;font-weight:700;color:#151419}
+  .vc .sum2 .n2{font-size:12px;line-height:16px;color:#6B7078}
+  .vc .quo{border:1px solid #EEF0F2;border-radius:12px;padding:20px 32px 12px;
+    display:flex;flex-direction:column;gap:20px}
+  .vc .q1{display:flex;flex-direction:column;gap:4px;position:relative}
+  .vc .q1 .r1{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-size:12px;line-height:18px}
+  .vc .q1 .r1 .lb2{font-weight:500;color:#151419}
+  .vc .q1 .r1 .ok2{font-weight:700;color:#0071F3}
+  .vc .q1 .r1 .ok2.no{color:#E9081B}
+  .vc .q1 .bar2{position:relative;height:12px;border-radius:4px;background:#EEF0F2}
+  .vc .q1 .bar2 i{display:block;height:12px;border-radius:4px;background:#0071F3}
+  .vc .q1 .bar2 i.no{background:#E9081B}
+  .vc .q1 .bar2 u{position:absolute;top:-4px;width:0;height:20px;border-left:1.5px dashed #272929}
+  .vc .q1 .r2{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-size:12px;line-height:18px;color:#6B7078}
+
+  /* 행사 바 */
+  .vc .act2{display:flex;align-items:center;gap:8px;height:80px;padding:0 20px;
+    background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,.04)}
+  .vc .st{flex:none;display:flex;align-items:center;gap:4px;font-size:12px;line-height:18px;font-weight:500}
+  .vc .st i{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .vc .st.wait{color:#A7AAB1}.vc .st.vote{color:#0071F3}.vc .st.cnt{color:#0DAD7E}
+  .choices{flex:1;display:flex;justify-content:center;gap:8px}
+  .choice{width:80px;height:41px;padding:10px 12px;border:1px solid #EEF0F2;border-radius:8px;
+    background:#fff;font-family:inherit;font-size:14px;line-height:21px;font-weight:700;
+    letter-spacing:inherit;color:#151419;display:flex;align-items:center;justify-content:center;gap:4px}
+  .choice.sel{background:#EBF4FF;border-color:#B2D5FF;color:#0071F3}
+  .choice:disabled{opacity:.5}
+  .done{flex:none;width:120px;height:41px;padding:10px 20px 10px 12px;border:0;border-radius:8px;
+    background:#0071F3;font-family:inherit;font-size:14px;line-height:21px;font-weight:700;
+    letter-spacing:inherit;color:#fff;display:flex;align-items:center;justify-content:center;gap:4px}
+  .done:disabled{background:#D7D9DF}
+  .vc .flag2{margin-left:auto;display:flex;align-items:center;gap:4px;
+    font-size:16px;line-height:24px;font-weight:700;color:#0071F3}
+  .vc .flag2 svg{width:20px;height:20px;stroke:#0071F3;fill:none;stroke-width:2.2}
+  .vc .flag2.none{color:#A7AAB1}
+  .vc .note2{margin-left:auto;font-size:14px;line-height:21px;color:#6B7078}
+
+  /* 집중투표 배분 */
+  .vc .alc{display:flex;flex-direction:column;gap:12px;padding-top:4px}
+  .vc .alc .a1{display:flex;align-items:center;gap:8px;font-size:12px;line-height:18px;font-weight:500;color:#4C4F54}
+  .vc .alc .a1 i{width:1px;height:10px;background:#D7D9DF}
+  .vc .alc .a2{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    font-size:14px;line-height:21px;font-weight:500;color:#151419}
+  .vc .alc .a2 b{font-weight:700}
+  .vc .alc .a2 .rr{display:flex;align-items:center;gap:8px}
+  .vc .alc .undo{width:26px;height:26px;border:1px solid #EEF0F2;border-radius:6px;background:#fff;
+    display:flex;align-items:center;justify-content:center;padding:0}
+  .vc .alc .undo svg{width:14px;height:14px;stroke:#4C4F54;fill:none;stroke-width:1.8}
+  .vc .alc .crow{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid #EEF0F2}
+  .vc .alc .cno{flex:none;font-size:12px;line-height:18px;color:#6B7078}
+  .vc .alc .cnm{flex:1;min-width:0;font-size:14px;line-height:21px;font-weight:500;color:#151419}
+  .vc .alc .cin{width:140px;height:41px;padding:10px 12px;border:1px solid #EEF0F2;border-radius:8px;
+    font-family:inherit;font-size:14px;letter-spacing:inherit;text-align:right;color:#151419}
+  .vc .alc .cin::placeholder{color:#A7AAB1}
+  .vc .alc .cfill{flex:none;width:84px;height:26px;border:0;border-radius:6px;background:#EEF0F2;
+    font-family:inherit;font-size:12px;font-weight:500;letter-spacing:inherit;color:#4C4F54}
+  .done:disabled{background:#B2D5FF;color:#fff}
+
   .cand{display:flex;flex-direction:column;gap:12px}
   .cand .cr .l{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:14px}
   .cand .cr .rk{width:18px;height:18px;border-radius:6px;background:#e5e7eb;color:#374151;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
@@ -154,24 +222,36 @@
   .qcard .m{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
   .qcard .q{margin-top:8px;font-size:14px;line-height:1.5}
   .empty{padding:40px 0;text-align:center;color:#a1a1aa;font-size:14px}
-  /* 질의 탭 */
-  .qfilter{display:flex;align-items:center;gap:18px;margin-bottom:14px}
-  .qfilter .qf{border:0;background:none;font-size:15px;font-weight:700;color:#a7aab1;padding:0;cursor:pointer}
+  /* 질의 탭 — 줄을 긋지 않고 사이를 넉넉히 띄워 한 건씩 읽히게 한다 */
+  .qfilter{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+  .qfilter .qf{border:0;background:none;font-size:16px;line-height:24px;font-weight:700;
+    color:#A7AAB1;padding:0;cursor:pointer}
   .qfilter .qf.on{color:#151419}
-  .qfilter .qwrite{margin-left:auto}
-  .qitem{padding:14px 0;border-top:1px solid var(--line)}
-  .qitem:first-child{border-top:0}
-  .qitem .m{display:flex;align-items:center;gap:8px;font-size:13px;color:#6b7078;margin-bottom:8px}
-  .qitem .m .av{width:24px;height:24px;border-radius:50%;background:#eef0f2;display:flex;align-items:center;justify-content:center;flex:none}
-  .qitem .m .av svg{width:15px;height:15px;stroke:#b9bcc2;fill:none;stroke-width:1.8}
-  .qitem .m .nm{font-weight:700;color:#151419}
-  .qitem .m .ag{margin-left:auto;font-weight:700;color:#6b7078}
-  .qitem .q{font-size:15px;line-height:1.55;color:#151419}
-  .qitem .ans{margin-top:10px;border-radius:8px;padding:12px;font-size:14px;line-height:1.5;color:#151419}
-  .qitem .ans.pub{background:#f5f9ff}.qitem .ans.pub b{color:#0071f3;margin-right:4px}
-  .qitem .ans.priv{background:#f8fafa}.qitem .ans.priv b{color:#6b7078;margin-right:4px}
-  .qitem .ans .lock{color:#6b7078;font-weight:500}
-  .qempty{padding:44px 0;text-align:center;color:#6b7078;font-size:15px}
+  .qfilter .qwrite{margin-left:auto;height:41px;padding:10px 12px;border:1px solid #EEF0F2;
+    border-radius:8px;background:#fff;font-size:14px;line-height:21px;font-weight:700;color:#151419}
+  .qlist{display:flex;flex-direction:column;gap:40px}
+  .qitem{display:flex;flex-direction:column;gap:12px}
+  .qitem .m{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .qitem .m .who{display:flex;align-items:center;gap:12px;font-size:14px;line-height:21px;color:#6B7078}
+  .qitem .m .av{width:24px;height:24px;border-radius:50%;background:#EEF0F2;
+    display:flex;align-items:center;justify-content:center;flex:none}
+  .qitem .m .av svg{width:16px;height:16px;stroke:#C9CCD2;fill:none;stroke-width:1.8}
+  .qitem .m .nm{font-size:16px;line-height:24px;font-weight:700;color:#151419}
+  .qitem .m .pv{height:22px;padding:2px 6px;border:1px solid #EEF0F2;border-radius:6px;
+    background:#fff;font-size:12px;line-height:16px;font-weight:500;color:#151419}
+  .qitem .m .rt{display:flex;align-items:center;gap:12px}
+  .qitem .m .ag{font-size:14px;line-height:21px;font-weight:700;color:#6B7078}
+  .qitem .m .del{width:24px;height:24px;border:0;background:none;padding:0;
+    display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .qitem .m .del svg{width:18px;height:18px;stroke:#6B7078;fill:none;stroke-width:2}
+  .qitem .q{font-size:16px;line-height:24px;color:#151419}
+  .qitem .ans{border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:4px;
+    font-size:16px;line-height:24px;color:#151419}
+  .qitem .ans b{font-size:16px;line-height:24px;font-weight:700}
+  .qitem .ans.pub{background:#F5F9FF}.qitem .ans.pub b{color:#0071F3}
+  .qitem .ans.priv{background:#F8F8FA}.qitem .ans.priv b{color:#6B7078}
+  .qitem .ans .lock{font-size:16px;line-height:24px;font-weight:500;color:#6B7078}
+  .qempty{padding:40px 12px;text-align:center;color:#6B7078;font-size:16px;line-height:24px}
 
   /* 의안 상태 리스트 (Figma: 의안 상태별 표시) */
   .alist{display:flex;flex-direction:column;gap:8px}
@@ -229,18 +309,27 @@
   .rb{display:inline-flex;align-items:center;height:20px;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
   .rb.pass{background:#eef5ff;color:#2563eb}.rb.fail{background:#fff1f2;color:#e11d48}.rb.disc{background:#f4f4f5;color:#8a8a8f}
 
-  .modal{background:#fff;border-radius:16px;box-shadow:var(--shmd);width:min(560px,94vw);padding:22px}
-  .modal h3{margin:0 0 16px;font-size:18px;font-weight:800}
-  .fld{margin-bottom:14px}.fld label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
-  .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .seg button{height:42px;border:1px solid var(--border);border-radius:10px;background:#fff;font-weight:700;color:#52525b}
-  .seg button.on{border-color:var(--ink);background:#f7f7f8;color:#111}
+  .modal{background:#fff;border-radius:16px;box-shadow:var(--shmd);width:min(540px,94vw);padding:20px}
+  .modal h3{margin:0 0 16px;font-size:20px;line-height:26px;font-weight:700;color:#151419}
+  .fld{margin-bottom:16px}
+  .fld label{display:block;font-size:14px;line-height:18px;font-weight:500;color:#151419;margin-bottom:4px}
+  .seg{display:flex;gap:8px}
+  .seg button{flex:1;height:41px;border:1px solid #EEF0F2;border-radius:8px;background:#fff;
+    font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit;color:#151419}
+  .seg button.on{border-color:#D7D9DF;background:#F3F4F6}
   .sel,.ta{width:100%;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;padding:12px}
-  .ta{min-height:110px;resize:vertical}
-  .rules{font-size:12px;color:#8a8a8f;line-height:1.7;margin:6px 0 14px;padding-left:16px}
-  .mact{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
-  .mact .cancel{height:46px;border:1px solid var(--border);border-radius:11px;background:#fff;font-weight:700}
-  .mact .ok{height:46px;border:0;border-radius:11px;background:var(--brand);color:#fff;font-weight:700}
+  .tabox{border:1px solid #EEF0F2;border-radius:8px;overflow:hidden}
+  .tabox .ta{display:block;width:100%;min-height:112px;border:0;border-radius:8px 8px 0 0;resize:none;
+    padding:12px 16px 8px;font-family:inherit;font-size:16px;line-height:24px;letter-spacing:inherit;color:#151419}
+  .tabox .ta::placeholder{color:#A7AAB1}
+  .tabox .cnt{padding:8px 16px;font-size:12px;line-height:16px;font-weight:500;color:#151419}
+  .rules{font-size:14px;line-height:21px;color:#4C4F54;margin:0 0 16px}
+  .mact{display:flex;gap:12px}
+  .mact button{flex:1;height:55px;border-radius:10px;font-family:inherit;
+    font-size:18px;line-height:27px;font-weight:700;letter-spacing:inherit}
+  .mact .cancel{border:1px solid #EEF0F2;background:#fff;color:#151419}
+  .mact .ok{border:0;background:#151419;color:#fff}
+  .mact .ok:disabled{background:#D7D9DF}
   /* 주총 스위처 모달 */
   .mmodal{background:#fff;border-radius:16px;box-shadow:var(--shmd);width:400px;max-width:94vw;overflow:hidden}
   .mm-h{padding:20px 20px 12px;font-size:20px;font-weight:800}
@@ -344,7 +433,7 @@
             <button class="qf" data-f="mine">내가 쓴 질의 <b id="qcMine">0</b></button>
             <button class="qwrite" id="qWrite">질의 작성</button>
           </div>
-          <div id="qList"></div>
+          <div class="qlist" id="qList"></div>
         </div>
       </div>
 
@@ -379,15 +468,21 @@
 <!-- 질의 작성 모달 -->
 <div class="ovl" id="qOvl">
   <div class="modal">
-    <h3>질의 작성 <span style="color:#a1a1aa;font-weight:700">(1/3)</span></h3>
-    <div class="fld"><label>유형 *</label><div class="seg" id="qType"><button class="on">질의</button><button>이의제기</button></div></div>
-    <div class="fld"><label>대상 *</label><select class="sel" id="qTarget"></select></div>
-    <div class="fld"><label>질의 내용 *</label><textarea class="ta" id="qBody" maxlength="500" placeholder="해당 안건 또는 진행 절차에 대한 질의 사유를 구체적으로 작성해 주세요."></textarea></div>
-    <div class="rules">• 질의는 시간당 최대 3회까지 가능하며, 제출 후 90초 뒤에 재질의할 수 있습니다.<br>• 접수된 질의는 운영진 검토 후 순차적으로 의장에게 전달됩니다.<br>• 비방·욕설 등 부적절한 표현이 포함된 질의는 접수가 제한될 수 있습니다.<br>• 답변은 주총 현장에서 음성 또는 화면 텍스트로 안내됩니다.</div>
-    <div class="mact"><button class="cancel" id="qCancel">취소</button><button class="ok" id="qSubmit">질의 제출</button></div>
+    <h3>질의 작성 <span id="qCnt">(1/3)</span></h3>
+    <div class="fld"><label>관련 의안</label>
+      <div class="seg" id="qScope"><button type="button" class="on" data-v="all">총회 진행 전반</button><button type="button" data-v="ag">의안 선택</button></div>
+    </div>
+    <div class="fld" id="qAgFld" style="display:none"><label>의안</label><select class="sel" id="qTarget"></select></div>
+    <div class="fld"><label>질의 내용</label>
+      <div class="tabox"><textarea class="ta" id="qBody" maxlength="100" placeholder="해당 안건 또는 진행 절차에 대한 질의 내용을 구체적으로 작성해 주세요."></textarea>
+        <div class="cnt"><span id="qLen">0</span>/100</div></div>
+    </div>
+    <div class="rules">질의는 시간당 최대 3회까지 가능하며, 제출 후 90초 뒤에 재질의할 수 있습니다. 접수된 질의는 운영진 검토 후 순차적으로 의장에게 전달됩니다. 비방, 욕설 등 부적절한 표현이 포함된 질의는 접수가 제한될 수 있습니다. 답변은 주총 현장에서 음성 또는 화면 텍스트로 안내됩니다.</div>
+    <div class="mact"><button class="cancel" id="qCancel">취소</button><button class="ok" id="qSubmit" disabled>등록하기</button></div>
   </div>
 </div>
 
+<script src="assets/agenda.js"></script>
 <script>
 /* ---- CX(SSOT) 폴백: 실제 통합 시 cx-data.js(window.CX) 사용 ---- */
 var CXD = window.CX || {
@@ -426,6 +521,8 @@ var CXD = window.CX || {
   decided:'회사',
   util:{comma:function(n){return Math.round(Number(n)).toLocaleString('en-US');},chip:function(no){return String(no).replace('제','제 ');},pct:function(a,b){return b?a/b*100:0;}}
 };
+/* 의안 목록은 conexus 와 같은 내용을 담은 assets/agenda.js 를 정본으로 쓴다 */
+if(window.PASS_AGENDA) CXD.agenda = window.PASS_AGENDA;
 var U=CXD.util, comma=U.comma, chip=U.chip;
 var M=CXD.meeting;
 var units=CXD.agenda.filter(function(a){return !a.header;});
@@ -468,45 +565,28 @@ function renderProg(){
 renderProg();
 
 /* ---- 의안 진행현황 (좌) ----
-   conexus 와 같이 표결 단위로 묶는다. 상위 의안(제2호·제4호)은 자식을 품는 카드가 되고,
-   지금 표결 중인 의안이 든 카드만 회색으로 띄운다. */
+   conexus 현장 제어의 의안 트리와 같은 단위다. 표결하지 않는 상위 의안(제2호·제4호)은
+   제목 줄로만 두고, 표결 단위 하나가 카드 하나가 된다. 하위 후보는 그 카드 안에 들어간다. */
 function statDot(s){
   var L={wait:['wait','대기'],vote:['vote','투표중'],cnt:['cnt','집계중']}[s];
   return L ? '<span class="st '+L[0]+'"><i></i>'+L[1]+'</span>' : '';
 }
-function rowOf(a, cls){
-  var vs=VS[a.no]||{s:'wait'};
-  var right = vs.s==='result' ? resBadgeV(vs.r) : statDot(vs.s);
-  return '<div class="r '+(cls||'')+'"><span class="nb">'+num(a.no)+'</span>'
-    +'<span class="t'+(vs.mute?' mute':'')+'">'+a.nm+'</span>'+right+'</div>';
-}
 function renderApl(){
-  /* 상위 의안 바로 다음에 오는 하위 번호들을 그 밑에 모은다 */
-  var cards=[], cur=null;
-  CXD.agenda.forEach(function(a){
-    if(a.header){ cur={head:a, kids:[]}; cards.push(cur); return; }
-    if(cur && a.no.indexOf(cur.head.no.replace('호','')+'-')===0){ cur.kids.push(a); return; }
-    cur=null; cards.push({head:a, kids:[]});
-  });
-  document.getElementById('apl').innerHTML=cards.map(function(c){
-    var mine=[c.head].concat(c.kids).filter(function(a){ return !a.header; });
-    var on=mine.some(function(a){ return (VS[a.no]||{}).cur; });
-    if(!c.kids.length){
-      /* 표결 단위 하나 — 양립불가처럼 고를 안이 있으면 펼쳐 보여 준다 */
-      var opts=(on && c.head.children) ? '<div class="kids">'+c.head.children.map(function(k){
-        return '<div class="kid"><span class="nb">↳ '+num(k.no)+'</span><span class="t">'+k.nm+'</span></div>';
-      }).join('')+'</div>' : '';
-      return '<div class="ac'+(on?' cur':'')+'">'+rowOf(c.head,'top')+opts+'</div>';
+  document.getElementById('apl').innerHTML=CXD.agenda.map(function(a){
+    if(a.header){
+      return '<div class="ac hd"><div class="r"><span class="nb">'+num(a.no)+'</span>'
+        +'<span class="t">'+a.nm+'</span></div></div>';
     }
-    return '<div class="ac'+(on?' cur':'')+'">'
-      +'<div class="r top"><span class="nb">'+num(c.head.no)+'</span>'
-      +'<span class="t">'+c.head.nm+'</span></div>'
-      +'<div class="kids">'+c.kids.map(function(k){
-          var vs=VS[k.no]||{s:'wait'};
-          var right = vs.s==='result' ? resBadgeV(vs.r) : statDot(vs.s);
-          return '<div class="kid"><span class="nb">↳ '+num(k.no)+'</span>'
-            +'<span class="t'+(vs.mute?' mute':'')+'">'+k.nm+'</span>'+right+'</div>';
-        }).join('')+'</div></div>';
+    var vs=VS[a.no]||{s:'wait'};
+    var right = vs.s==='result' ? resBadgeV(vs.r) : statDot(vs.s);
+    /* 결의 구분은 지금 표결 중인 카드에서만 — 목록이 번잡해지지 않도록 */
+    var mth = vs.cur ? '<span class="mth2">'+typeLabel(a.no)+'</span>' : '';
+    var kids = a.children ? '<div class="kids">'+a.children.map(function(k){
+      return '<div class="kid"><span class="nb">↳ '+num(k.no)+'</span>'
+        +'<span class="t">'+k.nm+'</span></div>';
+    }).join('')+'</div>' : '';
+    return '<div class="ac'+(vs.cur?' cur':'')+'"><div class="r top"><span class="nb">'+num(a.no)+'</span>'
+      +'<span class="t'+(vs.mute?' mute':'')+'">'+a.nm+'</span>'+mth+right+'</div>'+kids+'</div>';
   }).join('');
 }
 renderApl();
@@ -519,55 +599,165 @@ document.querySelectorAll('.tabs button').forEach(function(b){
   });
 });
 
-/* ---- 의안 투표 카드 (현재 의안) ---- */
+/* ---- 의안 투표 카드 (현재 의안) ----
+   한 장 안에서 표결 전·표결 중·집계 중·행사 완료가 이어진다. 아래 행사 바만 상태에 따라 바뀐다. */
 function pct(part,whole){return whole?(part/whole*100):0;}
+var MY={held:1200, limit:0};        /* 내 의결권 — 참석 정보와 같은 수치 */
+var CAST={};                        /* 의안별 내가 행사한 값 */
+var CHOICE={pro:'찬성',con:'반대',abs:'기권',neu:'중립'};
+
+function agOf(no){
+  for(var i=0;i<CXD.agenda.length;i++) if(CXD.agenda[i].no===no) return CXD.agenda[i];
+  return null;
+}
+function thr(d){ return (d.type==='특별결의') ? [2/3,1/3] : [1/2,1/4]; }
+function thrName(d){
+  return (d.type==='특별결의')
+    ? ['출석 의결권의 2/3 이상','발행주식총수의 1/3 이상']
+    : ['출석 의결권의 과반수','발행주식총수의 1/4 이상'];
+}
+/* 의안 상세 내용 — 접었다 펼 수 있는 상자 하나 */
+function detBox(a, open){
+  if(!a || !a.desc) return '';
+  var files=(a.files||[]).map(function(f){
+    return '<div class="f3"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>'
+      +'<span class="n3">'+f[0]+'</span><span class="s3">'+f[1]+'</span></div>';
+  }).join('');
+  return '<div class="det2'+(open?' open':'')+'" id="det2"><button class="h3" type="button"><b>의안 상세 내용</b>'
+    +'<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>'
+    +'<div class="bd3"><div class="tx3">'+a.desc+'</div>'+files+'</div></div>';
+}
+/* 의결정족수 — 두 요건을 각각 막대 하나로 */
+function quorum(d){
+  var t=thr(d), nm=thrName(d);
+  var p1=pct(d.for,M.attendShares), p2=pct(d.for,M.sharesVoting);
+  function bar(label,p,limit,base,baseName){
+    var ok=p>=limit*100;
+    return '<div class="q1"><div class="r1"><span class="lb2">'+label+'</span>'
+      +'<span class="ok2'+(ok?'':' no')+'">'+p.toFixed(1)+'%・'+(ok?'충족':'미달')+'</span></div>'
+      +'<div class="bar2"><i class="'+(ok?'':'no')+'" style="width:'+Math.min(100,p).toFixed(1)+'%"></i>'
+      +'<u style="left:'+(limit*100).toFixed(1)+'%"></u></div>'
+      +'<div class="r2"><span>찬성 '+comma(d.for)+'주</span><span>'+baseName+' '+comma(base)+'주</span></div></div>';
+  }
+  return '<div class="quo">'+bar(nm[0],p1,t[0],M.attendShares,'출석 의결권')
+    +bar(nm[1],p2,t[1],M.sharesVoting,'발행주식총수')+'</div>';
+}
+function sumLine(d,r){
+  var t=thr(d), ok1=pct(d.for,M.attendShares)>=t[0]*100, ok2=pct(d.for,M.sharesVoting)>=t[1]*100;
+  var msg = r==='disc' ? '제3호 표결 결과에 따라 폐기된 의안입니다'
+    : (ok1&&ok2) ? '두 요건을 모두 충족하여 해당 의안이 가결되었습니다'
+    : (!ok1 ? thrName(d)[0] : thrName(d)[1])+' 요건에 미달하여 해당 의안이 부결되었습니다';
+  return '<div class="sum2"><div class="k2">집계 결과</div><div class="v2">'+msg+'</div>'
+    +'<div class="n2">*사전투표, 전자투표, 현장투표 합산</div></div>';
+}
+/* 집중투표 — 후보마다 표를 나눠 적는다 */
+function allocBox(d){
+  var seats=2, able=MY.held-MY.limit, total=able*seats;
+  return '<div class="alc" data-total="'+total+'">'
+    +'<div class="a1"><span>보유 주식수 '+comma(MY.held)+'</span><i></i><span>제한 주식수 '+comma(MY.limit)+'</span></div>'
+    +'<div class="a2"><span class="k">행사 가능 주식수 <b>'+comma(total)+'</b></span>'
+    +'<span class="rr">잔여 주식 <b id="alcRest">'+comma(total)+'</b>'
+    +'<button class="undo" type="button" title="되돌리기"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button></span></div>'
+    +d.cands.map(function(c){
+      return '<div class="crow"><span class="cno">'+chip(c.no||('제 '+c.rank))+'</span>'
+        +'<span class="cnm">'+c.name+'</span>'
+        +'<input class="cin" type="text" inputmode="numeric" placeholder="0">'
+        +'<button class="cfill" type="button">잔여 전량 배분</button></div>';
+    }).join('')+'</div>';
+}
+function bindAlloc(el){
+  var box=el.querySelector('.alc'); if(!box) return;
+  var total=+box.dataset.total, rest=box.querySelector('#alcRest'), btn=el.querySelector('#voteDone');
+  function nOf(i){ return Math.max(0, parseInt(String(i.value).replace(/[^0-9]/g,''),10)||0); }
+  function paint(){
+    var ins=box.querySelectorAll('.cin'), used=0;
+    ins.forEach(function(i){ used+=nOf(i); });
+    if(used>total){ /* 넘치면 마지막 입력을 잘라 준다 */ used=total; }
+    var left=total-used;
+    rest.textContent=comma(left);
+    if(btn){ btn.disabled = left!==0 || used===0; }
+  }
+  box.querySelectorAll('.cin').forEach(function(i){
+    i.addEventListener('input',function(){
+      var v=nOf(i), other=0;
+      box.querySelectorAll('.cin').forEach(function(x){ if(x!==i) other+=nOf(x); });
+      if(v+other>total) v=Math.max(0,total-other);
+      i.value=v?comma(v):'';
+      paint();
+    });
+  });
+  box.querySelectorAll('.cfill').forEach(function(b){
+    b.addEventListener('click',function(){
+      var i=b.parentNode.querySelector('.cin'), other=0;
+      box.querySelectorAll('.cin').forEach(function(x){ if(x!==i) other+=nOf(x); });
+      i.value=comma(total-other); paint();
+    });
+  });
+  box.querySelector('.undo').addEventListener('click',function(){
+    box.querySelectorAll('.cin').forEach(function(i){ i.value=''; }); paint();
+  });
+  paint();
+}
+function flagOf(no){
+  var c=CAST[no];
+  if(!c) return '<span class="flag2 none">의결권 미행사</span>';
+  return '<span class="flag2"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>'+c+' 행사</span>';
+}
 function renderVote(){
-  var d=CXD.center[CURRENT]; var el=document.getElementById('voteCard');
-  var typeB=(d.type==='집중투표')?'<span class="b mth">집중투표</span>':(d.type==='양립불가')?'<span class="b mth">양립불가</span>':(d.type==='특별결의')?'<span class="b spec">특별결의</span>':'<span class="b norm">보통결의</span>';
-  var head='<div class="cat">'+chip(d.cat)+' '+typeB+'</div><div class="nm">'+d.name+'</div>';
-  if(d.type==='집중투표'){
-    el.innerHTML=head+'<div class="base">보유 1,200주 × 선임예정 2인 = 2,400표 배분</div>'+candBars(d);return;
-  }
-  /* 현장 제어가 표결을 열기 전이면 투표 칸을 내주지 않는다 */
-  var st=(VS[CURRENT]||{}).s;
-  if(st==='wait'){
-    el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
-      +'<div class="doneflag wait2">의장이 표결을 개시하면 의결권을 행사하실 수 있습니다</div>';
-    return;
-  }
-  if(st==='cnt'){
-    el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
-      +'<div class="doneflag">집계 중입니다</div>'+normalResult(d);
-    return;
-  }
+  var no=CURRENT, d=CXD.center[no], a=agOf(no), el=document.getElementById('voteCard');
+  if(!d){ el.innerHTML=''; return; }
+  var vs=VS[no]||{s:'wait'}, st=vs.s, r=(st==='result')?resultOf(no):null;
+  var right = r ? '<span class="rb2 '+r+'">'+({pass:'가결',fail:'부결',disc:'폐기'}[r])+'</span>'
+                : statDot(st);
+  var body='<div class="cat"><span class="no3">'+chip(no)+'</span>'+right+'</div>'
+    +'<div class="nm">'+(a?a.nm:d.name)+'</div>'
+    +'<div class="base">'+typeLabel(no)+'</div>'
+    +detBox(a, st!=='result');
   if(st==='result'){
-    el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
-      +'<div class="doneflag">'+(resultOf(CURRENT)==='pass'?'가결되었습니다':resultOf(CURRENT)==='disc'?'폐기된 의안입니다':'부결되었습니다')+'</div>'
-      +normalResult(d);
-    return;
+    body += (d.type==='집중투표') ? candBars(d) : (sumLine(d,r)+quorum(d));
+  }else if(st==='cnt'){
+    body += '<div class="sum2"><div class="k2">집계 결과</div><div class="v2">표결을 마감하고 집계 중입니다</div></div>';
+  }else if(st==='vote' && d.type==='집중투표' && !CAST[no]){
+    body += allocBox(d);
   }
-  // 표결 중 — 투표 버튼 + (행사 후) 결과
-  el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
-    +(LIVE.sec>0?'<div class="vleft" id="vLeft"></div>':'')
-    +'<div class="choices" id="choices">'
-    +'<button class="choice pro" data-c="pro">찬성</button>'
-    +'<button class="choice con" data-c="con">반대</button>'
-    +'<button class="choice abs" data-c="abs">기권</button></div>'
-    +'<button class="done wait" id="voteDone" disabled>의결권을 선택해 주세요</button>'
-    +'<div id="voteRes"></div>';
+  /* 아래 행사 바 */
+  var act;
+  if(st==='result' || st==='cnt'){
+    act='<div class="act2">'+(st==='cnt'?statDot('cnt'):'')+flagOf(no)+'</div>';
+  }else if(st==='wait'){
+    act='<div class="act2">'+statDot('wait')
+      +'<span class="note2">의장이 표결을 개시하면 의결권을 행사하실 수 있습니다</span></div>';
+  }else if(CAST[no]){
+    act='<div class="act2">'+statDot('vote')+flagOf(no)+'</div>';
+  }else if(d.type==='집중투표'){
+    act='<div class="act2">'+statDot('vote')
+      +'<span class="note2">후보별로 배분한 뒤 행사하실 수 있습니다</span>'
+      +'<button class="done" id="voteDone" disabled>행사하기</button></div>';
+  }else{
+    act='<div class="act2">'+statDot('vote')+'<div class="choices" id="choices">'
+      +Object.keys(CHOICE).map(function(k){
+          return '<button class="choice" type="button" data-c="'+k+'">'+CHOICE[k]+'</button>';
+        }).join('')
+      +'</div><button class="done" id="voteDone" disabled>행사하기</button></div>';
+  }
+  el.innerHTML='<div class="body">'+body+'</div>'+act;
+
+  var det=el.querySelector('.det2');
+  if(det) det.querySelector('.h3').addEventListener('click',function(){ det.classList.toggle('open'); });
+  if(el.querySelector('.alc')) bindAlloc(el);
+
   var picked=null;
   el.querySelectorAll('.choice').forEach(function(c){
     c.addEventListener('click',function(){
       el.querySelectorAll('.choice').forEach(function(x){x.classList.remove('sel');});
       c.classList.add('sel'); picked=c.dataset.c;
-      var db=document.getElementById('voteDone'); db.classList.remove('wait'); db.disabled=false; db.textContent='의결권 행사하기';
+      document.getElementById('voteDone').disabled=false;
     });
   });
-  document.getElementById('voteDone').addEventListener('click',function(){
-    if(!picked) return;
-    el.querySelectorAll('.choice').forEach(function(x){x.style.pointerEvents='none';x.style.opacity=x.classList.contains('sel')?'1':'.5';});
-    this.outerHTML='<div class="doneflag">✓ 의결권 행사 완료 (집계 중)</div>';
-    document.getElementById('voteRes').innerHTML=normalResult(d);
+  var done=el.querySelector('#voteDone');
+  if(done) done.addEventListener('click',function(){
+    CAST[no] = picked ? CHOICE[picked] : '집중투표';
+    renderVote();
   });
 }
 function normalResult(d){
@@ -652,24 +842,54 @@ function renderVoteList(){
 }
 renderVoteList();
 
-/* ---- 질의 대상 옵션 ---- */
+/* ---- 질의 작성 ----
+   관련 의안을 '총회 진행 전반'으로 둘지 의안 하나로 좁힐지 먼저 고르고,
+   내용이 한 글자라도 있어야 등록할 수 있다. 남은 횟수는 제목 옆에 적는다. */
+var QMAXL=3;
 (function(){
-  var opt='<option>총회 진행 전반</option>'+units.map(function(a){return '<option>'+chip(a.no)+' '+a.nm+'</option>';}).join('');
-  document.getElementById('qTarget').innerHTML=opt;
+  document.getElementById('qTarget').innerHTML=units.map(function(a){
+    return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
+  }).join('');
 })();
-document.querySelectorAll('#qType button').forEach(function(b){
-  b.addEventListener('click',function(){document.querySelectorAll('#qType button').forEach(function(x){x.classList.toggle('on',x===b);});});
+var QSCOPE='all';
+document.querySelectorAll('#qScope button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#qScope button').forEach(function(x){x.classList.toggle('on',x===b);});
+    QSCOPE=b.dataset.v;
+    document.getElementById('qAgFld').style.display = QSCOPE==='ag' ? '' : 'none';
+  });
 });
+(function(){
+  var ta=document.getElementById('qBody');
+  ta.addEventListener('input',function(){
+    document.getElementById('qLen').textContent=ta.value.length;
+    document.getElementById('qSubmit').disabled=!ta.value.trim();
+  });
+})();
 function openM(id){document.getElementById(id).classList.add('on');}
 function closeM(id){document.getElementById(id).classList.remove('on');}
-document.getElementById('qWrite').addEventListener('click',function(){openM('qOvl');});
+document.getElementById('qWrite').addEventListener('click',function(){
+  var used=QUES.filter(function(x){return x.mine;}).length;
+  document.getElementById('qCnt').textContent='('+Math.min(used+1,QMAXL)+'/'+QMAXL+')';
+  openM('qOvl');
+});
 document.getElementById('qCancel').addEventListener('click',function(){closeM('qOvl');});
-document.getElementById('qSubmit').addEventListener('click',function(){closeM('qOvl');alert('질의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.');});
+document.getElementById('qSubmit').addEventListener('click',function(){
+  var ta=document.getElementById('qBody'), sel=document.getElementById('qTarget');
+  QUES.unshift({name:PASSNAME, mine:true, time:nowHm(), date:todayStr()+' '+nowHm(),
+    ag:(QSCOPE==='ag'?sel.value:'총회 진행 전반'), q:ta.value.trim(), priv:false});
+  ta.value=''; document.getElementById('qLen').textContent='0';
+  document.getElementById('qSubmit').disabled=true;
+  closeM('qOvl'); renderQ();
+});
+function nowHm(){ var d=new Date(); return (d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes(); }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'.'+('0'+(d.getMonth()+1)).slice(-2)+'.'+('0'+d.getDate()).slice(-2); }
+var PASSNAME=(window.PASS_USER&&PASS_USER.name)||'박성용';
 
 /* ---- 질의 목록 (전체/내가 쓴 질의, 답변·공개범위) ---- */
 var QUES=[
-  {name:'박성용',mine:true,time:'10:07',ag:'제2호',q:'ESG 경영 목표 달성을 위한 올해 구체적 실행 계획은 무엇인지요.',ans:'탄소중립 로드맵 2030을 기준으로 사업장별 감축 목표를 설정하고 분기별 공시할 예정입니다.',pub:true},
-  {name:'박성용',mine:true,time:'10:07',ag:'제2호',q:'정관 변경 중 전자투표 상시 도입 조항이 기존 서면투표권을 제약하는 것은 아닌지 설명 부탁드립니다.',ans:'정관상 배제조항이 없어 청구 가능하나, 이사회는 단일 후보로 진행하고 있습니다.',pub:true},
+  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2호',q:'ESG 경영 목표 달성을 위한 올해 구체적 실행 계획은 무엇인지요.',ans:'탄소중립 로드맵 2030을 기준으로 사업장별 감축 목표를 설정하고 분기별 공시할 예정입니다.',pub:true},
+  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2호',q:'정관 변경 중 전자투표 상시 도입 조항이 기존 서면투표권을 제약하는 것은 아닌지 설명 부탁드립니다.',ans:'정관상 배제조항이 없어 청구 가능하나, 이사회는 단일 후보로 진행하고 있습니다.',pub:true},
   {name:'황**',mine:false,time:'10:07',ag:'제2호',q:'집중투표제 배제 조항 삭제 시 향후 이사 선임 절차가 어떻게 달라지나요?',ans:'2인 이상 이사 선임 시 주주가 집중투표를 청구할 수 있게 됩니다.',pub:true},
   {name:'황**',mine:false,time:'10:07',ag:'제2호',q:'전자주주총회 도입 후 현장 참석 주주의 권리는 동일하게 보장되는지 궁금합니다.',priv:true}
 ];
@@ -681,13 +901,27 @@ function renderQ(){
   document.getElementById('qcAll').textContent=QUES.length;
   document.getElementById('qcMine').textContent=QUES.filter(function(x){return x.mine;}).length;
   if(!list.length){ host.innerHTML='<div class="qempty">아직 등록된 질의가 없습니다</div>'; return; }
-  host.innerHTML=list.map(function(x){
+  host.innerHTML=list.map(function(x,i){
     var ans='';
     if(x.priv && !x.mine) ans='<div class="ans priv"><span class="lock">답변은 작성자만 확인할 수 있습니다</span></div>';
-    else if(x.ans) ans='<div class="ans '+(x.pub?'pub':'priv')+'"><b>답변</b>'+x.ans+'</div>';
-    return '<div class="qitem"><div class="m">'+qAvatar()+'<span class="nm">'+x.name+'</span><span>'+x.time+'</span>'
-      +'<span class="ag">'+chip(x.ag)+'</span></div><div class="q">'+x.q+'</div>'+ans+'</div>';
+    else if(x.ans) ans='<div class="ans '+(x.pub?'pub':'priv')+'"><b>답변</b><span>'+x.ans+'</span></div>';
+    else if(x.mine) ans='<div class="ans priv"><span class="lock">답변을 기다리는 중입니다</span></div>';
+    /* 내가 쓴 글은 날짜까지 적고, 답변 전이면 지울 수 있게 둔다 */
+    var when = x.mine ? (x.date||x.time) : x.time;
+    var pv = (x.mine && x.priv) ? '<span class="pv">비공개</span>' : '';
+    var del = (x.mine && !x.ans) ? '<button class="del" type="button" data-i="'+i+'" title="삭제">'
+      +'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>' : '';
+    return '<div class="qitem"><div class="m"><span class="who">'+qAvatar()
+      +'<span class="nm">'+x.name+'</span><span>'+when+'</span>'+pv+'</span>'
+      +'<span class="rt"><span class="ag">'+(x.ag==='총회 진행 전반'?x.ag:chip(x.ag))+'</span>'+del+'</span></div>'
+      +'<div class="q">'+x.q+'</div>'+ans+'</div>';
   }).join('');
+  host.querySelectorAll('.del').forEach(function(b){
+    b.addEventListener('click',function(){
+      var t=list[+b.dataset.i];
+      QUES.splice(QUES.indexOf(t),1); renderQ();
+    });
+  });
 }
 document.querySelectorAll('.qfilter .qf').forEach(function(b){
   b.addEventListener('click',function(){

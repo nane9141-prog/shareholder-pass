@@ -137,8 +137,7 @@
   .tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin:24px 0 16px}
   .tabs button{border:0;background:none;font-family:inherit;letter-spacing:inherit;
     font-size:16px;line-height:24px;font-weight:700;color:#6B7078;
-    padding:12px 16px;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
-  .tabs button:first-child{padding-left:0}
+    padding:8px 12px;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
   .tabs button.on{color:#151419;border-bottom-color:#272929}
   .pane{display:none}.pane.on{display:block}
 
@@ -341,6 +340,38 @@
     font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit;color:#151419}
   .seg button.on{border-color:#D7D9DF;background:#F3F4F6}
   select.sel,.ta{width:100%;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;padding:12px}
+  /* 고르는 칸 — 펼치면 테두리가 진해지고 아래로 목록이 열린다 */
+  .fsel{position:relative}
+  .fsel select{display:none}
+  .fselb{display:flex;align-items:center;gap:4px;width:100%;height:48px;padding:12px 16px;
+    border:1px solid #EEF0F2;border-radius:8px;background:#fff;font-family:inherit;
+    font-size:16px;line-height:24px;letter-spacing:inherit;color:#151419;text-align:left;cursor:pointer}
+  .fselb .v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fselb .cv{flex:none;width:24px;height:24px;stroke:#A7AAB1;fill:none;stroke-width:2;transition:transform .15s}
+  .fsel.open .fselb{border-color:#0A0A0A}
+  .fsel.open .fselb .cv{transform:rotate(180deg);stroke:#151419}
+  .selpop{display:none;position:absolute;left:0;right:0;top:52px;z-index:30;padding:4px;
+    background:#fff;border:1px solid #EEF0F2;border-radius:8px;
+    box-shadow:0 2px 12px -2px rgba(0,0,0,.15);max-height:240px;overflow:auto;
+    scrollbar-width:none;-ms-overflow-style:none}
+  .selpop::-webkit-scrollbar{display:none}
+  .fsel.open .selpop{display:block}
+  .selopt{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:10px 12px;
+    border:0;border-radius:8px;background:none;font-family:inherit;font-size:14px;line-height:21px;
+    letter-spacing:inherit;color:#151419;text-align:left;cursor:pointer}
+  .selopt:hover{background:#F8F8FA}
+  .selopt.on{font-weight:700}
+  .selopt svg{flex:none;width:16px;height:16px;margin-left:auto;stroke:#0071F3;fill:none;
+    stroke-width:2.4;visibility:hidden}
+  .selopt.on svg{visibility:visible}
+
+  /* 알림 — 마지막 동작을 한 줄로 알린다 */
+  .toast{position:fixed;left:50%;bottom:32px;z-index:90;max-width:min(520px,92vw);
+    padding:14px 18px;border-radius:12px;background:#151419;color:#fff;
+    font-size:14px;line-height:21px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.18);
+    opacity:0;pointer-events:none;transform:translateX(-50%) translateY(12px);
+    transition:opacity .18s,transform .18s}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
   .tabox{border:1px solid #EEF0F2;border-radius:8px;overflow:hidden}
   .tabox .ta{display:block;width:100%;min-height:112px;border:0;border-radius:8px 8px 0 0;resize:none;
     padding:12px 16px 8px;font-family:inherit;font-size:16px;line-height:24px;letter-spacing:inherit;color:#151419}
@@ -566,6 +597,8 @@
     <div class="mm-act"><button class="cancel" id="mtCancel">취소</button><button class="ok" id="mtOk">확인</button></div>
   </div>
 </div>
+
+<div class="toast" id="toast" role="status"></div>
 
 <!-- 공지사항 모달 -->
 <div class="ovl" id="ntOvl">
@@ -915,13 +948,17 @@ function renderVote(){
     });
   });
   var undo=el.querySelector('#voteUndo');
-  if(undo) undo.addEventListener('click',function(){ delete CAST[no]; renderVote(); });
+  if(undo) undo.addEventListener('click',function(){
+    delete CAST[no]; renderVote(); toast(chip(no)+' 의결권 행사를 철회했습니다');
+  });
   var done=el.querySelector('#voteDone');
   if(done) done.addEventListener('click',function(){
     /* 표를 넘기기 전에 본인 확인을 한 번 거친다 */
     askAuth(function(){
       CAST[no] = picked ? CHOICE[picked] : '집중투표';
       renderVote();
+      toast(picked ? chip(no)+' — '+CHOICE[picked]+' 행사가 완료되었습니다'
+                   : chip(no)+' — 집중투표 배분이 완료되었습니다');
     });
   });
 }
@@ -954,6 +991,7 @@ var QMAXL=3;
   document.getElementById('qTarget').innerHTML=units.map(function(a){
     return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
   }).join('');
+  dressSelect('qTarget'); dressSelect('qAmType');
 })();
 /* 질의와 수정동의는 채워야 하는 칸도, 안내 문구도, 제출 버튼 이름도 다르다 */
 var QKIND='q';
@@ -993,6 +1031,40 @@ paintQForm();
     document.getElementById('qSubmit').disabled=!ta.value.trim();
   });
 })();
+/* 알림 — 같은 자리에 한 줄, 잠시 뒤 스스로 사라진다 */
+var TOASTT=null;
+function toast(msg){
+  var el=document.getElementById('toast'); if(!el) return;
+  el.textContent=msg; el.classList.add('on');
+  clearTimeout(TOASTT); TOASTT=setTimeout(function(){ el.classList.remove('on'); },2600);
+}
+/* 고르는 칸에 옷을 입힌다 — 값은 원래의 select 가 그대로 들고 있다 */
+function dressSelect(id){
+  var sel=document.getElementById(id);
+  if(!sel || sel.dataset.dressed) return;
+  sel.dataset.dressed='1';
+  var w=document.createElement('div'); w.className='fsel';
+  var b=document.createElement('button'); b.type='button'; b.className='fselb';
+  var p=document.createElement('div'); p.className='selpop';
+  sel.parentNode.insertBefore(w,sel); w.appendChild(sel); w.appendChild(b); w.appendChild(p);
+  function paint(){
+    var o=sel.options[sel.selectedIndex];
+    b.innerHTML='<span class="v">'+(o?o.text:'')+'</span>'
+      +'<svg class="cv" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>';
+    p.innerHTML=[].map.call(sel.options,function(x,i){
+      return '<button class="selopt'+(i===sel.selectedIndex?' on':'')+'" type="button" data-i="'+i+'">'
+        +'<span>'+x.text+'</span><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></button>';
+    }).join('');
+  }
+  b.addEventListener('click',function(e){ e.stopPropagation(); w.classList.toggle('open'); });
+  p.addEventListener('click',function(e){
+    var o=e.target.closest('.selopt'); if(!o) return;
+    sel.selectedIndex=+o.dataset.i; paint(); w.classList.remove('open');
+    sel.dispatchEvent(new Event('change'));
+  });
+  document.addEventListener('click',function(){ w.classList.remove('open'); });
+  paint();
+}
 function openM(id){document.getElementById(id).classList.add('on');}
 function closeM(id){document.getElementById(id).classList.remove('on');}
 document.getElementById('qWrite').addEventListener('click',function(){
@@ -1005,7 +1077,7 @@ document.getElementById('qSubmit').addEventListener('click',function(){
   var ta=document.getElementById('qBody'), sel=document.getElementById('qTarget');
   var kind=QKIND==='a'?'수정동의':null;
   var amtype=kind?document.getElementById('qAmType').value:null;
-  QUES.unshift({name:PASSNAME, mine:true, time:nowHm(), date:todayStr()+' '+nowHm(),
+  QUES.unshift({name:PASSNAME, mine:true, own:true, time:nowHm(), date:todayStr()+' '+nowHm(),
     ag:sel.value, q:ta.value.trim(), priv:false, kind:kind, amtype:amtype});
   /* 현장 제어의 질의 목록에도 같은 건이 올라간다 */
   cxPush('cx.qna',{id:'PASS-'+Date.now(), name:PASSNAME, t:'개인', sh:MY.held,
@@ -1013,25 +1085,59 @@ document.getElementById('qSubmit').addEventListener('click',function(){
   ta.value=''; document.getElementById('qLen').textContent='0';
   document.getElementById('qSubmit').disabled=true;
   closeM('qOvl'); renderQ();
+  toast(kind ? '수정동의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.'
+             : '질의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.');
 });
 function nowHm(){ var d=new Date(); return (d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes(); }
 function todayStr(){ var d=new Date(); return d.getFullYear()+'.'+('0'+(d.getMonth()+1)).slice(-2)+'.'+('0'+d.getDate()).slice(-2); }
 var PASSNAME=(window.PASS_USER&&PASS_USER.name)||'박성용';
 
 /* ---- 질의 목록 (전체/내가 쓴 질의, 답변·공개범위) ---- */
+/* 질의는 의안마다 쌓인다. 아직 상정하지 않은 의안의 질의는 목록에 나오지 않고,
+   현장 제어가 의안을 넘길 때마다 그만큼 늘어난다. */
 var QUES=[
-  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2-1호',q:'ESG 경영 목표 달성을 위한 올해 구체적 실행 계획은 무엇인지요.',ans:'탄소중립 로드맵 2030을 기준으로 사업장별 감축 목표를 설정하고 분기별 공시할 예정입니다.',pub:true},
-  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2-2호',q:'정관 변경 중 전자투표 상시 도입 조항이 기존 서면투표권을 제약하는 것은 아닌지 설명 부탁드립니다.',ans:'정관상 배제조항이 없어 청구 가능하나, 이사회는 단일 후보로 진행하고 있습니다.',pub:true},
-  {name:'황**',mine:false,time:'10:07',ag:'제2-1호',q:'집중투표제 배제 조항 삭제 시 향후 이사 선임 절차가 어떻게 달라지나요?',ans:'2인 이상 이사 선임 시 주주가 집중투표를 청구할 수 있게 됩니다.',pub:true},
-  {name:'황**',mine:false,time:'10:07',ag:'제2-2호',q:'전자주주총회 도입 후 현장 참석 주주의 권리는 동일하게 보장되는지 궁금합니다.',priv:true}
+  {name:'박성용',mine:true,time:'09:41',date:'2026.08.27 09:41',ag:'제1호',
+   q:'당기순이익 대비 배당성향을 어떤 기준으로 정하고 계신지 알고 싶습니다.',
+   ans:'별도재무제표 당기순이익을 기준으로 약 27% 수준을 유지하고 있으며, 실적과 자본 상황을 함께 고려합니다.',pub:true},
+  {name:'김**',mine:false,time:'09:44',ag:'제1호',
+   q:'자기주식 취득이나 소각 계획이 있는지, 있다면 규모와 시기는 어떻게 되는지요.',
+   ans:'주당가치 제고를 위해 이사회에서 지속 검토 중이며, 확정되는 대로 공시하겠습니다.',pub:true},
+  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2-1호',
+   q:'ESG 경영 목표 달성을 위한 올해 구체적 실행 계획은 무엇인지요.',
+   ans:'탄소중립 로드맵 2030을 기준으로 사업장별 감축 목표를 설정하고 분기별 공시할 예정입니다.',pub:true},
+  {name:'황**',mine:false,time:'10:09',ag:'제2-1호',
+   q:'집중투표제 배제 조항 삭제 시 향후 이사 선임 절차가 어떻게 달라지나요?',
+   ans:'2인 이상 이사를 선임할 때 주주가 집중투표를 청구하실 수 있게 됩니다.',pub:true},
+  {name:'박성용',mine:true,time:'10:21',date:'2026.08.27 10:21',ag:'제2-2호',
+   q:'정관 변경 중 전자투표 상시 도입 조항이 기존 서면투표권을 제약하는 것은 아닌지 설명 부탁드립니다.',
+   ans:'서면투표는 그대로 유지되며, 전자적 방법을 선택지로 더하는 변경입니다.',pub:true},
+  {name:'황**',mine:false,time:'10:24',ag:'제2-2호',
+   q:'전자주주총회 도입 후 현장 참석 주주의 권리는 동일하게 보장되는지 궁금합니다.',priv:true},
+  {name:'이**',mine:false,time:'10:38',ag:'제3호',
+   q:'회사제안과 주주제안이 함께 상정된 이유와, 하나가 가결되면 다른 안은 어떻게 되는지요.',
+   ans:'두 안은 선임 방식이 양립하지 않아 먼저 표결하며, 선택되지 않은 안은 폐기됩니다.',pub:true},
+  {name:'국민연금공단',mine:false,time:'10:52',ag:'제4-1호',
+   q:'사외이사 후보들의 독립성 판단 근거를 후보별로 설명해 주시기 바랍니다.',
+   ans:'네 분 모두 최근 3년간 당사 및 계열사와 거래·고용 관계가 없음을 확인하였습니다.',pub:true},
+  {name:'정**',mine:false,time:'11:04',ag:'제4-2호',
+   q:'주주제안 후보의 추천 경위와 지분 요건 충족 여부를 알고 싶습니다.',priv:true}
 ];
+/* 표결 단위의 차례 — 진행한 의안까지만 질의를 보여 주는 잣대 */
+function agIdx(no){ return units.map(function(a){return a.no;}).indexOf(no); }
+function qSeen(x){
+  if(x.own) return true;                        /* 방금 내가 올린 건은 늘 보인다 */
+  var i=agIdx(x.ag); if(i<0) return true;        /* 총회 진행 전반 */
+  var cur=agIdx(CURRENT);
+  return cur<0 ? true : i<=cur;
+}
 var QFILTER='all';
 function qAvatar(){return '<span class="av"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></span>';}
 function renderQ(){
-  var list=QUES.filter(function(x){return QFILTER==='mine'?x.mine:true;});
+  var open=QUES.filter(qSeen);
+  var list=open.filter(function(x){return QFILTER==='mine'?x.mine:true;});
   var host=document.getElementById('qList');
-  document.getElementById('qcAll').textContent=QUES.length;
-  document.getElementById('qcMine').textContent=QUES.filter(function(x){return x.mine;}).length;
+  document.getElementById('qcAll').textContent=open.length;
+  document.getElementById('qcMine').textContent=open.filter(function(x){return x.mine;}).length;
   if(!list.length){ host.innerHTML='<div class="qempty">아직 등록된 질의가 없습니다</div>'; return; }
   host.innerHTML=list.map(function(x,i){
     var ans='';
@@ -1139,6 +1245,7 @@ function renderSp(){
   document.getElementById('spTarget').innerHTML=units.map(function(a){
     return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
   }).join('');
+  dressSelect('spTarget');
   document.querySelectorAll('#spKind button').forEach(function(b){
     b.addEventListener('click',function(){
       document.querySelectorAll('#spKind button').forEach(function(x){x.classList.toggle('on',x===b);});
@@ -1158,6 +1265,7 @@ function renderSp(){
     ta.value=''; document.getElementById('spLen').textContent='0';
     document.getElementById('spAgree').checked=false; spCheck();
     closeM('spOvl'); renderSp();
+    toast((SPKIND==='a'?'수정동의':'발언')+' 신청이 접수되었습니다. 의장 지명 후 마이크가 켜집니다.');
   });
   paintSpForm(); renderSp();
 })();
@@ -1516,7 +1624,7 @@ function applyLive(s){
     else if(n>i) VS[a.no]={s:'wait'};
     else VS[a.no]=stVS(a.no);
   });
-  renderProg(); renderApl(); renderVote(); paintLeft();
+  renderProg(); renderApl(); renderVote(); paintLeft(); renderQ();
 }
 
 function paintLeft(){

@@ -20,12 +20,14 @@
   /* header */
   header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
   .hd{height:64px;display:flex;align-items:center;justify-content:space-between}
-  .brand{display:flex;align-items:baseline;gap:8px}
-  .brand img{height:20px;width:auto;display:block;align-self:center}
-  .brand small{font-weight:600;font-size:13px;color:var(--muted);letter-spacing:0}
+  .brand{display:flex;align-items:center;gap:8px;height:20px}
+  .brand img{height:20px;width:auto;display:block}
+  .brand small{font-size:13px;line-height:20px;font-weight:600;color:var(--muted);letter-spacing:0}
   .nav{display:flex;align-items:center;gap:22px;font-size:14px;color:#3f3f46}
   .nav .sep{width:1px;height:14px;background:var(--border)}
-  .nav .login{font-weight:600;color:var(--fg)}
+  .nav .u{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--fg)}
+  .nav .u svg{width:16px;height:16px;stroke:#52525b;fill:none;stroke-width:1.8}
+  .nav .out{color:var(--muted);cursor:pointer}
 
   /* hero */
   .hero{margin-top:20px;height:340px;border-radius:18px;position:relative;overflow:hidden;color:#fff;
@@ -40,11 +42,24 @@
   .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}
   .dots i.on{width:22px;border-radius:9px;background:#fff}
 
-  /* login strip */
-  .loginrow{margin:26px 2px 0}
-  .loginrow .t{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:800}
-  .loginrow .t svg{width:20px;height:20px;stroke:var(--fg);fill:none;stroke-width:2}
-  .loginrow p{margin:8px 0 0;color:var(--muted);font-size:15px}
+  /* 내 주주총회 */
+  .mine{margin:30px 0 8px}
+  .mine .h{display:flex;align-items:center;gap:8px}
+  .mine h2{margin:0;font-size:22px;font-weight:800}
+  .mine .cnt{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:9999px;
+    background:var(--brand-50);color:var(--brand-ink);font-size:12px;font-weight:700}
+  .mine p{margin:8px 0 0;color:var(--muted);font-size:15px}
+  .mygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+  .my{display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border:1px solid var(--border);
+    border-radius:14px;box-shadow:var(--sh);cursor:pointer;transition:box-shadow .12s,border-color .12s}
+  .my:hover{box-shadow:var(--shmd);border-color:#d9d9de}
+  .my img{width:48px;height:48px;border-radius:13px;object-fit:contain;background:#fff;flex:none}
+  .my .info{display:flex;flex-direction:column;min-width:0;flex:1}
+  .my .nm{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700}
+  .my .sub{margin-top:3px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .my .sh{margin-top:5px;font-size:12px;font-weight:700;color:var(--brand-ink)}
+  .my .cv{width:16px;height:16px;flex:none;stroke:#c4c4c8;fill:none;stroke-width:2}
+  @media(max-width:920px){.mygrid{grid-template-columns:1fr}}
 
   /* find */
   .find{margin:34px 0 8px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -91,7 +106,8 @@
 <header>
   <div class="wrap hd">
     <a class="brand" href="index.html"><img src="assets/logo-pass.svg" alt="주주PASS" width="73" height="20"><small>전자주주총회</small></a>
-    <nav class="nav"><span>이용안내</span><span>고객센터</span><span class="sep"></span><a class="login" href="#">로그인</a></nav>
+    <nav class="nav"><span>이용안내</span><span>고객센터</span><span class="sep"></span>
+      <span class="u" id="navUser"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>박성용</span><span class="out">로그아웃</span></nav>
   </div>
 </header>
 
@@ -105,9 +121,10 @@
     <div class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
   </section>
 
-  <section class="loginrow">
-    <div class="t">로그인 <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-    <p>로그인하고 내가 보유한 기업의 주주총회 소식을 확인해보세요!</p>
+  <section class="mine">
+    <div class="h"><h2>내 주주총회</h2><span class="cnt" id="myCnt">0</span></div>
+    <p>보유하신 기업의 주주총회입니다. 기업을 누르면 상세 정보와 참여 방법을 확인하실 수 있습니다.</p>
+    <div class="mygrid" id="mygrid"></div>
   </section>
 
   <section class="find">
@@ -131,27 +148,15 @@
   </div>
 </footer>
 
+<script src="assets/companies.js"></script>
 <script>
-/* 데모 표시용 기업 목록 — 실제 통합 시 CX.companies 로 교체.
-   카카오뱅크만 실데이터(CX.meeting, 제10기 진행) 연결, 나머지는 목업. */
+/* 기업 목록은 assets/companies.js 한 곳에서 온다. */
 var MEETING = (window.CX && CX.meeting) || { name:'제10기 정기주주총회' };
-var COMPANIES = [
-  {nm:'카카오뱅크', img:'kakaobank', term:MEETING.name, status:'live', href:'company.html', live:true},
-  {nm:'현대', img:'hyundai', term:'제9기 정기주주총회', status:'dday'},
-  {nm:'신세계', img:'shinsegae', term:'제9기 정기주주총회', status:'end'},
-  {nm:'기아', img:'kia', term:'제9기 정기주주총회', status:'end'},
-  {nm:'고려아연', img:'korea-zinc', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
-  {nm:'한미반도체', img:'hanmi', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
-  {nm:'달바', img:'dalba', term:'제9기 정기주주총회', status:'end'},
-  {nm:'GS', img:'gs', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
-  {nm:'한화에어로스페이스', img:'hanwha-aero', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
-  {nm:'미래에셋증권', img:'mirae-asset', term:'제9기 정기주주총회', status:'end'},
-  {nm:'농심', img:'nongshim', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
-  {nm:'HD현대', img:'hd-hyundai', term:'제9기 정기주주총회', status:'end'},
-  {nm:'신한지주', img:'shinhan', term:'제9기 정기주주총회', status:'end'},
-  {nm:'무신사', img:'musinsa', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
-  {nm:'대한항공', img:'korean-air', term:'제9기 정기주주총회', status:'end'}
-];
+var COMPANIES = PASS_CO;
+document.getElementById('navUser').lastChild.nodeValue = PASS_USER.name;
+
+/* 상세 화면은 보유한 기업에만 연다 — 남의 총회에는 내 주식 정보가 없다 */
+function coHref(c){ return c.mine ? 'company.html?co='+c.key : ''; }
 function chip(c){
   if(c.status==='live') return '<span class="chip live"><i></i>LIVE</span>';
   if(c.status==='dday') return '<span class="chip dday">D-day</span>';
@@ -160,13 +165,28 @@ function chip(c){
 }
 function render(list){
   document.getElementById('grid').innerHTML = list.map(function(c){
-    return '<a class="co'+(c.live?' live':'')+'"'+(c.href?' href="'+c.href+'"':'')+'>'
-      +'<img class="logo" src="assets/logo-'+c.img+'.png" alt="'+c.nm+'" width="52" height="52">'
+    var href=coHref(c);
+    return '<a class="co'+(c.status==='live'?' live':'')+'"'+(href?' href="'+href+'"':'')+'>'
+      +'<img class="logo" src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="52" height="52">'
       +'<span class="info"><span class="nm">'+c.nm+' '+chip(c)+'</span>'
       +'<span class="sub">'+c.term+(c.status==='end'?' 종료':'')+'</span></span></a>';
   }).join('');
 }
 render(COMPANIES);
+
+/* 내 주주총회 — 보유 주식수까지 같이 보여 준다 */
+(function(){
+  var mine=COMPANIES.filter(function(c){return c.mine;});
+  document.getElementById('myCnt').textContent=mine.length;
+  document.getElementById('mygrid').innerHTML=mine.map(function(c){
+    return '<a class="my" href="company.html?co='+c.key+'">'
+      +'<img src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="48" height="48">'
+      +'<span class="info"><span class="nm">'+c.nm+' '+chip(c)+'</span>'
+      +'<span class="sub">'+c.term+' · '+c.date+'</span>'
+      +'<span class="sh">'+c.kind+' '+c.shares+'</span></span>'
+      +'<svg class="cv" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>';
+  }).join('');
+})();
 document.getElementById('q').addEventListener('input', function(e){
   var v=e.target.value.trim();
   render(v ? COMPANIES.filter(function(c){return c.nm.indexOf(v)>=0;}) : COMPANIES);

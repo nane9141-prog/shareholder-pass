@@ -35,11 +35,12 @@
   /* hero */
   .hero{margin-top:16px;height:220px;border-radius:16px;position:relative;overflow:hidden;color:#1a1a1a;
     background:linear-gradient(120deg,#ffe98a 0%,#ffd21f 100%)}
-  .hero .join{display:inline-flex;align-items:center;gap:6px;margin-top:12px;height:38px;padding:0 16px;
-    border-radius:10px;background:#e11d48;color:#fff;font-size:14px;font-weight:700}
-  .hero .join i{width:6px;height:6px;border-radius:50%;background:#fff}
-  .hero .ended{display:inline-flex;align-items:center;margin-top:12px;height:30px;padding:0 12px;
-    border-radius:9999px;background:rgba(0,0,0,.18);font-size:13px;font-weight:700}
+  /* 주주카드 — 상태는 배지와 버튼으로 보여 준다 */
+  .card .u-h{display:flex;align-items:center;justify-content:flex-start;gap:8px;font-size:18px;line-height:27px;font-weight:700}
+  .card .sb{height:22px;padding:2px 6px;border-radius:6px;background:#F3F4F6;
+    font-size:12px;line-height:16px;font-weight:500;color:#151419}
+  .card .sb.blue{background:#F5F9FF;color:#0071F3}
+  .card .btn.line{background:#fff;border:1px solid #EEF0F2;color:#151419}
   .hero::after{content:"";position:absolute;right:-4%;top:-40%;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,#fff2 0%,#fff0 60%)}
   .hero .in{position:absolute;left:44px;bottom:34px;z-index:2}
   .hero .lg{width:40px;height:40px;border-radius:11px;object-fit:contain;background:#fff;margin-bottom:12px;display:block}
@@ -145,23 +146,34 @@
   .infobox .v{color:var(--fg)}
 
   /* agenda list */
-  .agh{display:flex;align-items:baseline;gap:8px;margin:0 0 8px}
-  .agh h3{margin:0;font-size:18px;font-weight:800}.agh .cnt{font-size:13px;color:var(--muted)}
-  .grouprow{margin:18px 0 2px;font-size:13px;font-weight:700;color:#9a9aa0}
-  .ag{border-top:1px solid var(--line)}
-  .ag .row{display:flex;align-items:center;gap:12px;padding:16px 4px;cursor:pointer}
-  .ag .no{min-width:44px;font-size:13px;font-weight:700;color:#8a8a8f}
-  .ag .ti{flex:1;font-size:15px;font-weight:600}
-  .ag .rt{display:flex;align-items:center;gap:10px}
-  .ag .cv{width:16px;height:16px;stroke:#a1a1aa;fill:none;stroke-width:2;transition:transform .15s}
-  .ag .row.open .cv{transform:rotate(180deg)}
-  .ag .det{display:none;padding:0 4px 18px 60px;color:#52525b;font-size:13.5px;line-height:1.7}
-  .ag .row.open + .det{display:block}
-  .ag .sub{margin-top:8px;display:flex;flex-direction:column;gap:6px}
-  .ag .sub .s{display:flex;align-items:center;gap:8px;font-size:13px;color:#3f3f46}
-  .ag .attach{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:13px}
-  .ag .attach svg{width:14px;height:14px;stroke:#737373;fill:none;stroke-width:1.8}
-
+  .agh{display:flex;align-items:center;gap:8px;margin:26px 0 12px}
+  .agh h3{margin:0;font-size:20px;line-height:26px;font-weight:700;color:#151419}
+  .agh .cnt{font-size:12px;line-height:18px;color:#6B7078}
+  .agi{border-bottom:1px solid #EEF0F2}
+  .agi .hd2{display:flex;align-items:center;gap:4px;width:100%;padding:16px;border:0;background:none;
+    font-family:inherit;letter-spacing:inherit;text-align:left;cursor:pointer}
+  .agi.head .hd2{cursor:default}
+  .agi .no2{width:70px;flex:none;display:flex;align-items:center}
+  .agi .no2 b{height:26px;padding:4px 8px;border-radius:8px;background:#F3F4F6;
+    font-size:14px;line-height:18px;font-weight:500;color:#6B7078;white-space:nowrap}
+  .agi .tt2{flex:1;min-width:0;font-size:16px;line-height:24px;font-weight:500;color:#151419}
+  .agi .mth2{font-size:12px;line-height:18px;color:#6B7078;white-space:nowrap;text-align:right}
+  .agi .cv2{width:24px;height:24px;flex:none;stroke:#6B7078;fill:none;stroke-width:2;transition:transform .15s}
+  .agi.open .cv2{transform:rotate(180deg)}
+  .agi.head .cv2{visibility:hidden}
+  .agi .bd2{display:none;padding:0 16px 16px;flex-direction:column;gap:8px}
+  .agi.open .bd2{display:flex}
+  .agi .desc2{padding:2px 4px 2px 74px;font-size:14px;line-height:21px;letter-spacing:-.01em;
+    color:#4C4F54;white-space:pre-line}
+  .agi .kids2{padding-left:74px;display:flex;flex-direction:column;gap:2px;
+    font-size:14px;line-height:21px;color:#4C4F54}
+  .agi .files2{padding-left:70px;display:flex;flex-direction:column;gap:8px}
+  .agi .file2{display:flex;align-items:center;gap:8px;height:34px;padding:8px 12px;
+    border:1px solid #EEF0F2;border-radius:8px;background:#fff}
+  .agi .file2 svg{width:16px;height:16px;flex:none;stroke:#151419;fill:none;stroke-width:1.6}
+  .agi .file2 .nm2{flex:1;min-width:0;font-size:12px;line-height:18px;font-weight:500;color:#151419}
+  .agi .file2 .sz2{font-size:12px;line-height:18px;color:#6B7078}
+  .agi .file2 .dl2{width:18px;height:18px;flex:none;stroke:#6B7078}
   /* badges */
   .b{display:inline-flex;align-items:center;height:20px;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:600;white-space:nowrap}
   .b.norm{background:#f4f4f5;color:#525252}
@@ -205,7 +217,7 @@
         <svg class="cv" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
     </div>
     <nav class="nav"><span>고객센터</span><span>이용안내</span>
-      <span class="u" id="navUser"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>박성용</span></nav>
+      <a class="u" id="navUser" href="mypage.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>박성용</a></nav>
   </div>
 </header>
 
@@ -216,7 +228,6 @@
       <div class="co" id="heroCo">카카오뱅크</div>
       <h1 id="heroMt">제10기 정기주주총회 <span class="dchip" id="heroD">D-14</span></h1>
       <div class="dt" id="heroDt">2026년 3월 27일 (금) 오전 10:00</div>
-      <div id="heroAct"></div>
     </div>
   </section>
 
@@ -242,7 +253,7 @@
       </div>
 
       <div class="agh"><h3>의안 목록</h3><span class="cnt" id="agCnt">총 6건</span></div>
-      <div class="ag" id="agList"></div>
+      <div id="agList"></div>
 
       <h2 class="sub2">주주총회 자료</h2>
       <div class="file"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>사업보고서_2026.pdf <span class="sz">2.6MB</span><svg class="dl" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.8"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg></div>
@@ -280,54 +291,20 @@
     </div>
 
     <aside class="side">
-      <div class="card">
-        <div class="u-h" id="sideUser">박성용 <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-        <div class="kv"><span class="k">주식 종류</span><span class="v" id="sideKind">보통주</span></div>
-        <div class="kv"><span class="k">보유 주식수</span><span class="v" id="sideShares">1,200주</span></div>
-        <div class="btn">사전 참석 신청</div>
-      </div>
+      <div class="card" id="sideCard"></div>
       <div id="sideGroups"></div>
     </aside>
   </div>
 </main>
 
 <script src="assets/companies.js"></script>
+<script src="assets/agenda.js"></script>
 <script>
 /* CX(SSOT)가 있으면 그대로 사용, 없으면 데모 폴백. 실제 통합 시 cx-data.js 로드로 대체. */
-var CXD = window.CX || {
-  meeting:{ org:'카카오뱅크', name:'제10기 정기주주총회', dateText:'2026년 3월 27일 (금)', time:'오전 10:00',
-            place:'서울 영등포구 카카오뱅크 본사 대강당' },
-  agenda:[
-    {no:'제1호', nm:'재무제표 승인의 건', types:['보통결의']},
-    {no:'제2호', nm:'정관 일부 변경의 건', header:true},
-    {no:'제2-1호', nm:'집중투표제 배제 조항 삭제의 건(정관 제37조 제3항)', types:['특별결의']},
-    {no:'제2-2호', nm:'전자주주총회 도입 관련 변경(정관 제26조 제2항)', types:['특별결의']},
-    {no:'제3호', nm:'선임 이사 수 결정의 건', types:['보통결의','양립불가'], children:[
-      {no:'제3-1호', nm:'집중투표 4인 중 2인 선임의 건(회사제안)'},
-      {no:'제3-2호', nm:'집중투표 5인 중 2인 선임의 건(주주제안)'}]},
-    {no:'제4호', nm:'집중투표에 의한 이사 선임의 건', header:true},
-    {no:'제4-1호', nm:'집중투표 4인 중 2인 선임의 건(회사제안)', types:['보통결의','집중투표'], children:[
-      {no:'제4-1-1호',nm:'사외이사 후보 김도현'},{no:'제4-1-2호',nm:'사외이사 후보 이수진'},
-      {no:'제4-1-3호',nm:'사외이사 후보 박준영'},{no:'제4-1-4호',nm:'사외이사 후보 최민서'}]},
-    {no:'제4-2호', nm:'집중투표 5인 중 2인 선임의 건(주주제안)', types:['보통결의','집중투표'], children:[
-      {no:'제4-2-1호',nm:'사외이사 후보 정우성'},{no:'제4-2-2호',nm:'사외이사 후보 한지민'},
-      {no:'제4-2-3호',nm:'사외이사 후보 오세훈'},{no:'제4-2-4호',nm:'사외이사 후보 강가람'},
-      {no:'제4-2-5호',nm:'사외이사 후보 윤서연'}]}
-  ]
-};
-var M=CXD.meeting;
 /* 어느 기업의 총회인지는 주소(?co=)가 정한다. 없으면 첫 기업을 연다. */
 var CO=PASS_FIND(new URLSearchParams(location.search).get('co')||'');
 function chip(no){return String(no).replace('제','제 ');}
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
-function typeBadges(types){
-  if(!types) return '';
-  return types.map(function(t){
-    if(t==='보통결의') return '<span class="b norm">보통결의</span>';
-    if(t==='특별결의') return '<span class="b spec">특별결의</span>';
-    return '<span class="b mth">'+t+'</span>';
-  }).join(' ');
-}
 // 헤더 · 배너 — 고른 기업으로 맞춘다
 document.title=CO.nm+' · '+CO.term+' — 주주PASS';
 var logo='assets/logo-'+CO.key+'.png';
@@ -345,9 +322,6 @@ document.getElementById('heroDt').textContent=when;
 document.getElementById('mDate').textContent=when;
 document.getElementById('mPlace').textContent=CO.place;
 document.getElementById('navUser').lastChild.nodeValue=PASS_USER.name;
-document.getElementById('sideUser').childNodes[0].nodeValue=PASS_USER.name+' ';
-document.getElementById('sideKind').textContent=CO.kind;
-document.getElementById('sideShares').textContent=CO.shares;
 
 /* 배너 색과 D-day 표시는 기업마다 다르다 */
 var hero=document.querySelector('.hero');
@@ -356,24 +330,64 @@ hero.style.color=CO.ink;
 var dchip=document.getElementById('heroD');
 if(CO.dday){ dchip.textContent=CO.dday; dchip.style.background=CO.ink; dchip.style.color=CO.hero[1]; }
 else dchip.remove();
-document.getElementById('heroAct').innerHTML =
-  CO.status==='live' ? '<a class="join" href="live.html"><i></i>생중계 참여하기</a>'
-  : CO.status==='end' ? '<span class="ended">종료된 주주총회입니다</span>' : '';
+/* ---- 주주카드 — 총회 상태를 배지와 버튼으로 보여 준다 ----
+   진행 중이면 바로 들어갈 수 있고, 끝난 총회는 확인증만 받는다. */
+(function(){
+  var S = {
+    live: { bs:[['출석',''],['행사 완료','blue']], btn:'생중계 참여하기', href:'live.html', dark:true },
+    end:  { bs:[['출석',''],['행사 완료','blue']], btn:'행사 확인증 발급', line:true },
+    dday: { bs:[], btn:'사전 참석 신청', dark:true },
+    dn:   { bs:[], btn:'사전 참석 신청', dark:true }
+  };
+  var st = S[CO.status] || S.dn;
+  var badges = st.bs.map(function(b){ return '<span class="sb '+b[1]+'">'+b[0]+'</span>'; }).join('');
+  var btn = st.href
+    ? '<a class="btn" href="'+st.href+'">'+st.btn+'</a>'
+    : '<div class="btn'+(st.line?' line':'')+'" id="sideBtn">'+st.btn+'</div>';
+  document.getElementById('sideCard').innerHTML =
+     '<div class="u-h">'+PASS_USER.name+badges+'</div>'
+    +'<div class="kv"><span class="k">주식종류</span><span class="v">'+CO.kind+'</span></div>'
+    +'<div class="kv"><span class="k">보유주식수</span><span class="v">'+CO.shares+'</span></div>'
+    +'<div class="kv"><span class="k">제한주식수</span><span class="v">'+(CO.limit||'0주')+'</span></div>'
+    + btn;
+  var b = document.getElementById('sideBtn');
+  if (b) b.addEventListener('click', function(){
+    alert(st.line ? '의결권 행사 확인증을 발급했습니다. 등록된 이메일로 보내 드립니다.'
+                  : '사전 참석 신청이 접수되었습니다.');
+  });
+})();
 
-// 의안 목록 렌더 (표결 단위 카운트)
-var units=CXD.agenda.filter(function(a){return !a.header;});
-document.getElementById('agCnt').textContent='총 '+units.length+'건';
-var detailText='본 안건은 상법 제449조 및 당사 정관에 의거하여 상정된 안건입니다. 자세한 내용은 소집공고를 확인해 주세요.';
-var html='';
-CXD.agenda.forEach(function(a){
-  if(a.header){ html+='<div class="grouprow">'+chip(a.no)+' · '+a.nm+'</div>'; return; }
-  var kids = a.children ? '<div class="sub">'+a.children.map(function(c){return '<div class="s">'+chip(c.no)+' · '+c.nm+'</div>';}).join('')+'</div>' : '';
-  html+='<div class="row"><span class="no">'+chip(a.no)+'</span><span class="ti">'+a.nm+'</span>'
-      +'<span class="rt">'+typeBadges(a.types)+'<svg class="cv" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></div>'
-      +'<div class="det">'+detailText+kids
-      +'<div class="attach"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>주주총회 소집공고 2.6MB</div></div>';
-});
-document.getElementById('agList').innerHTML=html;
+/* ---- 의안 목록 — 번호 배지 + 제목 + 결의 구분, 펼치면 설명과 자료 ---- */
+var FILE_SVG = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+var DL_SVG = '<svg class="dl2" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>';
+(function(){
+  var units = PASS_AGENDA.filter(function(a){ return !a.header; });
+  document.getElementById('agCnt').textContent = '총 ' + units.length + '건';
+  document.getElementById('agList').innerHTML = PASS_AGENDA.map(function(a){
+    var kids = a.children
+      ? '<div class="kids2">'+a.children.map(function(c){ return '<div>'+chip(c.no)+' · '+c.nm+'</div>'; }).join('')+'</div>'
+      : '';
+    var files = (a.files||[]).map(function(f){
+      return '<div class="file2">'+FILE_SVG+'<span class="nm2">'+f[0]+'</span>'
+        +'<span class="sz2">'+f[1]+'</span>'+DL_SVG+'</div>';
+    }).join('');
+    return '<div class="agi'+(a.header?' head':'')+'">'
+      +'<button class="hd2" type="button"><span class="no2"><b>'+chip(a.no)+'</b></span>'
+      +'<span class="tt2">'+a.nm+'</span>'
+      +'<span class="mth2">'+((a.types||[]).join(' · '))+'</span>'
+      +'<svg class="cv2" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>'
+      + (a.header ? '' :
+         '<div class="bd2"><div class="desc2">'+a.desc+'</div>'+kids
+         +(files?'<div class="files2">'+files+'</div>':'')+'</div>')
+      +'</div>';
+  }).join('');
+  document.getElementById('agList').addEventListener('click', function(e){
+    var h = e.target.closest('.hd2'); if(!h) return;
+    var it = h.parentNode;
+    if(it.classList.contains('head')) return;
+    it.classList.toggle('open');
+  });
+})();
 
 /* ---- 탭 ---- */
 document.querySelectorAll('.tabs button').forEach(function(b){

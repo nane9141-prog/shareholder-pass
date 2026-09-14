@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이페이지 — 주주PASS</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --fg:#151419; --sub:#6B7078; --dim:#4C4F54; --line:#EEF0F2; --line2:#D7D9DF;
+    --bg:#F8F8FA; --soft:#F3F4F6; --brand:#0071F3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:'Pretendard',system-ui,sans-serif;
+    letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;letter-spacing:inherit;cursor:pointer}
+
+  /* header */
+  header{position:sticky;top:0;z-index:20;height:60px;background:rgba(255,255,255,.7);backdrop-filter:blur(15px)}
+  .hd{max-width:1280px;height:60px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:4px;height:20px}
+  .brand img{height:20px;width:auto;display:block}
+  .brand small{font-size:12px;line-height:20px;color:var(--fg)}
+  .nav{display:flex;align-items:center;gap:4px;font-size:14px}
+  .nav a,.nav span{display:flex;align-items:center;justify-content:center;height:37px;padding:8px 12px;border-radius:8px}
+  .nav .divv{width:1px;height:10px;padding:0;background:var(--line2)}
+  .nav .u{gap:8px}
+  .nav .u svg{width:20px;height:20px;stroke:var(--fg);fill:none;stroke-width:1.6}
+
+  /* layout */
+  .wrap{max-width:920px;margin:0 auto;padding:28px 20px 60px;display:flex;align-items:flex-start;gap:40px}
+  @media(max-width:900px){.wrap{flex-direction:column;gap:20px}}
+
+  /* 좌측 메뉴 */
+  .menu{width:240px;flex:none;padding:24px 16px;background:#fff;border-radius:12px;
+    display:flex;flex-direction:column;gap:12px;align-self:flex-start}
+  @media(max-width:900px){.menu{width:100%}}
+  .menu .me{padding:0 12px;display:flex;flex-direction:column;gap:2px}
+  .menu .me .hi{font-size:12px;line-height:18px;font-weight:500;color:var(--brand)}
+  .menu .me .nm{font-size:18px;line-height:27px;font-weight:700}
+  .menu .me .em{font-size:12px;line-height:16px;color:var(--sub)}
+  .menu hr{width:100%;height:0;margin:0;border:0;border-top:1px solid var(--line)}
+  .menu .grp{display:flex;flex-direction:column}
+  .menu .grp .gl{height:34px;padding:4px 12px;display:flex;align-items:center;
+    font-size:12px;line-height:18px;font-weight:500;color:var(--sub)}
+  .menu a.m{height:48px;padding:10px 12px;border-radius:8px;display:flex;align-items:center;
+    font-size:16px;line-height:24px}
+  .menu .grp.small a.m{height:44px}
+  .menu a.m.on{background:var(--soft);font-weight:700}
+
+  /* 우측 카드 */
+  .panel{flex:1;min-width:0;padding:24px;background:#fff;border-radius:12px;
+    display:flex;flex-direction:column;gap:24px}
+  .panel h1{margin:0;font-size:18px;line-height:23px;font-weight:700}
+  .view{display:none}.view.on{display:block}
+
+  /* 계정 정보 */
+  .rows{display:flex;flex-direction:column;gap:2px}
+  .row2{display:flex;align-items:center;gap:8px;padding:4px 0}
+  .row2 .k{width:150px;flex:none;font-size:14px;line-height:21px;color:var(--sub)}
+  .row2 .v{display:flex;align-items:center;gap:8px;font-size:16px;line-height:24px}
+  .tbtn{padding:0 4px;border:0;background:none;font-size:14px;line-height:21px;
+    color:var(--sub);text-decoration:underline}
+  .tbtn.dark{color:var(--fg)}
+  .foot{display:flex;flex-direction:column;gap:20px}
+  .foot hr{width:100%;height:0;margin:0;border:0;border-top:1px solid var(--line)}
+  .foot .tbtn{align-self:flex-start}
+
+  /* 칩 필터 */
+  .chips{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  .chip{height:26px;padding:4px 10px;border:1px solid var(--line);border-radius:1000px;background:#fff;
+    font-size:12px;line-height:18px;font-weight:700;color:var(--dim)}
+  .chip.on{background:var(--fg);border-color:var(--fg);color:#fff}
+
+  /* 기업 행 목록 */
+  .list{display:flex;flex-direction:column;gap:2px}
+  .item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;width:100%;
+    border:0;background:none;text-align:left}
+  .item:hover{background:var(--bg)}
+  .item>img{width:46px;height:46px;flex:none;border-radius:12px;object-fit:contain;background:#fff;
+    box-shadow:0 2px 12px -2px rgba(0,0,0,.15)}
+  .item .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .item .nm{font-size:16px;line-height:24px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item .mt{font-size:14px;line-height:21px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item .right{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .item .badges{display:flex;gap:4px}
+  .item .when{font-size:12px;line-height:18px;color:var(--sub);text-align:right}
+  .item .cnt2{font-size:12px;line-height:16px;color:var(--dim);text-align:right}
+  .bd{height:26px;padding:4px 8px;border-radius:8px;display:inline-flex;align-items:center;
+    font-size:14px;line-height:18px;font-weight:500;white-space:nowrap}
+  .bd.blue{background:#EBF4FF;color:var(--brand)}
+  .bd.gray{background:var(--soft);color:var(--sub)}
+  .bd.red{background:#FDF4F5;color:#E9081B}
+  .bd.purple{background:#F9F4FC;color:#870AE7}
+  .bd.dark{background:var(--fg);color:#fff}
+  .obtn{height:26px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;
+    font-size:12px;line-height:18px;font-weight:500;color:var(--fg);white-space:nowrap}
+  .obtn.brand{border-color:var(--brand);color:var(--brand)}
+  .empty{padding:40px;text-align:center;font-size:14px;color:var(--sub)}
+
+  /* 의결권 행사 상세 */
+  .back{display:flex;align-items:center;gap:4px;padding:8px 0;border:0;background:none;
+    font-size:14px;line-height:21px;font-weight:500;color:var(--fg)}
+  .back svg{width:20px;height:20px;stroke:var(--fg);fill:none;stroke-width:1.8}
+  .dhead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .dhead .l{display:flex;align-items:flex-start;gap:12px}
+  .dhead img{width:46px;height:46px;flex:none;border-radius:12px;object-fit:contain;background:#fff;
+    box-shadow:0 2px 12px -2px rgba(0,0,0,.15)}
+  .dhead .t{font-size:20px;line-height:26px;font-weight:700}
+  .dhead .s{margin-top:4px;display:flex;align-items:center;gap:8px;font-size:12px;line-height:18px;color:var(--sub)}
+  .dhead .s i{width:1px;height:10px;background:var(--line2)}
+  .hr2{height:0;border:0;border-top:1px solid #272929;margin:0}
+  .hr1{height:0;border:0;border-top:1px solid var(--line);margin:0}
+  .sect{display:flex;flex-direction:column;gap:12px}
+  .sect>b{font-size:16px;line-height:21px;font-weight:700}
+  .kpi2{display:flex;gap:8px}
+  .kpi2>div{flex:1;display:flex;flex-direction:column;gap:4px}
+  .kpi2 .k{font-size:12px;line-height:18px;color:var(--sub)}
+  .kpi2 .v{font-size:16px;line-height:21px;font-weight:700}
+  table.vt{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table.vt th,table.vt td{padding:8px 12px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);
+    font-size:14px;line-height:21px;text-align:left;vertical-align:middle}
+  table.vt th{background:var(--soft);font-weight:500;color:var(--sub)}
+  table.vt td:last-child,table.vt th:last-child{border-right:0}
+  table.vt tr:last-child td{border-bottom:0}
+  table.vt tr.sub td{background:var(--bg)}
+  table.vt td.r,table.vt th.r{width:90px}
+  table.vt td.no,table.vt th.no{width:66px}
+  table.vt td.act,table.vt td.res{font-weight:500}
+  .wide{width:100%;height:41px;border:1px solid var(--line);border-radius:8px;background:#fff;
+    font-size:14px;line-height:21px;font-weight:700;color:var(--fg)}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <a class="brand" href="index.html"><img src="assets/logo-pass.svg" alt="주주PASS" width="73" height="20"><small>전자주주총회</small></a>
+    <nav class="nav">
+      <span>고객센터</span><span>이용안내</span><span class="divv"></span>
+      <span class="u" id="navUser"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>박성용</span>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <aside class="menu">
+    <div class="me"><span class="hi">반가워요!</span>
+      <span class="nm" id="meName">박성용 주주님</span>
+      <span class="em" id="meMail">psy@example.com</span></div>
+    <hr>
+    <div class="grp"><span class="gl">내 정보 설정</span>
+      <a class="m" href="#account" data-v="account">개인정보</a></div>
+    <div class="grp"><span class="gl">주주총회 내역</span>
+      <a class="m" href="#apply" data-v="apply">신청 내역</a>
+      <a class="m" href="#attend" data-v="attend">출석 내역</a>
+      <a class="m" href="#qna" data-v="qna">질의 및 발언 내역</a>
+      <a class="m" href="#vote" data-v="vote">의결권 행사 내역</a></div>
+    <hr>
+    <div class="grp small">
+      <a class="m" href="index.html">주주총회 찾기</a>
+      <a class="m" href="#">이용안내</a></div>
+    <hr>
+    <div class="grp small"><a class="m" href="index.html">로그아웃</a></div>
+  </aside>
+
+  <section class="panel">
+    <!-- 개인정보 -->
+    <div class="view" data-view="account">
+      <h1>계정 정보</h1>
+      <div style="height:24px"></div>
+      <div class="rows" id="acRows"></div>
+      <div style="height:24px"></div>
+      <div class="foot"><hr><button class="tbtn dark" type="button" id="acLeave">회원 탈퇴</button></div>
+    </div>
+
+    <!-- 신청 내역 · 출석 내역 · 질의 및 발언 내역 · 의결권 행사 내역 -->
+    <div class="view" data-view="apply"><h1>신청 내역</h1><div style="height:24px"></div>
+      <div class="chips" data-chips="apply"></div><div style="height:24px"></div>
+      <div class="list" data-list="apply"></div></div>
+
+    <div class="view" data-view="attend"><h1>출석 내역</h1><div style="height:24px"></div>
+      <div class="chips" data-chips="attend"></div><div style="height:24px"></div>
+      <div class="list" data-list="attend"></div></div>
+
+    <div class="view" data-view="qna"><h1>질의 및 발언 내역</h1><div style="height:24px"></div>
+      <div class="chips" data-chips="qna"></div><div style="height:24px"></div>
+      <div class="list" data-list="qna"></div></div>
+
+    <div class="view" data-view="vote"><h1>의결권 행사 내역</h1><div style="height:24px"></div>
+      <div class="chips" data-chips="vote"></div><div style="height:24px"></div>
+      <div class="list" data-list="vote"></div></div>
+
+    <!-- 의결권 행사 상세 -->
+    <div class="view" data-view="vote-detail" id="vd"></div>
+  </section>
+</main>
+
+<script src="assets/companies.js"></script>
+<script>
+/* 마이페이지 — 좌측 메뉴로 오른쪽 화면만 갈아 끼운다.
+   기업·주주 정보는 목록·상세 화면과 같은 표(assets/companies.js)를 본다. */
+function $(id){ return document.getElementById(id); }
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+var USER = { name: PASS_USER.name, mail: 'psy@example.com',
+             phone: '010-****-1234', birth: '1989.04.12' };
+var MINE = PASS_CO.filter(function(c){ return c.mine; });
+$('meName').textContent = USER.name + ' 주주님';
+$('meMail').textContent = USER.mail;
+$('navUser').lastChild.nodeValue = USER.name;
+
+/* ---- 계정 정보 — 이름·생년월일은 본인확인으로 정해져 못 고친다 ---- */
+var ACCOUNT = [
+  { k:'이름',      v:USER.name,  fix:false },
+  { k:'생년월일',  v:USER.birth, fix:false },
+  { k:'휴대폰 번호', v:USER.phone, fix:true },
+  { k:'이메일',    v:USER.mail,  fix:true }
+];
+$('acRows').innerHTML = ACCOUNT.map(function(x){
+  return '<div class="row2"><span class="k">'+x.k+'</span>'
+    +'<span class="v">'+esc(x.v)
+    +(x.fix?'<button class="tbtn" type="button">수정</button>':'')+'</span></div>';
+}).join('');
+$('acLeave').addEventListener('click', function(){
+  alert('회원 탈퇴는 고객센터를 통해 본인 확인 후 진행됩니다.');
+});
+
+/* ---- 주주총회 내역 ----
+   한 벌의 데이터에 화면별 상태를 달아 두고, 칩으로 걸러서 같은 행 모양으로 그린다. */
+function co(key){ return PASS_FIND(key); }
+var HISTORY = [
+  { key:'kakaobank', apply:'done',  attend:'online', qna:{pre:2,day:1,say:1}, vote:'done',
+    at:'2026.03.27 09:41', shares:'1,200주' },
+  { key:'hyundai',   apply:'open',  attend:'none',   qna:{pre:1,day:0,say:0}, vote:'todo',
+    at:'-',                shares:'340주' },
+  { key:'shinsegae', apply:'done',  attend:'proxy',  qna:{pre:0,day:0,say:0}, vote:'done',
+    at:'2026.03.13 08:55', shares:'260주' },
+  { key:'kia',       apply:'done',  attend:'site',   qna:{pre:3,day:1,say:1}, vote:'done',
+    at:'2026.03.12 08:47', shares:'1,050주' },
+  { key:'korea-zinc',apply:'open',  attend:'none',   qna:{pre:0,day:0,say:0}, vote:'todo',
+    at:'-',                shares:'85주' }
+];
+
+var ATTEND = { site:['출석','blue'], online:['출석','blue'], proxy:['위임','purple'], none:['불참','gray'] };
+var VOTE   = { done:['행사완료','blue'], todo:['미행사','gray'] };
+
+var VIEWS = {
+  apply: {
+    chips: [['all','전체'], ['done','신청 완료'], ['open','미신청']],
+    match: function(h,f){ return f==='all' || h.apply===f; },
+    right: function(h){
+      return h.apply==='done'
+        ? '<button class="obtn" type="button">상세보기</button>'
+        : '<button class="obtn brand" type="button">신청하기</button>';
+    }
+  },
+  attend: {
+    chips: [['all','전체'], ['in','출석'], ['none','불참'], ['proxy','위임']],
+    match: function(h,f){
+      if(f==='all') return true;
+      if(f==='in') return h.attend==='site' || h.attend==='online';
+      return h.attend===f;
+    },
+    right: function(h){
+      var a=ATTEND[h.attend];
+      return '<span class="badges"><span class="bd '+a[1]+'">'+a[0]+'</span></span>'
+        +'<span class="when">'+h.at+'</span>';
+    }
+  },
+  qna: {
+    chips: [['all','전체'], ['pre','사전'], ['day','당일'], ['say','발언']],
+    match: function(h,f){ return f==='all' ? (h.qna.pre+h.qna.day+h.qna.say)>0 : h.qna[f]>0; },
+    right: function(h){
+      var q=h.qna, bs='';
+      if(q.pre) bs+='<span class="bd blue">사전</span>';
+      if(q.day) bs+='<span class="bd red">당일</span>';
+      if(q.say) bs+='<span class="bd gray">발언</span>';
+      var txt=[];
+      if(q.pre) txt.push('사전 질의 '+q.pre);
+      if(q.day) txt.push('당일 질의 '+q.day);
+      if(q.say) txt.push('당일 발언 '+q.say);
+      return '<span class="badges">'+bs+'</span><span class="cnt2">'+txt.join('・')+'</span>';
+    }
+  },
+  vote: {
+    chips: [['all','전체'], ['done','행사완료'], ['todo','미행사']],
+    match: function(h,f){ return f==='all' || h.vote===f; },
+    right: function(h){
+      var v=VOTE[h.vote];
+      return '<span class="badges"><span class="bd '+v[1]+'">'+v[0]+'</span></span>';
+    }
+  }
+};
+var FILTER = { apply:'all', attend:'all', qna:'all', vote:'all' };
+
+function drawView(name){
+  var V=VIEWS[name];
+  document.querySelector('[data-chips="'+name+'"]').innerHTML = V.chips.map(function(c){
+    return '<button class="chip'+(FILTER[name]===c[0]?' on':'')+'" type="button" data-f="'+c[0]+'">'+c[1]+'</button>';
+  }).join('');
+  var rows=HISTORY.filter(function(h){ return V.match(h,FILTER[name]); });
+  var host=document.querySelector('[data-list="'+name+'"]');
+  if(!rows.length){ host.innerHTML='<div class="empty">해당하는 내역이 없습니다</div>'; return; }
+  host.innerHTML=rows.map(function(h){
+    var c=co(h.key);
+    return '<button class="item" type="button" data-key="'+h.key+'">'
+      +'<img src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="46" height="46">'
+      +'<span class="txt"><span class="nm">'+c.nm+'</span>'
+      +'<span class="mt">'+c.term+'・'+c.date+'</span></span>'
+      +'<span class="right">'+V.right(h)+'</span></button>';
+  }).join('');
+}
+['apply','attend','qna','vote'].forEach(function(name){
+  document.querySelector('[data-chips="'+name+'"]').addEventListener('click',function(e){
+    var b=e.target.closest('[data-f]'); if(!b) return;
+    FILTER[name]=b.dataset.f; drawView(name);
+  });
+  document.querySelector('[data-list="'+name+'"]').addEventListener('click',function(e){
+    var it=e.target.closest('[data-key]'); if(!it) return;
+    if(name==='vote') location.hash='#vote/'+it.dataset.key;
+  });
+});
+
+/* ---- 의결권 행사 상세 ----
+   의안은 상위·하위로 이어지며, 집중투표 후보는 배분 여부까지 적는다. */
+var AGENDA = [
+  { no:'1',     nm:'재무제표 승인의 건',                    act:'찬성',     res:'가결' },
+  { no:'2',     nm:'정관 일부 변경의 건',                   act:'-',        res:'-', head:true },
+  { no:'2-1',   nm:'집중투표제 배제 조항 삭제의 건',        act:'찬성',     res:'가결', sub:true },
+  { no:'2-2',   nm:'전자주주총회 도입 관련 변경',           act:'반대',     res:'가결', sub:true },
+  { no:'3',     nm:'선임 이사 수 결정의 건',                act:'-',        res:'-', head:true },
+  { no:'3-1',   nm:'집중투표 4인 중 2인 선임의 건(회사제안)', act:'찬성',   res:'가결', sub:true },
+  { no:'3-2',   nm:'집중투표 5인 중 2인 선임의 건(주주제안)', act:'반대',   res:'부결', sub:true },
+  { no:'4',     nm:'집중투표에 의한 이사 선임의 건',        act:'-',        res:'-', head:true },
+  { no:'4-1-1', nm:'사외이사 후보 김도현',                  act:'찬성 배분', res:'선임', sub:true },
+  { no:'4-1-2', nm:'사외이사 후보 이수진',                  act:'미배분',    res:'미선임', sub:true },
+  { no:'4-1-3', nm:'사외이사 후보 박준영',                  act:'찬성 배분', res:'선임', sub:true },
+  { no:'4-1-4', nm:'사외이사 후보 최민서',                  act:'미배분',    res:'미선임', sub:true }
+];
+function drawDetail(key){
+  var c=co(key), h=HISTORY.filter(function(x){ return x.key===key; })[0] || HISTORY[0];
+  var v=VOTE[h.vote];
+  $('vd').innerHTML =
+     '<button class="back" type="button" id="vdBack">'
+    +'<svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>의결권 행사 내역</button>'
+    +'<div style="height:12px"></div>'
+    +'<div class="dhead"><div class="l">'
+    +'<img src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="46" height="46">'
+    +'<div><div class="t">'+c.nm+' '+c.term+'</div>'
+    +'<div class="s"><span>'+c.date+' 개최</span><i></i><span>주주명부 기준일 2025.12.31</span></div></div>'
+    +'</div><span class="bd '+(h.vote==='done'?'dark':'gray')+'">'+(h.vote==='done'?'완료':'미행사')+'</span></div>'
+    +'<div style="height:24px"></div><hr class="hr2"><div style="height:24px"></div>'
+    +'<div class="sect"><b>의결권 정보</b><div class="kpi2">'
+    +'<div><span class="k">행사 가능 주식수</span><span class="v">'+c.shares+'</span></div>'
+    +'<div><span class="k">보유 주식수</span><span class="v">'+c.shares+'</span></div></div></div>'
+    +'<div style="height:24px"></div><hr class="hr1"><div style="height:24px"></div>'
+    +'<div class="sect"><b>의안별 행사 내역</b>'
+    +'<table class="vt"><thead><tr><th class="no">번호</th><th>의안명</th>'
+    +'<th class="r">행사내역</th><th class="r">결과</th></tr></thead><tbody>'
+    + AGENDA.map(function(a){
+        return '<tr'+(a.sub?' class="sub"':'')+'><td class="no">'+a.no+'</td>'
+          +'<td>'+esc(a.nm)+'</td><td class="r act">'+a.act+'</td><td class="r res">'+a.res+'</td></tr>';
+      }).join('')
+    +'</tbody></table></div>'
+    +'<div style="height:24px"></div>'
+    +'<button class="wide" type="button" id="vdCert">의결권 행사 확인증 발급</button>';
+  $('vdBack').addEventListener('click', function(){ location.hash='#vote'; });
+  $('vdCert').addEventListener('click', function(){
+    alert('의결권 행사 확인증을 발급했습니다. 등록된 이메일로 보내 드립니다.');
+  });
+}
+
+/* ---- 화면 전환 — 주소의 # 이 어느 화면인지 정한다 ---- */
+function show(){
+  var h=(location.hash||'#account').slice(1).split('/');
+  var name=h[0], key=h[1];
+  if(!VIEWS[name] && name!=='account') name='account';
+  var view=(name==='vote' && key) ? 'vote-detail' : name;
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('on', v.dataset.view===view); });
+  document.querySelectorAll('.menu a.m').forEach(function(a){ a.classList.toggle('on', a.dataset.v===name); });
+  if(view==='vote-detail') drawDetail(key);
+  else if(VIEWS[name]) drawView(name);
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange', show);
+show();
+</script>
+</body>
+</html>

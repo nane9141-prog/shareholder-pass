@@ -56,25 +56,39 @@
   .vid .lang svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
   .doneflag.wait2{background:#f7f8fa;color:#71717a;font-weight:600}
   .vleft{margin-top:10px;font-size:13px;font-weight:700;color:#e11d48}
-  .cap{margin-top:10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.6;color:#3f3f46}
-  .cap .on{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#7c3aed;background:#f5f3ff;border-radius:6px;padding:2px 7px;margin-right:8px}
+  /* AI 자막 — 두 줄까지 보여 주고, 칩을 눌러 끌 수 있다 */
+  .cap{margin-top:10px;display:flex;align-items:flex-start;gap:8px;background:#fff;
+    border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  .cap .on{flex:none;display:inline-flex;align-items:center;gap:5px;height:22px;padding:2px 7px;
+    border:0;border-radius:6px;background:#f5f3ff;font-family:inherit;font-size:12px;font-weight:700;
+    letter-spacing:inherit;color:#7c3aed;cursor:pointer}
+  .cap.off .on{background:#f4f4f5;color:#a1a1aa}
+  .cap .lines{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;min-height:44px}
+  .cap .lines span{font-size:14px;line-height:22px;color:#3f3f46}
+  .cap.off .lines span{color:#c4c4c8}
 
-  /* agenda progress */
-  .aph{margin:22px 0 6px;font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
-  .aph .c{font-size:14px;color:var(--muted);font-weight:600}
-  .apl{display:flex;flex-direction:column}
-  .apl .it{display:flex;align-items:center;gap:12px;padding:13px 6px;border-top:1px solid var(--line)}
-  .apl .it.sub{padding-left:34px}
-  .apl .it.cur{background:#f8fbff;border-radius:10px;border-top-color:transparent}
-  .apl .n{min-width:44px;font-size:13px;font-weight:700;color:#8a8a8f}
-  .apl .n.hd{color:#111}
-  .apl .ti{flex:1;font-size:14px;font-weight:600}
-  .apl .st{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700}
-  .apl .st i{width:6px;height:6px;border-radius:50%}
-  .st-wait{color:#a1a1aa}.st-wait i{background:#c4c4c8}
-  .st-vote{color:#2563eb}.st-vote i{background:#2563eb}
-  .st-cnt{color:#ea580c}.st-cnt i{background:#ea580c}
-  .st-done{color:#0a8a3c}.st-done i{background:#22c55e}
+  /* 의안 진행현황 — 표결 단위 하나가 카드 한 장, 상위 의안은 자식을 품는다 */
+  .aph{display:flex;align-items:center;gap:8px;margin:24px 0 8px;
+    font-size:18px;line-height:27px;font-weight:700;color:#151419}
+  .aph .c{font-size:16px;line-height:24px;font-weight:500;color:#151419}
+  .apl{display:flex;flex-direction:column;gap:4px}
+  .ac{padding:12px;background:#fff;border-radius:12px;display:flex;flex-direction:column;gap:24px}
+  .ac.cur{background:#F8F8FA}
+  .ac .r{display:flex;align-items:center;gap:12px}
+  .ac .nb{min-width:22px;height:22px;padding:2px 6px;border-radius:6px;background:#F3F4F6;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;line-height:16px;font-weight:500;color:#151419;flex:none}
+  .ac.cur .r.top .nb{background:#151419;color:#fff}
+  .ac .kid .nb{min-width:24px;height:24px;padding:0 8px;border-radius:8px;background:#151419;color:#fff}
+  .ac .t{flex:1;min-width:0;font-size:16px;line-height:24px;font-weight:500;color:#151419}
+  .ac .t.mute{color:#A7AAB1}
+  .ac .st{display:flex;align-items:center;gap:4px;flex:none;font-size:12px;line-height:18px;font-weight:500}
+  .ac .st i{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .ac .st.wait{color:#A7AAB1}
+  .ac .st.vote{color:#0071F3}
+  .ac .st.cnt{color:#0DAD7E}
+  .ac .kids{display:flex;flex-direction:column;gap:8px}
+  .ac .kid{display:flex;align-items:center;gap:8px}
 
   /* right side */
   .stat{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh);padding:18px}
@@ -158,13 +172,6 @@
   .qitem .ans.priv{background:#f8fafa}.qitem .ans.priv b{color:#6b7078;margin-right:4px}
   .qitem .ans .lock{color:#6b7078;font-weight:500}
   .qempty{padding:44px 0;text-align:center;color:#6b7078;font-size:15px}
-
-  /* 좌측 의안 진행현황 — 상태별 케이스 */
-  .apl .ti.mute{color:#a7aab1}
-  .apl .hn{min-width:44px;font-size:13px;font-weight:700;color:#111;flex:none}
-  .apl .it.hdr{padding:12px 6px 4px}
-  .apl .anum{flex:none}
-  .apl .atype2{flex:none}
 
   /* 의안 상태 리스트 (Figma: 의안 상태별 표시) */
   .alist{display:flex;flex-direction:column;gap:8px}
@@ -279,7 +286,8 @@
         <button class="snd" id="vSnd" type="button"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>소리 켜기</button>
         <div class="castbox" id="castBox"></div>
       </div>
-      <div class="cap"><span class="on">✨ AI 자막 ON</span><span id="capTxt">재적 주주 중 의결권 있는 주식의 과반수가 출석하여 본 총회는 적법하게 성립되었습니다.</span></div>
+      <div class="cap" id="cap"><button class="on" id="capBtn" type="button">✨ AI 자막 ON</button>
+        <div class="lines" id="capTxt"><span></span><span></span></div></div>
 
       <div class="aph">의안 진행현황 <span class="c" id="apCnt">2 / 6</span></div>
       <div class="apl" id="apl"></div>
@@ -437,12 +445,6 @@ var VS={
   '제4-2호':{s:'result',r:'disc',mute:true}  // 폐기(의결권 없음·회색)
 };
 function num(no){return String(no).replace(/제|호/g,'');}
-function statChip(s){
-  if(s==='wait')return '<span class="astat wait"><i></i>대기</span>';
-  if(s==='vote')return '<span class="astat vote"><i></i>투표중</span>';
-  if(s==='cnt') return '<span class="astat cnt"><i></i>집계중</span>';
-  return '';
-}
 function resBadgeV(r){
   return {pass:'<span class="arb pass">가결</span>',fail:'<span class="arb fail">부결</span>',
           disc:'<span class="arb disc">폐기</span>',wd:'<span class="arb wd">철회</span>'}[r]||'';
@@ -465,21 +467,47 @@ function renderProg(){
 }
 renderProg();
 
-/* ---- 의안 진행현황 (좌) — 상태별 케이스 ---- */
+/* ---- 의안 진행현황 (좌) ----
+   conexus 와 같이 표결 단위로 묶는다. 상위 의안(제2호·제4호)은 자식을 품는 카드가 되고,
+   지금 표결 중인 의안이 든 카드만 회색으로 띄운다. */
+function statDot(s){
+  var L={wait:['wait','대기'],vote:['vote','투표중'],cnt:['cnt','집계중']}[s];
+  return L ? '<span class="st '+L[0]+'"><i></i>'+L[1]+'</span>' : '';
+}
+function rowOf(a, cls){
+  var vs=VS[a.no]||{s:'wait'};
+  var right = vs.s==='result' ? resBadgeV(vs.r) : statDot(vs.s);
+  return '<div class="r '+(cls||'')+'"><span class="nb">'+num(a.no)+'</span>'
+    +'<span class="t'+(vs.mute?' mute':'')+'">'+a.nm+'</span>'+right+'</div>';
+}
 function renderApl(){
-  var h='';
+  /* 상위 의안 바로 다음에 오는 하위 번호들을 그 밑에 모은다 */
+  var cards=[], cur=null;
   CXD.agenda.forEach(function(a){
-    if(a.header){ h+='<div class="it hdr"><span class="hn">'+chip(a.no)+'</span><span class="ti hd">'+a.nm+'</span></div>'; return; }
-    var vs=VS[a.no]||{s:'wait'};
-    var right = vs.s==='result'? resBadgeV(vs.r) : statChip(vs.s);
-    var typ = vs.amend?'<span class="atype2 amend">수정동의</span>':'<span class="atype2">'+typeLabel(a.no)+'</span>';
-    h+='<div class="it'+(vs.cur?' cur':'')+'"><span class="anum'+(vs.cur?' act':'')+'">'+num(a.no)+'</span>'
-      +'<span class="ti'+(vs.mute?' mute':'')+'">'+a.nm+'</span>'+typ+right+'</div>';
-    if(a.children) a.children.forEach(function(c){
-      h+='<div class="it sub"><span class="anum sub act">↳ '+num(c.no)+'</span><span class="ti">'+c.nm+'</span></div>';
-    });
+    if(a.header){ cur={head:a, kids:[]}; cards.push(cur); return; }
+    if(cur && a.no.indexOf(cur.head.no.replace('호','')+'-')===0){ cur.kids.push(a); return; }
+    cur=null; cards.push({head:a, kids:[]});
   });
-  document.getElementById('apl').innerHTML=h;
+  document.getElementById('apl').innerHTML=cards.map(function(c){
+    var mine=[c.head].concat(c.kids).filter(function(a){ return !a.header; });
+    var on=mine.some(function(a){ return (VS[a.no]||{}).cur; });
+    if(!c.kids.length){
+      /* 표결 단위 하나 — 양립불가처럼 고를 안이 있으면 펼쳐 보여 준다 */
+      var opts=(on && c.head.children) ? '<div class="kids">'+c.head.children.map(function(k){
+        return '<div class="kid"><span class="nb">↳ '+num(k.no)+'</span><span class="t">'+k.nm+'</span></div>';
+      }).join('')+'</div>' : '';
+      return '<div class="ac'+(on?' cur':'')+'">'+rowOf(c.head,'top')+opts+'</div>';
+    }
+    return '<div class="ac'+(on?' cur':'')+'">'
+      +'<div class="r top"><span class="nb">'+num(c.head.no)+'</span>'
+      +'<span class="t">'+c.head.nm+'</span></div>'
+      +'<div class="kids">'+c.kids.map(function(k){
+          var vs=VS[k.no]||{s:'wait'};
+          var right = vs.s==='result' ? resBadgeV(vs.r) : statDot(vs.s);
+          return '<div class="kid"><span class="nb">↳ '+num(k.no)+'</span>'
+            +'<span class="t'+(vs.mute?' mute':'')+'">'+k.nm+'</span>'+right+'</div>';
+        }).join('')+'</div></div>';
+  }).join('');
 }
 renderApl();
 
@@ -744,6 +772,44 @@ var CLOCK={t:725,run:true};
   setInterval(function(){ if(CLOCK.run) CLOCK.t++; paint(); },1000); paint();
 })();
 
+/* ---- AI 자막 ----
+   영상이 흐른 만큼의 위치(0~1)로 대본을 찾는다. 시연 영상은 되풀이 재생되므로
+   절대 초가 아니라 비율로 두어야 길이가 달라져도 대본이 어긋나지 않는다. */
+var SCRIPT=[
+  [0.00,'지금부터 제10기 정기주주총회를 시작하겠습니다.','주주 여러분의 참석에 깊이 감사드립니다.'],
+  [0.07,'본 총회는 현장과 전자적 방법을 함께 사용하여 진행됩니다.','온라인으로 참석하신 주주께서도 동일하게 의결권을 행사하실 수 있습니다.'],
+  [0.15,'재적 주주 중 의결권 있는 주식의 과반수가 출석하여','본 총회는 적법하게 성립되었음을 선포합니다.'],
+  [0.23,'먼저 제1호 의안, 재무제표 승인의 건을 상정하겠습니다.','영업보고와 감사보고는 배포해 드린 자료로 갈음하겠습니다.'],
+  [0.31,'본 의안에 대한 표결을 시작하겠습니다.','화면의 찬성·반대·기권 가운데 하나를 선택해 주시기 바랍니다.'],
+  [0.39,'표결을 마감하겠습니다. 잠시 집계를 기다려 주시기 바랍니다.','집계가 끝나는 대로 결과를 선포하겠습니다.'],
+  [0.47,'제1호 의안은 출석 의결권의 과반수 찬성으로','원안대로 가결되었음을 선포합니다.'],
+  [0.55,'이어서 제2호 정관 일부 변경의 건을 상정하겠습니다.','먼저 제2-1호 집중투표제 배제 조항 삭제의 건입니다.'],
+  [0.63,'본 의안은 특별결의 사항으로','출석 의결권의 3분의 2 이상 찬성이 필요합니다.'],
+  [0.71,'질의를 원하시는 주주께서는 화면의 질의 작성을 눌러 주시기 바랍니다.','접수된 질의는 순서대로 의장께 전달됩니다.'],
+  [0.79,'주주님께서 주신 배당 정책 질의에 답변드리겠습니다.','당사는 안정적 배당과 성장 투자의 균형을 배당 정책의 원칙으로 하고 있습니다.'],
+  [0.87,'다음 의안의 표결을 준비하겠습니다.','잠시만 기다려 주시기 바랍니다.'],
+  [0.94,'오늘 상정된 의안의 처리가 모두 끝났습니다.','참석해 주신 주주 여러분께 다시 한번 감사드립니다.']
+];
+var CAP={on:true, hold:null};   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
+function capLines(){
+  if(CAP.hold) return CAP.hold;
+  var v=document.getElementById('vid');
+  /* 영상 길이를 못 읽는 환경에서는 경과 시계를 2분 주기로 대신 쓴다 */
+  var pos=(v&&v.duration) ? (v.currentTime%v.duration)/v.duration : (CLOCK.t%120)/120;
+  var cue=SCRIPT[0];
+  SCRIPT.forEach(function(c){ if(pos>=c[0]) cue=c; });
+  return [cue[1], cue[2]];
+}
+function paintCap(){
+  var box=document.getElementById('cap'), sp=document.getElementById('capTxt').children;
+  box.classList.toggle('off', !CAP.on);
+  document.getElementById('capBtn').textContent = CAP.on ? '✨ AI 자막 ON' : '✨ AI 자막 OFF';
+  var l = CAP.on ? capLines() : ['', ''];
+  sp[0].textContent=l[0]; sp[1].textContent=l[1]||'';
+}
+document.getElementById('capBtn').addEventListener('click',function(){ CAP.on=!CAP.on; paintCap(); });
+setInterval(paintCap, 500); paintCap();
+
 /* ---- conexus 현장 제어와 잇기 ----
    제어 화면과 이 화면이 같은 호스트에서 열려 있으면, localStorage 한 칸을 통해
    의안·표결 단계·송출 내용과 영상 위치가 그대로 넘어온다. 서버는 쓰지 않는다. */
@@ -778,7 +844,14 @@ function applyLive(s){
   }else{
     vw.classList.remove('cast');
   }
-  if(s.msg && s.cast==null) document.getElementById('capTxt').textContent=s.msg;
+  if(s.cast==null){
+    /* 전달 메시지는 대본을 잠시 밀어내고, 비면 다시 대본으로 돌아간다 */
+    if(s.msg){
+      var t=String(s.msg), cut=t.length>34 ? t.lastIndexOf(' ', Math.ceil(t.length/2)) : -1;
+      CAP.hold = cut>0 ? [t.slice(0,cut), t.slice(cut+1)] : [t, ''];
+    } else CAP.hold=null;
+    paintCap();
+  }
 
   if(!s.ag) return;
   var nos=units.map(function(a){return a.no;});

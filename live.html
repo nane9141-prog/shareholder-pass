@@ -37,11 +37,25 @@
   /* video */
   .vid{border-radius:14px;overflow:hidden;background:#0b0b0d;position:relative;aspect-ratio:16/9;box-shadow:var(--sh)}
   .vid .scene{position:absolute;inset:0;background:linear-gradient(135deg,#12203a,#0c1730 60%,#1a2c52);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#eef}
+  /* 영상은 화면 위에 덮고, 신호가 없으면 뒤의 안내 장면이 그대로 보인다 */
+  .vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;opacity:0;transition:opacity .2s}
+  .vid.playing video{opacity:1}
+  .vid .snd{position:absolute;right:12px;bottom:12px;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.45);color:#fff;font-size:12px;font-weight:600;border:0;border-radius:8px;padding:6px 10px;cursor:pointer;font-family:inherit}
+  .vid .snd svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
+  /* 의장이 내보낸 질의·발언은 영상 아래쪽에 겹쳐 보여 준다 */
+  .vid .castbox{position:absolute;left:12px;right:12px;bottom:12px;background:rgba(10,12,20,.78);color:#fff;border-radius:12px;padding:12px 14px;display:none}
+  .vid.cast .castbox{display:block}
+  .vid .castbox .k{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:9999px;background:#2563eb;font-size:11px;font-weight:700;margin-right:8px}
+  .vid .castbox .who{font-size:12px;opacity:.75}
+  .vid .castbox .q{margin-top:6px;font-size:14px;line-height:1.5;font-weight:600}
+  .vid .castbox .a{margin-top:6px;font-size:13px;line-height:1.5;opacity:.85}
   .vid .scene .lg{width:52px;height:52px;border-radius:14px;object-fit:contain;background:#fff;margin-bottom:14px;display:block}
   .vid .scene .t{font-size:26px;font-weight:800;opacity:.92}.vid .scene .t2{font-size:14px;opacity:.6;margin-top:4px}
   .vid .badge{position:absolute;left:12px;top:12px}
   .vid .lang{position:absolute;right:12px;top:12px;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.4);color:#fff;font-size:12px;font-weight:600;border-radius:8px;padding:5px 9px}
   .vid .lang svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
+  .doneflag.wait2{background:#f7f8fa;color:#71717a;font-weight:600}
+  .vleft{margin-top:10px;font-size:13px;font-weight:700;color:#e11d48}
   .cap{margin-top:10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.6;color:#3f3f46}
   .cap .on{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#7c3aed;background:#f5f3ff;border-radius:6px;padding:2px 7px;margin-right:8px}
 
@@ -259,10 +273,13 @@
     <div>
       <div class="vid">
         <div class="scene"><img class="lg" src="assets/logo-kakaobank.png" alt="카카오뱅크" width="52" height="52"><div class="t" id="vTitle">제10기 정기주주총회</div><div class="t2">카카오뱅크 · 생중계</div></div>
+        <video id="vid" src="assets/kakaobank.mp4" muted playsinline loop preload="auto"></video>
         <div class="badge"><span class="live"><i></i>LIVE</span></div>
         <div class="lang"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>한국어</div>
+        <button class="snd" id="vSnd" type="button"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>소리 켜기</button>
+        <div class="castbox" id="castBox"></div>
       </div>
-      <div class="cap"><span class="on">✨ AI 자막 ON</span>재적 주주 중 의결권 있는 주식의 과반수가 출석하여 본 총회는 적법하게 성립되었습니다.</div>
+      <div class="cap"><span class="on">✨ AI 자막 ON</span><span id="capTxt">재적 주주 중 의결권 있는 주식의 과반수가 출석하여 본 총회는 적법하게 성립되었습니다.</span></div>
 
       <div class="aph">의안 진행현황 <span class="c" id="apCnt">2 / 6</span></div>
       <div class="apl" id="apl"></div>
@@ -407,6 +424,9 @@ var units=CXD.agenda.filter(function(a){return !a.header;});
 
 /* ---- 데모 라이브 상태 + 상태 헬퍼 (좌측 의안 진행현황 케이스) ---- */
 var CURRENT='제2-1호';
+/* 현장 제어에서 넘어오는 표결 상태 */
+var LIVE={sec:null};
+var STAGE={0:'wait',1:'wait',2:'vote',3:'cnt'};
 /* 데모 상태: 대기·투표중·집계중 + 결과(가결/부결/폐기/철회) + 수정동의·의결권없음(회색) */
 var VS={
   '제1호':  {s:'result',r:'pass'},           // 가결
@@ -437,13 +457,16 @@ document.getElementById('sMt').textContent=M.name;
 document.getElementById('vTitle').textContent=M.name;
 var attPct=U.pct(M.attendShares,M.sharesVoting);
 document.getElementById('sAtt').textContent=attPct.toFixed(1)+'%';
-var curIdx=units.map(function(a){return a.no;}).indexOf(CURRENT);
-var progTxt=(curIdx>=0?curIdx+1:1)+' / '+units.length;
-document.getElementById('sProg').textContent=progTxt;
-document.getElementById('apCnt').textContent=progTxt;
+function renderProg(){
+  var curIdx=units.map(function(a){return a.no;}).indexOf(CURRENT);
+  var progTxt=(curIdx>=0?curIdx+1:1)+' / '+units.length;
+  document.getElementById('sProg').textContent=progTxt;
+  document.getElementById('apCnt').textContent=progTxt;
+}
+renderProg();
 
 /* ---- 의안 진행현황 (좌) — 상태별 케이스 ---- */
-(function(){
+function renderApl(){
   var h='';
   CXD.agenda.forEach(function(a){
     if(a.header){ h+='<div class="it hdr"><span class="hn">'+chip(a.no)+'</span><span class="ti hd">'+a.nm+'</span></div>'; return; }
@@ -457,7 +480,8 @@ document.getElementById('apCnt').textContent=progTxt;
     });
   });
   document.getElementById('apl').innerHTML=h;
-})();
+}
+renderApl();
 
 /* ---- 탭 ---- */
 document.querySelectorAll('.tabs button').forEach(function(b){
@@ -476,8 +500,27 @@ function renderVote(){
   if(d.type==='집중투표'){
     el.innerHTML=head+'<div class="base">보유 1,200주 × 선임예정 2인 = 2,400표 배분</div>'+candBars(d);return;
   }
-  // 보통/특별결의 — 투표 버튼 + (행사 후) 결과
+  /* 현장 제어가 표결을 열기 전이면 투표 칸을 내주지 않는다 */
+  var st=(VS[CURRENT]||{}).s;
+  if(st==='wait'){
+    el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
+      +'<div class="doneflag wait2">의장이 표결을 개시하면 의결권을 행사하실 수 있습니다</div>';
+    return;
+  }
+  if(st==='cnt'){
+    el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
+      +'<div class="doneflag">집계 중입니다</div>'+normalResult(d);
+    return;
+  }
+  if(st==='result'){
+    el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
+      +'<div class="doneflag">'+(resultOf(CURRENT)==='pass'?'가결되었습니다':resultOf(CURRENT)==='disc'?'폐기된 의안입니다':'부결되었습니다')+'</div>'
+      +normalResult(d);
+    return;
+  }
+  // 표결 중 — 투표 버튼 + (행사 후) 결과
   el.innerHTML=head+'<div class="base">가결 기준 '+(d.thrLabel||'출석의결권 1/2')+'</div>'
+    +(LIVE.sec>0?'<div class="vleft" id="vLeft"></div>':'')
     +'<div class="choices" id="choices">'
     +'<button class="choice pro" data-c="pro">찬성</button>'
     +'<button class="choice con" data-c="con">반대</button>'
@@ -692,8 +735,108 @@ function buildEx(){
   document.getElementById('exTbl').innerHTML=head+'<tbody>'+rows+'</tbody>';
 }
 
-/* ---- 경과 타이머 ---- */
-(function(){var t=725;var el=document.getElementById('sTime');setInterval(function(){t++;var h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;el.textContent=[h,m,s].map(function(n){return(n<10?'0':'')+n;}).join(':');},1000);})();
+/* ---- 경과 타이머 — 현장 제어 시계가 오면 그 값으로 맞춘다 ---- */
+var CLOCK={t:725,run:true};
+(function(){
+  var el=document.getElementById('sTime');
+  function paint(){var t=Math.max(0,Math.round(CLOCK.t)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
+    el.textContent=[h,m,s].map(function(n){return(n<10?'0':'')+n;}).join(':');}
+  setInterval(function(){ if(CLOCK.run) CLOCK.t++; paint(); },1000); paint();
+})();
+
+/* ---- conexus 현장 제어와 잇기 ----
+   제어 화면과 이 화면이 같은 호스트에서 열려 있으면, localStorage 한 칸을 통해
+   의안·표결 단계·송출 내용과 영상 위치가 그대로 넘어온다. 서버는 쓰지 않는다. */
+function cxRead(K,on){
+  function get(){ try{ return JSON.parse(localStorage.getItem(K)||'{}'); }catch(e){ return {}; } }
+  window.addEventListener('storage',function(e){ if(e.key===K) on(get()); });
+  on(get());
+}
+
+function resultOf(no){
+  if((CXD.decided==='회사'&&no==='제4-2호')||(CXD.decided==='주주'&&no==='제4-1호')) return 'disc';
+  var d=CXD.center[no]; if(!d) return 'pass';
+  if(d.cands) return 'pass';
+  var v=d.options?(d.options.filter(function(o){return o.result==='가결';})[0]||d.options[0]):d;
+  var base=v['for']+v.against+(v.abs||0);
+  var need=(d.thrLabel&&d.thrLabel.indexOf('2/3')>=0)?66.67:50;
+  return pct(v['for'],base)>=need?'pass':'fail';
+}
+
+function applyLive(s){
+  if(!s||!s.ts) return;
+  /* 송출 중인 질의·발언은 영상 위에 겹쳐 둔다 */
+  var vw=document.querySelector('.vid'), box=document.getElementById('castBox');
+  if(s.cast==='qna'){
+    vw.classList.add('cast');
+    box.innerHTML='<span class="k">질의</span><span class="who">'+(s.who||'')+'</span>'
+      +'<div class="q">'+(s.q||'')+'</div>'+(s.a?'<div class="a">'+s.a+'</div>':'');
+  }else if(s.cast==='speech'||s.cast==='amend'){
+    vw.classList.add('cast');
+    box.innerHTML='<span class="k">'+(s.cast==='amend'?'수정동의':'발언')+'</span>'
+      +'<span class="who">'+(s.who||'')+'</span>'+(s.msg?'<div class="q">'+s.msg+'</div>':'');
+  }else{
+    vw.classList.remove('cast');
+  }
+  if(s.msg && s.cast==null) document.getElementById('capTxt').textContent=s.msg;
+
+  if(!s.ag) return;
+  var nos=units.map(function(a){return a.no;});
+  var i=nos.indexOf(s.ag);
+  if(i<0) return;
+  CURRENT=s.ag;
+  LIVE.sec=(s.sec==null?null:+s.sec);
+  var stage=isFinite(s.stage)?+s.stage:0;
+  /* 앞선 의안은 끝난 것으로, 뒤의 의안은 대기로 둔다 */
+  units.forEach(function(a,n){
+    if(n<i) VS[a.no]={s:'result',r:resultOf(a.no),mute:resultOf(a.no)==='disc'};
+    else if(n>i) VS[a.no]={s:'wait'};
+    else{
+      var k=STAGE[stage]||'result';
+      VS[a.no]= k==='result' ? {s:'result',r:resultOf(a.no),cur:true,mute:resultOf(a.no)==='disc'}
+                             : {s:k,cur:true};
+    }
+  });
+  renderProg(); renderApl(); renderVote(); paintLeft();
+}
+
+function paintLeft(){
+  var el=document.getElementById('vLeft'); if(!el) return;
+  var n=Math.max(0,LIVE.sec|0);
+  if(!n){ el.remove(); return; }   /* 시간을 걸지 않은 표결이면 아예 적지 않는다 */
+  el.textContent='남은 표결 시간 '+Math.floor(n/60)+':'+(n%60<10?'0':'')+(n%60);
+}
+
+/* 영상은 길이를 알기 전에 위치를 옮기면 그대로 멈춰 버린다.
+   받은 값을 들고 있다가 메타데이터가 오면 그때 맞춘다. */
+var VWANT=null;
+function syncVid(){
+  var v=document.getElementById('vid');
+  if(!v||!VWANT||v.readyState<1||!v.duration) return;
+  var c=VWANT, drift=(Date.now()-c.at)/1000;
+  var want=(c.vt+(c.vpaused?0:drift))%v.duration;
+  if(isFinite(want)&&Math.abs(v.currentTime-want)>1.5) v.currentTime=want;
+  if(c.vpaused) v.pause(); else v.play().catch(function(){});
+  document.querySelector('.vid').classList.add('playing');
+}
+function applyClock(c){
+  if(!c||!c.at) return;
+  var drift=(Date.now()-c.at)/1000;
+  CLOCK.t=c.t+(c.run?drift:0); CLOCK.run=!!c.run;
+  VWANT=c; syncVid();
+}
+(function(){ var v=document.getElementById('vid');
+  if(v) ['loadedmetadata','canplay'].forEach(function(ev){ v.addEventListener(ev,syncVid); }); })();
+
+cxRead('cx.live',applyLive);
+cxRead('cx.clock',applyClock);
+setInterval(function(){ if(LIVE.sec!=null&&LIVE.sec>0){ LIVE.sec--; paintLeft(); } },1000);
+
+/* 자동재생은 소리 없이만 허용된다 — 소리는 주주가 직접 켠다 */
+document.getElementById('vSnd').addEventListener('click',function(){
+  var v=document.getElementById('vid'); v.muted=!v.muted;
+  this.lastChild.textContent=v.muted?'소리 켜기':'소리 끄기';
+});
 </script>
 </body>
 </html>

@@ -56,16 +56,35 @@
   .vid .lang svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
   .doneflag.wait2{background:#f7f8fa;color:#71717a;font-weight:600}
   .vleft{margin-top:10px;font-size:13px;font-weight:700;color:#e11d48}
-  /* AI 자막 — 두 줄까지 보여 주고, 칩을 눌러 끌 수 있다 */
-  .cap{margin-top:10px;display:flex;align-items:flex-start;gap:8px;background:#fff;
-    border:1px solid var(--border);border-radius:12px;padding:12px 14px}
-  .cap .on{flex:none;display:inline-flex;align-items:center;gap:5px;height:22px;padding:2px 7px;
-    border:0;border-radius:6px;background:#f5f3ff;font-family:inherit;font-size:12px;font-weight:700;
-    letter-spacing:inherit;color:#7c3aed;cursor:pointer}
-  .cap.off .on{background:#f4f4f5;color:#a1a1aa}
-  .cap .lines{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;min-height:44px}
-  .cap .lines span{font-size:14px;line-height:22px;color:#3f3f46}
-  .cap.off .lines span{color:#c4c4c8}
+  /* AI 자막 — 두 줄까지 보여 주고, 칩으로 끄고 오른쪽에서 언어를 고른다 */
+  .cap{margin-top:8px;background:#F8F8FA;border:0;border-radius:12px;padding:12px 16px;
+    display:flex;flex-direction:column}
+  .cap .caph{display:flex;align-items:center;justify-content:space-between;gap:4px;padding-bottom:8px}
+  .cap .on{display:inline-flex;align-items:center;gap:4px;height:22px;padding:2px 8px;
+    border:0;border-radius:1000px;background:linear-gradient(90deg,#E8DFFC 0%,#C6E0FD 100%);
+    font-family:inherit;font-size:12px;line-height:18px;font-weight:700;letter-spacing:inherit;
+    color:#0071F3;cursor:pointer}
+  .cap.off .on{background:#F3F4F6;color:#A7AAB1}
+  .cap .lines{display:flex;flex-direction:column;gap:0;min-height:48px}
+  .cap .lines span{font-size:16px;line-height:24px;font-weight:500;color:#151419}
+  .cap.off .lines span{color:#A7AAB1}
+  /* 언어 고르기 */
+  .lsel{position:relative;flex:none}
+  .lsel .lbtn{display:flex;align-items:center;gap:4px;height:18px;padding:0;border:0;background:none;
+    font-family:inherit;font-size:12px;line-height:18px;letter-spacing:inherit;color:#151419;cursor:pointer}
+  .lsel .lbtn .gl{width:16px;height:16px;stroke:#151419;fill:none;stroke-width:1.6}
+  .lsel .lbtn .cv{width:14px;height:14px;stroke:#151419;fill:none;stroke-width:2;transition:transform .15s}
+  .lsel.open .lbtn .cv{transform:rotate(180deg)}
+  .lsel .lpop{display:none;position:absolute;right:0;top:24px;z-index:20;min-width:120px;padding:4px;
+    background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:var(--shmd)}
+  .lsel.open .lpop{display:block}
+  .lsel .lopt{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+    height:34px;padding:0 10px;border:0;border-radius:8px;background:none;
+    font-family:inherit;font-size:13px;letter-spacing:inherit;color:#151419;cursor:pointer;text-align:left}
+  .lsel .lopt:hover{background:#F8F8FA}
+  .lsel .lopt.sel{font-weight:700}
+  .lsel .lopt .ck{width:15px;height:15px;stroke:#0071F3;fill:none;stroke-width:2.4;visibility:hidden}
+  .lsel .lopt.sel .ck{visibility:visible}
 
   /* 의안 진행현황 — 표결 단위 하나가 카드 한 장, 상위 의안은 자식을 품는다 */
   .aph{display:flex;align-items:center;gap:8px;margin:24px 0 8px;
@@ -155,7 +174,8 @@
   .vc .det2 .f3 .s3{font-size:12px;line-height:18px;color:#6B7078}
 
   /* 집계 결과 */
-  .vc .sum2{display:flex;flex-direction:column;gap:4px;text-align:center;padding-top:12px}
+  .vc .res2{display:flex;flex-direction:column;gap:8px;padding-top:12px}
+  .vc .sum2{display:flex;flex-direction:column;gap:4px;text-align:center}
   .vc .sum2 .k2{font-size:12px;line-height:16px;font-weight:500;color:#6B7078}
   .vc .sum2 .v2{font-size:14px;line-height:18px;font-weight:700;color:#151419}
   .vc .sum2 .n2{font-size:12px;line-height:16px;color:#6B7078}
@@ -181,7 +201,7 @@
   .vc .st i{width:6px;height:6px;border-radius:50%;background:currentColor}
   .vc .st.wait{color:#A7AAB1}.vc .st.vote{color:#0071F3}.vc .st.cnt{color:#0DAD7E}
   .choices{flex:1;display:flex;justify-content:center;gap:8px}
-  .choice{width:80px;height:41px;padding:10px 12px;border:1px solid #EEF0F2;border-radius:8px;
+  .choice{flex:none;width:80px;height:41px;padding:10px 12px;border:1px solid #EEF0F2;border-radius:8px;
     background:#fff;font-family:inherit;font-size:14px;line-height:21px;font-weight:700;
     letter-spacing:inherit;color:#151419;display:flex;align-items:center;justify-content:center;gap:4px}
   .choice.sel{background:#EBF4FF;border-color:#B2D5FF;color:#0071F3}
@@ -195,6 +215,10 @@
   .vc .flag2 svg{width:20px;height:20px;stroke:#0071F3;fill:none;stroke-width:2.2}
   .vc .flag2.none{color:#A7AAB1}
   .vc .note2{margin-left:auto;font-size:14px;line-height:21px;color:#6B7078}
+  .vc .act2 .rt2{margin-left:auto;display:flex;align-items:center;gap:20px}
+  .vc .act2 .rt2 .flag2{margin-left:0}
+  .vc .undo2{flex:none;height:41px;padding:10px 20px;border:0;border-radius:8px;background:#151419;
+    font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit;color:#fff}
 
   /* 집중투표 배분 */
   .vc .alc{display:flex;flex-direction:column;gap:12px;padding-top:4px}
@@ -293,7 +317,7 @@
   .seg button{flex:1;height:41px;border:1px solid #EEF0F2;border-radius:8px;background:#fff;
     font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit;color:#151419}
   .seg button.on{border-color:#D7D9DF;background:#F3F4F6}
-  .sel,.ta{width:100%;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;padding:12px}
+  select.sel,.ta{width:100%;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;padding:12px}
   .tabox{border:1px solid #EEF0F2;border-radius:8px;overflow:hidden}
   .tabox .ta{display:block;width:100%;min-height:112px;border:0;border-radius:8px 8px 0 0;resize:none;
     padding:12px 16px 8px;font-family:inherit;font-size:16px;line-height:24px;letter-spacing:inherit;color:#151419}
@@ -307,17 +331,52 @@
   .mact .ok{border:0;background:#151419;color:#fff}
   .mact .ok:disabled{background:#D7D9DF}
   /* 주총 스위처 모달 */
-  .mmodal{background:#fff;border-radius:16px;box-shadow:var(--shmd);width:400px;max-width:94vw;overflow:hidden}
-  .mm-h{padding:20px 20px 12px;font-size:20px;font-weight:800}
+  /* 주주총회 전환 — 지금 보고 있는 주총만 회색으로 눌러 둔다 */
+  .mmodal{background:#fff;border-radius:16px;box-shadow:0 2px 12px -2px rgba(0,0,0,.15);
+    width:400px;max-width:94vw;overflow:hidden}
+  .mm-h{display:flex;align-items:center;gap:4px;padding:20px 20px 12px;
+    font-size:20px;line-height:26px;font-weight:700;color:#151419}
+  .mm-h .live2{flex:none}
   .mm-list{padding:0 20px;display:flex;flex-direction:column}
-  .mm-item{display:flex;align-items:center;gap:8px;min-height:48px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:16px;color:#151419}
-  .mm-item.sel{background:#f3f4f6;font-weight:700}
-  .mm-item .rt{margin-left:auto;display:flex;gap:6px;align-items:center;flex:none}
-  .mm-item .att{font-size:12px;color:#4c4f54}
-  .mm-item .live2{display:inline-flex;align-items:center;height:20px;padding:0 8px;border:1px solid #e9081b;color:#e9081b;border-radius:9999px;font-size:10px;font-weight:700}
-  .mm-act{display:flex;gap:8px;padding:12px 20px 20px}
-  .mm-act .cancel{flex:1;height:41px;border:1px solid #eef0f2;background:#fff;border-radius:8px;font-weight:700}
-  .mm-act .ok{flex:1;height:41px;border:0;background:#151419;color:#fff;border-radius:8px;font-weight:700}
+  .mm-item{display:flex;align-items:center;gap:4px;height:48px;padding:12px;border-radius:8px;
+    cursor:pointer;background:#fff}
+  .mm-item .nm{flex:1;min-width:0;font-size:16px;line-height:24px;font-weight:400;color:#151419}
+  .mm-item.sel{background:#F3F4F6}
+  .mm-item.sel .nm{font-weight:700}
+  .mm-item .att{flex:none;display:flex;align-items:center;gap:2px;padding:0 4px;
+    font-size:14px;line-height:18px;font-weight:500;color:#4C4F54}
+  .mm-item .att svg{width:14px;height:14px;stroke:#4C4F54;fill:none;stroke-width:2.2}
+  .live2{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 8px;
+    background:#fff;border:1px solid #E9081B;border-radius:1000px;
+    font-size:10px;line-height:15px;font-weight:700;color:#E9081B}
+  .mm-act{display:flex;justify-content:center;gap:8px;padding:12px 20px 20px}
+  .mm-act button{flex:1;height:41px;border-radius:8px;font-family:inherit;
+    font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit}
+  .mm-act .cancel{border:1px solid #EEF0F2;background:#fff;color:#151419}
+  .mm-act .ok{border:0;background:#151419;color:#fff}
+
+  /* 간편인증 — 기관을 하나 고르고 인증을 누르면 표가 넘어간다 */
+  .amodal{background:#fff;border-radius:16px;box-shadow:0 2px 12px -2px rgba(0,0,0,.15);
+    width:420px;max-width:94vw;overflow:hidden}
+  .am-h{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:32px 28px 0}
+  .am-h b{font-size:20px;line-height:26px;font-weight:700;color:#151419}
+  .am-h .x{width:30px;height:30px;border:0;background:none;padding:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center}
+  .am-h .x svg{width:16px;height:16px;stroke:#151419;fill:none;stroke-width:2}
+  .am-b{padding:16px 28px 12px;display:flex;flex-direction:column;gap:16px}
+  .am-b .lb{font-size:14px;line-height:18px;font-weight:700;color:#151419}
+  .aggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .ag{display:flex;flex-direction:column;align-items:center;gap:8px;height:98px;padding:10px 0;
+    border:1px solid #EEF0F2;border-radius:10px;background:#fff;cursor:pointer;
+    font-family:inherit;letter-spacing:inherit}
+  .ag.sel{background:#F8F8FA;border-color:#272929}
+  .ag .lg2{width:52px;height:52px;border:1px solid rgba(0,0,0,.05);border-radius:16px;
+    display:flex;align-items:center;justify-content:center;font-weight:800}
+  .ag .nm2{font-size:12px;line-height:16px;font-weight:700;color:#151419;text-align:center}
+  .am-a{padding:12px 28px 32px}
+  .am-a button{width:100%;height:48px;border:0;border-radius:8px;background:#151419;
+    font-family:inherit;font-size:16px;line-height:24px;font-weight:700;letter-spacing:inherit;color:#fff}
+  .am-a button:disabled{background:#D7D9DF}  .mm-act .ok{flex:1;height:41px;border:0;background:#151419;color:#fff;border-radius:8px;font-weight:700}
   @media(max-width:980px){.cols{grid-template-columns:1fr}.stat .g{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -347,12 +406,23 @@
         <div class="scene"><img class="lg" src="assets/logo-kakaobank.png" alt="카카오뱅크" width="52" height="52"><div class="t" id="vTitle">제10기 정기주주총회</div><div class="t2">카카오뱅크 · 생중계</div></div>
         <video id="vid" src="assets/kakaobank.mp4" muted playsinline loop preload="auto"></video>
         <div class="badge"><span class="live"><i></i>LIVE</span></div>
-        <div class="lang"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>한국어</div>
         <button class="snd" id="vSnd" type="button"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>소리 켜기</button>
         <div class="castbox" id="castBox"></div>
       </div>
-      <div class="cap" id="cap"><button class="on" id="capBtn" type="button">✨ AI 자막 ON</button>
-        <div class="lines" id="capTxt"><span></span><span></span></div></div>
+      <div class="cap" id="cap">
+        <div class="caph">
+          <button class="on" id="capBtn" type="button">✨ AI 자막 ON</button>
+          <div class="lsel" id="lSel">
+            <button class="lbtn" id="lBtn" type="button">
+              <svg class="gl" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
+              <span id="lNow">한국어</span>
+              <svg class="cv" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="lpop" id="lPop"></div>
+          </div>
+        </div>
+        <div class="lines" id="capTxt"><span></span><span></span></div>
+      </div>
 
       <div class="aph">의안 진행현황 <span class="c" id="apCnt">2 / 6</span></div>
       <div class="apl" id="apl"></div>
@@ -433,9 +503,23 @@
 <!-- 주총 스위처 모달 -->
 <div class="ovl" id="mtOvl">
   <div class="mmodal">
-    <div class="mm-h">내 주주총회</div>
+    <div class="mm-h">내 주주총회 <span class="live2" id="mtLive">LIVE</span></div>
     <div class="mm-list" id="mtList"></div>
     <div class="mm-act"><button class="cancel" id="mtCancel">취소</button><button class="ok" id="mtOk">확인</button></div>
+  </div>
+</div>
+
+<!-- 간편인증 모달 -->
+<div class="ovl" id="authOvl">
+  <div class="amodal">
+    <div class="am-h"><b>간편인증</b>
+      <button class="x" id="authX" type="button"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="am-b">
+      <div class="lb">인증 기관을 선택해주세요</div>
+      <div class="aggrid" id="authList"></div>
+    </div>
+    <div class="am-a"><button id="authOk" type="button" disabled>인증</button></div>
   </div>
 </div>
 
@@ -576,7 +660,7 @@ document.querySelectorAll('.tabs button').forEach(function(b){
 function pct(part,whole){return whole?(part/whole*100):0;}
 var MY={held:1200, limit:0};        /* 내 의결권 — 참석 정보와 같은 수치 */
 var CAST={};                        /* 의안별 내가 행사한 값 */
-var CHOICE={pro:'찬성',con:'반대',abs:'기권',neu:'중립'};
+var CHOICE={pro:'찬성',con:'반대',abs:'기권'};
 
 function agOf(no){
   for(var i=0;i<CXD.agenda.length;i++) if(CXD.agenda[i].no===no) return CXD.agenda[i];
@@ -686,7 +770,8 @@ function renderVote(){
     +'<div class="base">'+typeLabel(no)+'</div>'
     +detBox(a, st!=='result');
   if(st==='result'){
-    body += (d.type==='집중투표') ? candBars(d) : (sumLine(d,r)+quorum(d));
+    body += (d.type==='집중투표') ? candBars(d)
+      : '<div class="res2">'+sumLine(d,r)+quorum(d)+'</div>';
   }else if(st==='cnt'){
     body += '<div class="sum2"><div class="k2">집계 결과</div><div class="v2">표결을 마감하고 집계 중입니다</div></div>';
   }else if(st==='vote' && d.type==='집중투표' && !CAST[no]){
@@ -700,17 +785,19 @@ function renderVote(){
     act='<div class="act2">'+statDot('wait')
       +'<span class="note2">의장이 표결을 개시하면 의결권을 행사하실 수 있습니다</span></div>';
   }else if(CAST[no]){
-    act='<div class="act2">'+statDot('vote')+flagOf(no)+'</div>';
+    /* 표결이 닫히기 전까지는 되돌릴 수 있다 */
+    act='<div class="act2">'+statDot('vote')+'<div class="rt2">'+flagOf(no)
+      +'<button class="undo2" id="voteUndo" type="button">투표 철회</button></div></div>';
   }else if(d.type==='집중투표'){
     act='<div class="act2">'+statDot('vote')
       +'<span class="note2">후보별로 배분한 뒤 행사하실 수 있습니다</span>'
-      +'<button class="done" id="voteDone" disabled>행사하기</button></div>';
+      +'<button class="done" id="voteDone" disabled>투표하기</button></div>';
   }else{
     act='<div class="act2">'+statDot('vote')+'<div class="choices" id="choices">'
       +Object.keys(CHOICE).map(function(k){
           return '<button class="choice" type="button" data-c="'+k+'">'+CHOICE[k]+'</button>';
         }).join('')
-      +'</div><button class="done" id="voteDone" disabled>행사하기</button></div>';
+      +'</div><button class="done" id="voteDone" disabled>투표하기</button></div>';
   }
   el.innerHTML='<div class="body">'+body+'</div>'+act;
 
@@ -726,10 +813,15 @@ function renderVote(){
       document.getElementById('voteDone').disabled=false;
     });
   });
+  var undo=el.querySelector('#voteUndo');
+  if(undo) undo.addEventListener('click',function(){ delete CAST[no]; renderVote(); });
   var done=el.querySelector('#voteDone');
   if(done) done.addEventListener('click',function(){
-    CAST[no] = picked ? CHOICE[picked] : '집중투표';
-    renderVote();
+    /* 표를 넘기기 전에 본인 확인을 한 번 거친다 */
+    askAuth(function(){
+      CAST[no] = picked ? CHOICE[picked] : '집중투표';
+      renderVote();
+    });
   });
 }
 function normalResult(d){
@@ -842,6 +934,43 @@ document.querySelectorAll('.qfilter .qf').forEach(function(b){
 });
 renderQ();
 
+/* ---- 간편인증 ----
+   시연용이라 실제 인증은 하지 않는다. 기관을 고르고 인증을 누르면 곧바로 다음 단계로 넘어간다. */
+var AUTHS=[
+  ['naver','네이버','#00C300','#fff','N'],
+  ['kakao','카카오','#FAE100','#371D1E','K'],
+  ['toss','토스','#FFFFFF','#3182F6','toss'],
+  ['payco','페이코','#FA2828','#fff','P'],
+  ['pass','PASS','#EC4745','#fff','PASS'],
+  ['kb','KB국민','#FFFFFF','#F8B500','KB']
+];
+var AUTH={pick:null, then:null};
+(function(){
+  document.getElementById('authList').innerHTML=AUTHS.map(function(a){
+    var fs = a[4].length>2 ? 12 : 20;
+    return '<button class="ag" type="button" data-k="'+a[0]+'">'
+      +'<span class="lg2" style="background:'+a[2]+';color:'+a[3]+';font-size:'+fs+'px">'+a[4]+'</span>'
+      +'<span class="nm2">'+a[1]+'</span></button>';
+  }).join('');
+  document.getElementById('authList').addEventListener('click',function(e){
+    var b=e.target.closest('.ag'); if(!b) return;
+    document.querySelectorAll('#authList .ag').forEach(function(x){ x.classList.toggle('sel', x===b); });
+    AUTH.pick=b.dataset.k;
+    document.getElementById('authOk').disabled=false;
+  });
+  document.getElementById('authX').addEventListener('click',function(){ closeM('authOvl'); });
+  document.getElementById('authOk').addEventListener('click',function(){
+    closeM('authOvl');
+    var f=AUTH.then; AUTH.then=null; if(f) f();
+  });
+})();
+function askAuth(done){
+  AUTH.pick=null; AUTH.then=done;
+  document.querySelectorAll('#authList .ag').forEach(function(x){ x.classList.remove('sel'); });
+  document.getElementById('authOk').disabled=true;
+  openM('authOvl');
+}
+
 /* ---- 주총 스위처 모달 ---- */
 var MEETINGS=[
   {nm:'카카오뱅크 제10기 정기주주총회',cur:true,attend:true,live:true},
@@ -850,9 +979,13 @@ var MEETINGS=[
   {nm:'LG전자 제24기 정기주주총회'}
 ];
 function renderMt(){
+  /* 머리글의 LIVE 는 지금 열려 있는 주총이 하나라도 있을 때만 */
+  var live=MEETINGS.some(function(m){return m.live;});
+  document.getElementById('mtLive').style.display = live ? '' : 'none';
   document.getElementById('mtList').innerHTML=MEETINGS.map(function(m,i){
-    var rt='<span class="rt">'+(m.attend?'<span class="att">출석</span>':'')+(m.live?'<span class="live2">LIVE</span>':'')+'</span>';
-    return '<div class="mm-item'+(m.cur?' sel':'')+'" data-i="'+i+'">'+m.nm+rt+'</div>';
+    var att=m.attend ? '<span class="att"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>출석</span>' : '';
+    return '<div class="mm-item'+(m.cur?' sel':'')+'" data-i="'+i+'">'
+      +'<span class="nm">'+m.nm+'</span>'+att+'</div>';
   }).join('');
   document.querySelectorAll('#mtList .mm-item').forEach(function(el){
     el.addEventListener('click',function(){
@@ -919,39 +1052,115 @@ var CLOCK={t:725,run:true};
 
 /* ---- AI 자막 ----
    영상이 흐른 만큼의 위치(0~1)로 대본을 찾는다. 시연 영상은 되풀이 재생되므로
-   절대 초가 아니라 비율로 두어야 길이가 달라져도 대본이 어긋나지 않는다. */
+   절대 초가 아니라 비율로 두어야 길이가 달라져도 대본이 어긋나지 않는다.
+   대본은 네 나라 말을 같은 자리에 나란히 담아 두고, 고른 말로 골라 낸다. */
+var LANGS=[['ko','한국어'],['en','English'],['ja','日本語'],['zh','中文']];
 var SCRIPT=[
-  [0.00,'지금부터 제10기 정기주주총회를 시작하겠습니다.','주주 여러분의 참석에 깊이 감사드립니다.'],
-  [0.07,'본 총회는 현장과 전자적 방법을 함께 사용하여 진행됩니다.','온라인으로 참석하신 주주께서도 동일하게 의결권을 행사하실 수 있습니다.'],
-  [0.15,'재적 주주 중 의결권 있는 주식의 과반수가 출석하여','본 총회는 적법하게 성립되었음을 선포합니다.'],
-  [0.23,'먼저 제1호 의안, 재무제표 승인의 건을 상정하겠습니다.','영업보고와 감사보고는 배포해 드린 자료로 갈음하겠습니다.'],
-  [0.31,'본 의안에 대한 표결을 시작하겠습니다.','화면의 찬성·반대·기권 가운데 하나를 선택해 주시기 바랍니다.'],
-  [0.39,'표결을 마감하겠습니다. 잠시 집계를 기다려 주시기 바랍니다.','집계가 끝나는 대로 결과를 선포하겠습니다.'],
-  [0.47,'제1호 의안은 출석 의결권의 과반수 찬성으로','원안대로 가결되었음을 선포합니다.'],
-  [0.55,'이어서 제2호 정관 일부 변경의 건을 상정하겠습니다.','먼저 제2-1호 집중투표제 배제 조항 삭제의 건입니다.'],
-  [0.63,'본 의안은 특별결의 사항으로','출석 의결권의 3분의 2 이상 찬성이 필요합니다.'],
-  [0.71,'질의를 원하시는 주주께서는 화면의 질의 작성을 눌러 주시기 바랍니다.','접수된 질의는 순서대로 의장께 전달됩니다.'],
-  [0.79,'주주님께서 주신 배당 정책 질의에 답변드리겠습니다.','당사는 안정적 배당과 성장 투자의 균형을 배당 정책의 원칙으로 하고 있습니다.'],
-  [0.87,'다음 의안의 표결을 준비하겠습니다.','잠시만 기다려 주시기 바랍니다.'],
-  [0.94,'오늘 상정된 의안의 처리가 모두 끝났습니다.','참석해 주신 주주 여러분께 다시 한번 감사드립니다.']
+  [0.00,{
+    ko:['지금부터 제10기 정기주주총회를 시작하겠습니다.','주주 여러분의 참석에 깊이 감사드립니다.'],
+    en:['We will now begin the 10th Annual General Meeting of Shareholders.','Thank you for joining us today.'],
+    ja:['ただ今より第10期定時株主総会を開会いたします。','株主の皆様のご出席に深く感謝申し上げます。'],
+    zh:['现在开始第10届定期股东大会。','衷心感谢各位股东的出席。']}],
+  [0.07,{
+    ko:['본 총회는 현장과 전자적 방법을 함께 사용하여 진행됩니다.','온라인으로 참석하신 주주께서도 동일하게 의결권을 행사하실 수 있습니다.'],
+    en:['This meeting is held on-site and by electronic means at the same time.','Shareholders attending online may exercise their voting rights in the same way.'],
+    ja:['本総会は会場と電子的方法を併用して進行いたします。','オンラインでご出席の株主様も同様に議決権を行使いただけます。'],
+    zh:['本次大会采用现场与电子方式同时进行。','在线出席的股东同样可以行使表决权。']}],
+  [0.15,{
+    ko:['재적 주주 중 의결권 있는 주식의 과반수가 출석하여','본 총회는 적법하게 성립되었음을 선포합니다.'],
+    en:['A majority of the voting shares are represented,','and this meeting is hereby declared duly constituted.'],
+    ja:['議決権のある株式の過半数の出席をもって、','本総会は適法に成立したことを宣言いたします。'],
+    zh:['有表决权股份的过半数已出席，','现宣布本次大会合法成立。']}],
+  [0.23,{
+    ko:['먼저 제1호 의안, 재무제표 승인의 건을 상정하겠습니다.','영업보고와 감사보고는 배포해 드린 자료로 갈음하겠습니다.'],
+    en:['We now move to Agenda Item 1, approval of the financial statements.','The business and audit reports are taken as read from the materials distributed.'],
+    ja:['まず第1号議案、財務諸表承認の件を上程いたします。','営業報告および監査報告は、お配りした資料に代えさせていただきます。'],
+    zh:['首先提请审议第1号议案，财务报表批准事项。','营业报告与审计报告以已发放的资料为准。']}],
+  [0.31,{
+    ko:['본 의안에 대한 표결을 시작하겠습니다.','화면의 찬성·반대·기권 가운데 하나를 선택해 주시기 바랍니다.'],
+    en:['Voting on this item is now open.','Please select For, Against or Abstain on your screen.'],
+    ja:['本議案の採決を開始いたします。','画面の賛成・反対・棄権のいずれかをお選びください。'],
+    zh:['现在开始对本议案进行表决。','请在屏幕上选择赞成、反对或弃权。']}],
+  [0.39,{
+    ko:['표결을 마감하겠습니다. 잠시 집계를 기다려 주시기 바랍니다.','집계가 끝나는 대로 결과를 선포하겠습니다.'],
+    en:['Voting is now closed. Please wait while the votes are counted.','The result will be declared as soon as counting is complete.'],
+    ja:['採決を締め切ります。しばらく集計をお待ちください。','集計が終わり次第、結果を宣言いたします。'],
+    zh:['表决现在结束，请稍候等待计票。','计票完成后将立即宣布结果。']}],
+  [0.47,{
+    ko:['제1호 의안은 출석 의결권의 과반수 찬성으로','원안대로 가결되었음을 선포합니다.'],
+    en:['Agenda Item 1 received the affirmative votes of a majority of those present,','and is hereby declared approved as proposed.'],
+    ja:['第1号議案は出席議決権の過半数の賛成により、','原案どおり可決されたことを宣言いたします。'],
+    zh:['第1号议案获得出席表决权过半数赞成，','现宣布按原案通过。']}],
+  [0.55,{
+    ko:['이어서 제2호 정관 일부 변경의 건을 상정하겠습니다.','먼저 제2-1호 집중투표제 배제 조항 삭제의 건입니다.'],
+    en:['We now move to Agenda Item 2, partial amendment of the Articles of Incorporation.','We begin with Item 2-1, deletion of the clause excluding cumulative voting.'],
+    ja:['続いて第2号、定款一部変更の件を上程いたします。','まず第2-1号、集中投票制排除条項の削除の件です。'],
+    zh:['接下来提请审议第2号议案，部分修改公司章程。','首先是第2-1号，删除排除累积投票制的条款。']}],
+  [0.63,{
+    ko:['본 의안은 특별결의 사항으로','출석 의결권의 3분의 2 이상 찬성이 필요합니다.'],
+    en:['This item is a special resolution,','requiring the approval of at least two-thirds of the voting rights present.'],
+    ja:['本議案は特別決議事項であり、','出席議決権の3分の2以上の賛成が必要です。'],
+    zh:['本议案属于特别决议事项，','需要出席表决权三分之二以上赞成。']}],
+  [0.71,{
+    ko:['질의를 원하시는 주주께서는 화면의 질의 작성을 눌러 주시기 바랍니다.','접수된 질의는 순서대로 의장께 전달됩니다.'],
+    en:['Shareholders wishing to ask a question may tap Submit a Question on screen.','Questions received are passed to the Chair in the order they arrive.'],
+    ja:['ご質問をご希望の株主様は、画面の質問作成をお押しください。','受け付けた質問は順に議長へお伝えいたします。'],
+    zh:['希望提问的股东请点击屏幕上的提交提问。','收到的提问将按顺序转交议长。']}],
+  [0.79,{
+    ko:['주주님께서 주신 배당 정책 질의에 답변드리겠습니다.','당사는 안정적 배당과 성장 투자의 균형을 배당 정책의 원칙으로 하고 있습니다.'],
+    en:['We will now answer the question received on our dividend policy.','Our policy is to balance a stable dividend with investment for growth.'],
+    ja:['株主様よりいただいた配当方針のご質問にお答えいたします。','当社は安定的な配当と成長投資の均衡を配当方針の原則としております。'],
+    zh:['现在回答股东提出的关于分红政策的提问。','本公司以稳定分红与成长投资的平衡作为分红政策原则。']}],
+  [0.87,{
+    ko:['다음 의안의 표결을 준비하겠습니다.','잠시만 기다려 주시기 바랍니다.'],
+    en:['We will now prepare the vote on the next agenda item.','Please wait a moment.'],
+    ja:['次の議案の採決を準備いたします。','少しお待ちください。'],
+    zh:['现在准备下一项议案的表决。','请稍等。']}],
+  [0.94,{
+    ko:['오늘 상정된 의안의 처리가 모두 끝났습니다.','참석해 주신 주주 여러분께 다시 한번 감사드립니다.'],
+    en:['All agenda items presented today have been dealt with.','Thank you once again to all shareholders for attending.'],
+    ja:['本日上程された議案の処理はすべて終了いたしました。','ご出席いただいた株主の皆様に、改めて御礼申し上げます。'],
+    zh:['今天提请审议的议案已全部处理完毕。','再次感谢各位出席的股东。']}]
 ];
-var CAP={on:true, hold:null};   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
+var CAPLBL={ko:['AI 자막 ON','AI 자막 OFF'],en:['AI Subtitles ON','AI Subtitles OFF'],
+  ja:['AI字幕 ON','AI字幕 OFF'],zh:['AI字幕 ON','AI字幕 OFF']};
+var CAP={on:true, hold:null, lang:'ko'};   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
 function capLines(){
   if(CAP.hold) return CAP.hold;
   var v=document.getElementById('vid');
-  /* 영상 길이를 못 읽는 환경에서는 경과 시계를 2분 주기로 대신 쓴다 */
+  /* 길이를 아직 모르면 경과 시간으로 대신 흘려 준다 */
   var pos=(v&&v.duration) ? (v.currentTime%v.duration)/v.duration : (CLOCK.t%120)/120;
   var cue=SCRIPT[0];
   SCRIPT.forEach(function(c){ if(pos>=c[0]) cue=c; });
-  return [cue[1], cue[2]];
+  var t=cue[1][CAP.lang]||cue[1].ko;
+  return [t[0], t[1]];
 }
 function paintCap(){
   var box=document.getElementById('cap'), sp=document.getElementById('capTxt').children;
   box.classList.toggle('off', !CAP.on);
-  document.getElementById('capBtn').textContent = CAP.on ? '✨ AI 자막 ON' : '✨ AI 자막 OFF';
+  document.getElementById('capBtn').textContent='✨ '+CAPLBL[CAP.lang][CAP.on?0:1];
   var l = CAP.on ? capLines() : ['', ''];
   sp[0].textContent=l[0]; sp[1].textContent=l[1]||'';
 }
+/* 언어 고르기 — 고른 말은 칩 글씨와 대본에 함께 반영된다 */
+(function(){
+  var wrap=document.getElementById('lSel'), pop=document.getElementById('lPop');
+  pop.innerHTML=LANGS.map(function(l){
+    return '<button class="lopt'+(l[0]==='ko'?' sel':'')+'" type="button" data-l="'+l[0]+'">'+l[1]
+      +'<svg class="ck" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></button>';
+  }).join('');
+  document.getElementById('lBtn').addEventListener('click',function(e){
+    e.stopPropagation(); wrap.classList.toggle('open');
+  });
+  pop.addEventListener('click',function(e){
+    var b=e.target.closest('.lopt'); if(!b) return;
+    CAP.lang=b.dataset.l;
+    pop.querySelectorAll('.lopt').forEach(function(x){ x.classList.toggle('sel', x===b); });
+    document.getElementById('lNow').textContent=b.textContent.trim();
+    wrap.classList.remove('open'); paintCap();
+  });
+  document.addEventListener('click',function(){ wrap.classList.remove('open'); });
+})();
 document.getElementById('capBtn').addEventListener('click',function(){ CAP.on=!CAP.on; paintCap(); });
 setInterval(paintCap, 500); paintCap();
 

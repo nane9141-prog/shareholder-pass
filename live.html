@@ -1428,15 +1428,25 @@ function applyLive(s){
   CURRENT=s.ag;
   LIVE.sec=(s.sec==null?null:+s.sec);
   var stage=isFinite(s.stage)?+s.stage:0;
-  /* 앞선 의안은 끝난 것으로, 뒤의 의안은 대기로 둔다 */
+  /* 현장 제어가 마감한 의안의 판정을 함께 보내면 그대로 따른다.
+     보내지 않는 예전 화면과 붙었을 때만 앞선 의안을 끝난 것으로 셈한다. */
+  var DONE=s.done||null, RMAP={'가결':'pass','부결':'fail','폐기':'disc','철회':'wd'};
+  function stVS(no){
+    var k=STAGE[stage]||'result';
+    return k==='result' ? {s:'result',r:resultOf(no),cur:true,mute:resultOf(no)==='disc'}
+                        : {s:k,cur:true};
+  }
   units.forEach(function(a,n){
+    var dr=DONE&&DONE[a.no];
+    if(dr){
+      VS[a.no]={s:'result',r:RMAP[dr]||'pass',mute:dr==='폐기'};
+      if(n===i) VS[a.no].cur=true;
+      return;
+    }
+    if(DONE){ VS[a.no]= (n===i) ? stVS(a.no) : {s:'wait'}; return; }
     if(n<i) VS[a.no]={s:'result',r:resultOf(a.no),mute:resultOf(a.no)==='disc'};
     else if(n>i) VS[a.no]={s:'wait'};
-    else{
-      var k=STAGE[stage]||'result';
-      VS[a.no]= k==='result' ? {s:'result',r:resultOf(a.no),cur:true,mute:resultOf(a.no)==='disc'}
-                             : {s:k,cur:true};
-    }
+    else VS[a.no]=stVS(a.no);
   });
   renderProg(); renderApl(); renderVote(); paintLeft();
 }

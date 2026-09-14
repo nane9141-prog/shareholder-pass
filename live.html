@@ -272,6 +272,7 @@
   .qitem .m .nm{font-size:16px;line-height:24px;font-weight:700;color:#151419}
   .qitem .m .pv{height:22px;padding:2px 6px;border:1px solid #EEF0F2;border-radius:6px;
     background:#fff;font-size:12px;line-height:16px;font-weight:500;color:#151419}
+  .qitem .m .pv.am{border-color:#B2D5FF;background:#EBF4FF;color:#0071F3;font-weight:700}
   .qitem .m .rt{display:flex;align-items:center;gap:12px}
   .qitem .m .ag{font-size:14px;line-height:21px;font-weight:700;color:#6B7078}
   .qitem .m .del{width:24px;height:24px;border:0;background:none;padding:0;
@@ -324,6 +325,27 @@
   .tabox .ta::placeholder{color:#A7AAB1}
   .tabox .cnt{padding:8px 16px;font-size:12px;line-height:16px;font-weight:500;color:#151419}
   .rules{font-size:14px;line-height:21px;color:#4C4F54;margin:0 0 16px}
+  /* 동의 체크 — 네모를 눌러도 글씨를 눌러도 켜진다 */
+  .chk{display:flex;align-items:flex-start;gap:4px;margin:0 0 2px;cursor:pointer}
+  .chk input{position:absolute;width:0;height:0;opacity:0}
+  .chk .bx{flex:none;width:18px;height:18px;margin-top:2px;border:1px solid #EEF0F2;border-radius:6px;
+    background:#fff;display:flex;align-items:center;justify-content:center}
+  .chk .bx svg{width:14px;height:14px;stroke:#CBCDD2;fill:none;stroke-width:2.4}
+  .chk input:checked+.bx{background:#151419;border-color:#151419}
+  .chk input:checked+.bx svg{stroke:#fff}
+  .chk .tx{font-size:14px;line-height:21px;font-weight:700;color:#151419}
+  /* 신청한 발언 */
+  .splist{display:flex;flex-direction:column;gap:12px}
+  .spitem{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #EEF0F2;border-radius:12px}
+  .spitem .m{display:flex;align-items:center;gap:8px}
+  .spitem .kd{height:22px;padding:2px 6px;border:1px solid #EEF0F2;border-radius:6px;
+    font-size:12px;line-height:16px;font-weight:700;color:#151419}
+  .spitem .kd.am{border-color:#B2D5FF;background:#EBF4FF;color:#0071F3}
+  .spitem .ag{font-size:14px;line-height:21px;font-weight:700;color:#6B7078}
+  .spitem .st3{margin-left:auto;display:flex;align-items:center;gap:4px;
+    font-size:12px;line-height:18px;font-weight:500;color:#A7AAB1}
+  .spitem .st3 i{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .spitem .tx3{font-size:16px;line-height:24px;color:#151419}
   .mact{display:flex;gap:12px}
   .mact button{flex:1;height:55px;border-radius:10px;font-family:inherit;
     font-size:18px;line-height:27px;font-weight:700;letter-spacing:inherit}
@@ -376,7 +398,25 @@
   .am-a{padding:12px 28px 32px}
   .am-a button{width:100%;height:48px;border:0;border-radius:8px;background:#151419;
     font-family:inherit;font-size:16px;line-height:24px;font-weight:700;letter-spacing:inherit;color:#fff}
-  .am-a button:disabled{background:#D7D9DF}  .mm-act .ok{flex:1;height:41px;border:0;background:#151419;color:#fff;border-radius:8px;font-weight:700}
+  .am-a button:disabled{background:#D7D9DF}
+  .am-a .ghost{background:#fff;border:1px solid #EEF0F2;color:#151419}
+  /* QR 본인확인 — PASS 앱으로 넘기는 두 번째 걸음 */
+  .amodal .am-qr{display:none}
+  .amodal.step2 .am-b{display:none}
+  .amodal.step2 .am-qr{display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px 28px 12px}
+  .amodal.step2 #authOk{display:none}
+  .am-qr .qrbox{width:200px;height:200px;padding:10px;background:#fff;
+    border:1px solid #EEF0F2;border-radius:12px}
+  .am-qr .qtx{text-align:center;display:flex;flex-direction:column;gap:4px}
+  .am-qr .qtx b{font-size:16px;line-height:24px;font-weight:700;color:#151419}
+  .am-qr .qtx span{font-size:12px;line-height:18px;color:#6B7078}
+  .am-qr .qtm{font-size:12px;line-height:18px;color:#6B7078}
+  .am-qr .qtm b{font-weight:700;color:#151419;font-variant-numeric:tabular-nums}
+  .am-qr .qwait{display:flex;align-items:center;gap:6px;font-size:12px;line-height:18px;
+    font-weight:700;color:#0071F3}
+  .am-qr .qwait i{width:12px;height:12px;border:2px solid #B2D5FF;border-top-color:#0071F3;
+    border-radius:50%;animation:qspin .8s linear infinite}
+  @keyframes qspin{to{transform:rotate(360deg)}}  .mm-act .ok{flex:1;height:41px;border:0;background:#151419;color:#fff;border-radius:8px;font-weight:700}
   @media(max-width:980px){.cols{grid-template-columns:1fr}.stat .g{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -485,7 +525,7 @@
       <div class="pane" data-p="speak">
         <div class="box">
           <div class="qhead"><span class="t">발언 신청</span><button class="qwrite" id="spReq">발언 신청</button></div>
-          <div class="empty">진행 중인 발언 신청이 없습니다.<br>발언을 원하시면 '발언 신청'을 눌러주세요.</div>
+          <div class="splist" id="spList"></div>
         </div>
       </div>
     </div>
@@ -509,6 +549,25 @@
   </div>
 </div>
 
+<!-- 발언 신청 모달 -->
+<div class="ovl" id="spOvl">
+  <div class="modal">
+    <h3>발언 신청 <span id="spCnt">(1/1)</span></h3>
+    <div class="fld"><label>유형</label>
+      <div class="seg" id="spKind"><button type="button" class="on" data-v="s">발언</button><button type="button" data-v="a">수정동의</button></div>
+    </div>
+    <div class="fld"><label>대상</label><select class="sel" id="spTarget"></select></div>
+    <div class="fld"><label id="spBodyLb">발언 내용</label>
+      <div class="tabox"><textarea class="ta" id="spBody" maxlength="100" placeholder="발언하실 내용을 요약해 작성해 주세요."></textarea>
+        <div class="cnt"><span id="spLen">0</span>/100</div></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="spAgree"><span class="bx"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <span class="tx" id="spAgreeTx">발언 내용의 실시간 송출에 동의합니다</span></label>
+    <div class="rules" id="spRules"></div>
+    <div class="mact"><button class="cancel" id="spCancel">취소</button><button class="ok" id="spSubmit" disabled>발언 신청하기</button></div>
+  </div>
+</div>
+
 <!-- 간편인증 모달 -->
 <div class="ovl" id="authOvl">
   <div class="amodal">
@@ -519,7 +578,17 @@
       <div class="lb">인증 기관을 선택해주세요</div>
       <div class="aggrid" id="authList"></div>
     </div>
-    <div class="am-a"><button id="authOk" type="button" disabled>인증</button></div>
+    <div class="am-qr">
+      <div class="qrbox"><canvas id="qrCv" width="180" height="180" style="width:180px;height:180px"></canvas></div>
+      <div class="qtx"><b>PASS 앱으로 QR코드를 스캔해 주세요</b>
+        <span>휴대폰에서 PASS 앱을 실행한 뒤 QR 스캔으로 본인확인을 진행합니다.</span></div>
+      <div class="qtm">남은 시간 <b id="qrLeft">03:00</b></div>
+      <div class="qwait"><i></i>인증 대기 중</div>
+    </div>
+    <div class="am-a">
+      <button id="authOk" type="button" disabled>인증</button>
+      <button id="authBack" type="button" class="ghost" style="display:none">취소</button>
+    </div>
   </div>
 </div>
 
@@ -527,15 +596,20 @@
 <div class="ovl" id="qOvl">
   <div class="modal">
     <h3>질의 작성 <span id="qCnt">(1/3)</span></h3>
-    <div class="fld"><label>관련 의안</label>
-      <div class="seg" id="qScope"><button type="button" class="on" data-v="all">총회 진행 전반</button><button type="button" data-v="ag">의안 선택</button></div>
+    <div class="fld"><label>유형</label>
+      <div class="seg" id="qKind"><button type="button" class="on" data-v="q">질의</button><button type="button" data-v="a">수정동의</button></div>
     </div>
-    <div class="fld" id="qAgFld" style="display:none"><label>의안</label><select class="sel" id="qTarget"></select></div>
-    <div class="fld"><label>질의 내용</label>
+    <div class="fld"><label>대상</label><select class="sel" id="qTarget"></select></div>
+    <div class="fld" id="qAmFld" style="display:none"><label>수정 유형</label>
+      <select class="sel" id="qAmType">
+        <option>금액 조정</option><option>조건 변경</option><option>내용 추가</option><option>의제 변경</option>
+      </select>
+    </div>
+    <div class="fld"><label id="qBodyLb">질의 내용</label>
       <div class="tabox"><textarea class="ta" id="qBody" maxlength="100" placeholder="해당 안건 또는 진행 절차에 대한 질의 내용을 구체적으로 작성해 주세요."></textarea>
         <div class="cnt"><span id="qLen">0</span>/100</div></div>
     </div>
-    <div class="rules">질의는 시간당 최대 3회까지 가능하며, 제출 후 90초 뒤에 재질의할 수 있습니다. 접수된 질의는 운영진 검토 후 순차적으로 의장에게 전달됩니다. 비방, 욕설 등 부적절한 표현이 포함된 질의는 접수가 제한될 수 있습니다. 답변은 주총 현장에서 음성 또는 화면 텍스트로 안내됩니다.</div>
+    <div class="rules" id="qRules"></div>
     <div class="mact"><button class="cancel" id="qCancel">취소</button><button class="ok" id="qSubmit" disabled>등록하기</button></div>
   </div>
 </div>
@@ -854,14 +928,37 @@ var QMAXL=3;
     return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
   }).join('');
 })();
-var QSCOPE='all';
-document.querySelectorAll('#qScope button').forEach(function(b){
+/* 질의와 수정동의는 채워야 하는 칸도, 안내 문구도, 제출 버튼 이름도 다르다 */
+var QKIND='q';
+var QFORM={
+  q:{ label:'질의 내용', submit:'질의 제출하기', amend:false,
+      ph:'해당 안건 또는 진행 절차에 대한 질의 내용을 구체적으로 작성해 주세요.',
+      rules:['질의는 시간당 최대 3회까지 가능하며, 제출 후 90초 뒤에 재질의할 수 있습니다.',
+             '접수된 질의는 운영진 검토 후 순차적으로 의장에게 전달됩니다.',
+             '비방, 욕설 등 부적절한 표현이 포함된 질의는 접수가 제한될 수 있습니다.',
+             '답변은 주총 현장에서 음성 또는 화면 텍스트로 안내됩니다.'] },
+  a:{ label:'내용', submit:'수정동의 제출하기', amend:true,
+      ph:'원안을 어떻게 고칠지 구체적으로 작성해 주세요. (예: 배당금을 주당 750원에서 800원으로 조정)',
+      rules:['수정동의는 해당 의안의 표결이 개시되기 전까지 제출할 수 있습니다.',
+             '접수된 수정동의는 운영진 검토 후 의장에게 전달되며, 상정 여부는 의장이 판단합니다.',
+             '상정된 수정동의는 원안보다 먼저 표결하며, 가결되면 원안은 폐기됩니다.',
+             '상정 결과는 주총 현장에서 음성 또는 화면 텍스트로 안내됩니다.'] }
+};
+function paintQForm(){
+  var f=QFORM[QKIND];
+  document.getElementById('qAmFld').style.display = f.amend ? '' : 'none';
+  document.getElementById('qBodyLb').textContent = f.label;
+  document.getElementById('qBody').placeholder = f.ph;
+  document.getElementById('qSubmit').textContent = f.submit;
+  document.getElementById('qRules').innerHTML = f.rules.join('<br>');
+}
+document.querySelectorAll('#qKind button').forEach(function(b){
   b.addEventListener('click',function(){
-    document.querySelectorAll('#qScope button').forEach(function(x){x.classList.toggle('on',x===b);});
-    QSCOPE=b.dataset.v;
-    document.getElementById('qAgFld').style.display = QSCOPE==='ag' ? '' : 'none';
+    document.querySelectorAll('#qKind button').forEach(function(x){x.classList.toggle('on',x===b);});
+    QKIND=b.dataset.v; paintQForm();
   });
 });
+paintQForm();
 (function(){
   var ta=document.getElementById('qBody');
   ta.addEventListener('input',function(){
@@ -880,7 +977,9 @@ document.getElementById('qCancel').addEventListener('click',function(){closeM('q
 document.getElementById('qSubmit').addEventListener('click',function(){
   var ta=document.getElementById('qBody'), sel=document.getElementById('qTarget');
   QUES.unshift({name:PASSNAME, mine:true, time:nowHm(), date:todayStr()+' '+nowHm(),
-    ag:(QSCOPE==='ag'?sel.value:'총회 진행 전반'), q:ta.value.trim(), priv:false});
+    ag:sel.value, q:ta.value.trim(), priv:false,
+    kind:QKIND==='a'?'수정동의':null,
+    amtype:QKIND==='a'?document.getElementById('qAmType').value:null});
   ta.value=''; document.getElementById('qLen').textContent='0';
   document.getElementById('qSubmit').disabled=true;
   closeM('qOvl'); renderQ();
@@ -912,6 +1011,7 @@ function renderQ(){
     /* 내가 쓴 글은 날짜까지 적고, 답변 전이면 지울 수 있게 둔다 */
     var when = x.mine ? (x.date||x.time) : x.time;
     var pv = (x.mine && x.priv) ? '<span class="pv">비공개</span>' : '';
+    if(x.kind) pv += '<span class="pv am">'+x.kind+(x.amtype?' · '+x.amtype:'')+'</span>';
     var del = (x.mine && !x.ans) ? '<button class="del" type="button" data-i="'+i+'" title="삭제">'
       +'<svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>' : '';
     return '<div class="qitem"><div class="m"><span class="who">'+qAvatar()
@@ -933,6 +1033,73 @@ document.querySelectorAll('.qfilter .qf').forEach(function(b){
   });
 });
 renderQ();
+
+/* ---- 발언 신청 ----
+   발언과 수정동의는 같은 창에서 고른다. 송출에 동의하고 내용이 있어야 신청할 수 있다. */
+var SPKIND='s';
+var SPFORM={
+  s:{ label:'발언 내용', submit:'발언 신청하기', agree:'발언 내용의 실시간 송출에 동의합니다',
+      ph:'발언하실 내용을 요약해 작성해 주세요.',
+      rules:'회의당 1회·최대 3분, 의장 지명 후 마이크가 활성화됩니다. 발언은 실시간 송출·기록됩니다. '
+            +'부적절한 발언 시 마이크가 차단될 수 있으며 법적 책임은 본인에게 있습니다.' },
+  a:{ label:'수정동의 내용', submit:'수정동의 신청하기', agree:'수정동의 내용의 실시간 송출에 동의합니다',
+      ph:'원안을 어떻게 고칠지 구체적으로 작성해 주세요.',
+      rules:'수정동의는 해당 의안의 표결이 개시되기 전까지 신청할 수 있습니다. 의장 지명 후 마이크가 활성화되며 '
+            +'제안 취지를 직접 설명하게 됩니다. 상정 여부는 의장이 판단하고, 상정되면 원안보다 먼저 표결합니다.' }
+};
+var SPQ=[];
+function paintSpForm(){
+  var f=SPFORM[SPKIND];
+  document.getElementById('spBodyLb').textContent=f.label;
+  document.getElementById('spBody').placeholder=f.ph;
+  document.getElementById('spAgreeTx').textContent=f.agree;
+  document.getElementById('spRules').textContent=f.rules;
+  document.getElementById('spSubmit').textContent=f.submit;
+}
+function spCheck(){
+  var ok=!!document.getElementById('spBody').value.trim() && document.getElementById('spAgree').checked;
+  document.getElementById('spSubmit').disabled=!ok;
+}
+function renderSp(){
+  var host=document.getElementById('spList');
+  if(!SPQ.length){
+    host.innerHTML='<div class="empty">진행 중인 발언 신청이 없습니다.<br>발언을 원하시면 \'발언 신청\'을 눌러주세요.</div>';
+    return;
+  }
+  host.innerHTML=SPQ.map(function(x){
+    return '<div class="spitem"><div class="m">'
+      +'<span class="kd'+(x.kind==='수정동의'?' am':'')+'">'+x.kind+'</span>'
+      +'<span class="ag">'+chip(x.ag)+'</span>'
+      +'<span class="st3"><i></i>'+x.st+'</span></div>'
+      +'<div class="tx3">'+x.tx+'</div></div>';
+  }).join('');
+}
+(function(){
+  document.getElementById('spTarget').innerHTML=units.map(function(a){
+    return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
+  }).join('');
+  document.querySelectorAll('#spKind button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('#spKind button').forEach(function(x){x.classList.toggle('on',x===b);});
+      SPKIND=b.dataset.v; paintSpForm();
+    });
+  });
+  document.getElementById('spBody').addEventListener('input',function(){
+    document.getElementById('spLen').textContent=this.value.length; spCheck();
+  });
+  document.getElementById('spAgree').addEventListener('change',spCheck);
+  document.getElementById('spReq').addEventListener('click',function(){ openM('spOvl'); });
+  document.getElementById('spCancel').addEventListener('click',function(){ closeM('spOvl'); });
+  document.getElementById('spSubmit').addEventListener('click',function(){
+    var ta=document.getElementById('spBody');
+    SPQ.unshift({kind:SPKIND==='a'?'수정동의':'발언', ag:document.getElementById('spTarget').value,
+      tx:ta.value.trim(), st:'대기'});
+    ta.value=''; document.getElementById('spLen').textContent='0';
+    document.getElementById('spAgree').checked=false; spCheck();
+    closeM('spOvl'); renderSp();
+  });
+  paintSpForm(); renderSp();
+})();
 
 /* ---- 간편인증 ----
    시연용이라 실제 인증은 하지 않는다. 기관을 고르고 인증을 누르면 곧바로 다음 단계로 넘어간다. */
@@ -958,13 +1125,59 @@ var AUTH={pick:null, then:null};
     AUTH.pick=b.dataset.k;
     document.getElementById('authOk').disabled=false;
   });
-  document.getElementById('authX').addEventListener('click',function(){ closeM('authOvl'); });
+  document.getElementById('authX').addEventListener('click',authClose);
+  document.getElementById('authBack').addEventListener('click',authClose);
   document.getElementById('authOk').addEventListener('click',function(){
-    closeM('authOvl');
-    var f=AUTH.then; AUTH.then=null; if(f) f();
+    /* PASS 는 앱으로 넘기는 화면을 한 번 더 거친다 */
+    if(AUTH.pick==='pass'){ qrStep(); return; }
+    authDone();
   });
 })();
+/* QR — 실제 인증이 아니므로 모양만 그린다. 같은 자리는 늘 같은 무늬가 되도록 씨앗을 둔다 */
+function drawQR(seed){
+  var cv=document.getElementById('qrCv'); if(!cv||!cv.getContext) return;
+  var g=cv.getContext('2d'), N=25, u=180/N, r=seed;
+  function rnd(){ r=(r*1103515245+12345)&0x7fffffff; return r/0x7fffffff; }
+  g.fillStyle='#fff'; g.fillRect(0,0,180,180); g.fillStyle='#151419';
+  function finder(x,y){
+    g.fillRect(x*u,y*u,7*u,7*u);
+    g.fillStyle='#fff'; g.fillRect((x+1)*u,(y+1)*u,5*u,5*u);
+    g.fillStyle='#151419'; g.fillRect((x+2)*u,(y+2)*u,3*u,3*u);
+  }
+  for(var y=0;y<N;y++) for(var x=0;x<N;x++){
+    var inF=(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);
+    if(!inF && rnd()>0.52) g.fillRect(x*u,y*u,u,u);
+  }
+  finder(0,0); finder(N-7,0); finder(0,N-7);
+}
+var QRT=null;
+function qrStep(){
+  document.querySelector('.amodal').classList.add('step2');
+  document.getElementById('authBack').style.display='';
+  drawQR(Date.now()%100000);
+  var left=180;
+  function paint(){
+    var m=Math.floor(left/60), s2=left%60;
+    document.getElementById('qrLeft').textContent=(m<10?'0':'')+m+':'+(s2<10?'0':'')+s2;
+  }
+  paint();
+  clearInterval(QRT);
+  QRT=setInterval(function(){ left--; paint(); if(left<=0) authClose(); },1000);
+  /* 시연용 — 앱에서 승인한 것으로 보고 잠시 뒤 넘어간다 */
+  setTimeout(function(){ if(document.getElementById('authOvl').classList.contains('on')) authDone(); },6000);
+}
+function authReset(){
+  clearInterval(QRT); QRT=null;
+  document.querySelector('.amodal').classList.remove('step2');
+  document.getElementById('authBack').style.display='none';
+}
+function authClose(){ authReset(); AUTH.then=null; closeM('authOvl'); }
+function authDone(){
+  authReset(); closeM('authOvl');
+  var f=AUTH.then; AUTH.then=null; if(f) f();
+}
 function askAuth(done){
+  authReset();
   AUTH.pick=null; AUTH.then=done;
   document.querySelectorAll('#authList .ag').forEach(function(x){ x.classList.remove('sel'); });
   document.getElementById('authOk').disabled=true;
@@ -1056,71 +1269,71 @@ var CLOCK={t:725,run:true};
    대본은 네 나라 말을 같은 자리에 나란히 담아 두고, 고른 말로 골라 낸다. */
 var LANGS=[['ko','한국어'],['en','English'],['ja','日本語'],['zh','中文']];
 var SCRIPT=[
-  [0.00,{
-    ko:['지금부터 제10기 정기주주총회를 시작하겠습니다.','주주 여러분의 참석에 깊이 감사드립니다.'],
-    en:['We will now begin the 10th Annual General Meeting of Shareholders.','Thank you for joining us today.'],
-    ja:['ただ今より第10期定時株主総会を開会いたします。','株主の皆様のご出席に深く感謝申し上げます。'],
-    zh:['现在开始第10届定期股东大会。','衷心感谢各位股东的出席。']}],
-  [0.07,{
-    ko:['본 총회는 현장과 전자적 방법을 함께 사용하여 진행됩니다.','온라인으로 참석하신 주주께서도 동일하게 의결권을 행사하실 수 있습니다.'],
-    en:['This meeting is held on-site and by electronic means at the same time.','Shareholders attending online may exercise their voting rights in the same way.'],
-    ja:['本総会は会場と電子的方法を併用して進行いたします。','オンラインでご出席の株主様も同様に議決権を行使いただけます。'],
-    zh:['本次大会采用现场与电子方式同时进行。','在线出席的股东同样可以行使表决权。']}],
-  [0.15,{
-    ko:['재적 주주 중 의결권 있는 주식의 과반수가 출석하여','본 총회는 적법하게 성립되었음을 선포합니다.'],
-    en:['A majority of the voting shares are represented,','and this meeting is hereby declared duly constituted.'],
-    ja:['議決権のある株式の過半数の出席をもって、','本総会は適法に成立したことを宣言いたします。'],
-    zh:['有表决权股份的过半数已出席，','现宣布本次大会合法成立。']}],
-  [0.23,{
-    ko:['먼저 제1호 의안, 재무제표 승인의 건을 상정하겠습니다.','영업보고와 감사보고는 배포해 드린 자료로 갈음하겠습니다.'],
-    en:['We now move to Agenda Item 1, approval of the financial statements.','The business and audit reports are taken as read from the materials distributed.'],
-    ja:['まず第1号議案、財務諸表承認の件を上程いたします。','営業報告および監査報告は、お配りした資料に代えさせていただきます。'],
-    zh:['首先提请审议第1号议案，财务报表批准事项。','营业报告与审计报告以已发放的资料为准。']}],
-  [0.31,{
-    ko:['본 의안에 대한 표결을 시작하겠습니다.','화면의 찬성·반대·기권 가운데 하나를 선택해 주시기 바랍니다.'],
-    en:['Voting on this item is now open.','Please select For, Against or Abstain on your screen.'],
-    ja:['本議案の採決を開始いたします。','画面の賛成・反対・棄権のいずれかをお選びください。'],
-    zh:['现在开始对本议案进行表决。','请在屏幕上选择赞成、反对或弃权。']}],
-  [0.39,{
-    ko:['표결을 마감하겠습니다. 잠시 집계를 기다려 주시기 바랍니다.','집계가 끝나는 대로 결과를 선포하겠습니다.'],
-    en:['Voting is now closed. Please wait while the votes are counted.','The result will be declared as soon as counting is complete.'],
-    ja:['採決を締め切ります。しばらく集計をお待ちください。','集計が終わり次第、結果を宣言いたします。'],
-    zh:['表决现在结束，请稍候等待计票。','计票完成后将立即宣布结果。']}],
-  [0.47,{
-    ko:['제1호 의안은 출석 의결권의 과반수 찬성으로','원안대로 가결되었음을 선포합니다.'],
-    en:['Agenda Item 1 received the affirmative votes of a majority of those present,','and is hereby declared approved as proposed.'],
-    ja:['第1号議案は出席議決権の過半数の賛成により、','原案どおり可決されたことを宣言いたします。'],
-    zh:['第1号议案获得出席表决权过半数赞成，','现宣布按原案通过。']}],
-  [0.55,{
-    ko:['이어서 제2호 정관 일부 변경의 건을 상정하겠습니다.','먼저 제2-1호 집중투표제 배제 조항 삭제의 건입니다.'],
-    en:['We now move to Agenda Item 2, partial amendment of the Articles of Incorporation.','We begin with Item 2-1, deletion of the clause excluding cumulative voting.'],
-    ja:['続いて第2号、定款一部変更の件を上程いたします。','まず第2-1号、集中投票制排除条項の削除の件です。'],
-    zh:['接下来提请审议第2号议案，部分修改公司章程。','首先是第2-1号，删除排除累积投票制的条款。']}],
-  [0.63,{
-    ko:['본 의안은 특별결의 사항으로','출석 의결권의 3분의 2 이상 찬성이 필요합니다.'],
-    en:['This item is a special resolution,','requiring the approval of at least two-thirds of the voting rights present.'],
-    ja:['本議案は特別決議事項であり、','出席議決権の3分の2以上の賛成が必要です。'],
-    zh:['本议案属于特别决议事项，','需要出席表决权三分之二以上赞成。']}],
-  [0.71,{
-    ko:['질의를 원하시는 주주께서는 화면의 질의 작성을 눌러 주시기 바랍니다.','접수된 질의는 순서대로 의장께 전달됩니다.'],
-    en:['Shareholders wishing to ask a question may tap Submit a Question on screen.','Questions received are passed to the Chair in the order they arrive.'],
-    ja:['ご質問をご希望の株主様は、画面の質問作成をお押しください。','受け付けた質問は順に議長へお伝えいたします。'],
-    zh:['希望提问的股东请点击屏幕上的提交提问。','收到的提问将按顺序转交议长。']}],
-  [0.79,{
-    ko:['주주님께서 주신 배당 정책 질의에 답변드리겠습니다.','당사는 안정적 배당과 성장 투자의 균형을 배당 정책의 원칙으로 하고 있습니다.'],
-    en:['We will now answer the question received on our dividend policy.','Our policy is to balance a stable dividend with investment for growth.'],
-    ja:['株主様よりいただいた配当方針のご質問にお答えいたします。','当社は安定的な配当と成長投資の均衡を配当方針の原則としております。'],
-    zh:['现在回答股东提出的关于分红政策的提问。','本公司以稳定分红与成长投资的平衡作为分红政策原则。']}],
-  [0.87,{
-    ko:['다음 의안의 표결을 준비하겠습니다.','잠시만 기다려 주시기 바랍니다.'],
-    en:['We will now prepare the vote on the next agenda item.','Please wait a moment.'],
-    ja:['次の議案の採決を準備いたします。','少しお待ちください。'],
-    zh:['现在准备下一项议案的表决。','请稍等。']}],
-  [0.94,{
-    ko:['오늘 상정된 의안의 처리가 모두 끝났습니다.','참석해 주신 주주 여러분께 다시 한번 감사드립니다.'],
-    en:['All agenda items presented today have been dealt with.','Thank you once again to all shareholders for attending.'],
-    ja:['本日上程された議案の処理はすべて終了いたしました。','ご出席いただいた株主の皆様に、改めて御礼申し上げます。'],
-    zh:['今天提请审议的议案已全部处理完毕。','再次感谢各位出席的股东。']}]
+  [3.8,{
+    ko:['이제 주주총회가 시작될 예정이오니','주주 여러분께서는 모두 자리에 앉아 주시기 바랍니다.'],
+    en:['The general meeting is about to begin.','All shareholders are kindly asked to take your seats.'],
+    ja:['まもなく株主総会を開会いたします。','株主の皆様は席にお着きください。'],
+    zh:['股东大会即将开始。','请各位股东回到座位就座。']}],
+  [9.8,{
+    ko:['안녕하십니까. 오늘 2026년 정기 주주총회의 사회를 맡은','경영전략그룹 강지훈입니다.'],
+    en:['Good morning. I am Kang Ji-hoon of the Management Strategy Group,','host of the 2026 Annual General Meeting.'],
+    ja:['おはようございます。2026年定時株主総会の司会を務めます','経営戦略グループのカン・ジフンです。'],
+    zh:['大家好。我是本次 2026 年定期股东大会的主持人，','经营战略组 姜志勋。']}],
+  [16.8,{
+    ko:['오늘 주주총회가 원활하게 진행되도록','적극적인 협조를 부탁드리며'],
+    en:['We ask for your active cooperation','so that today\'s meeting may proceed smoothly.'],
+    ja:['本日の株主総会が円滑に進行するよう','皆様のご協力をお願い申し上げます。'],
+    zh:['为使今天的股东大会顺利进行，','恳请各位积极配合。']}],
+  [22.5,{
+    ko:['아울러 정숙한 회의 진행을 위해 갖고 계신 휴대폰을','무음이나 진동으로 설정해 주시기를 부탁드립니다.'],
+    en:['Please also set your mobile phone to silent or vibrate','so that the meeting is not disturbed.'],
+    ja:['また、静粛な会議進行のため、お手持ちの携帯電話は','無音またはマナーモードに設定してください。'],
+    zh:['同时，为保持会场安静，请将随身携带的手机','调至静音或震动模式。']}],
+  [29.8,{
+    ko:['주주총회를 시작하기 전에 원활한 회의 진행을 위해','주주님들께 안내 말씀 드립니다.'],
+    en:['Before we begin, a few announcements','to help the meeting run smoothly.'],
+    ja:['株主総会を始める前に、円滑な会議進行のため','株主の皆様にご案内申し上げます。'],
+    zh:['在大会开始前，为使会议顺利进行，','向各位股东作如下说明。']}],
+  [36.8,{
+    ko:['발언을 하시고자 하는 경우에는 반드시 의장의 의안 설명이 끝난 후에','의장에게서 발언권을 득하여 말씀해 주시고'],
+    en:['If you wish to speak, please wait until the Chair has finished explaining the item,','then obtain the floor from the Chair before speaking.'],
+    ja:['ご発言をご希望の際は、議長の議案説明が終わった後に','議長から発言の許可を得てお話しください。'],
+    zh:['如需发言，请在议长对议案说明结束后，','获得议长许可后再行发言。']}],
+  [45.8,{
+    ko:['효율적인 총회의 운영을 위하여 발언권은 한 분당 한 번 부여되며,','발언당 2분 이내로 지켜 주시기 바랍니다.'],
+    en:['For the efficient conduct of the meeting, each shareholder may speak once,','and each remark is limited to two minutes.'],
+    ja:['効率的な総会運営のため、発言は一人一回とし、','一回のご発言は2分以内でお願いいたします。'],
+    zh:['为提高大会效率，每位股东限发言一次，','每次发言请控制在两分钟以内。']}],
+  [54.8,{
+    ko:['발언 시에는 입장 전 배부해 드린 주주번호를 밝힌 후','발언해 주시기 바라며'],
+    en:['When speaking, please state the shareholder number given to you on entry','before you begin.'],
+    ja:['ご発言の際は、入場時にお渡しした株主番号を','述べてからお話しください。'],
+    zh:['发言时，请先报出入场时所领取的股东编号，','然后再进行发言。']}],
+  [60.7,{
+    ko:['의안과 관련 있는 내용에 한하여','말씀해 주시기를 부탁드립니다.'],
+    en:['Please confine your remarks','to matters related to the agenda items.'],
+    ja:['ご発言は議案に関係する内容に','限っていただきますようお願いいたします。'],
+    zh:['请将发言内容限于与议案相关的事项，','恳请各位配合。']}],
+  [65.8,{
+    ko:['의안과 직접 관련이 없는 내용은 주주총회가 끝난 후에 문의하여 주시면','상세히 설명해 드리도록 하겠습니다.'],
+    en:['Matters not directly related to the agenda may be raised after the meeting,','and we will explain them to you in detail.'],
+    ja:['議案と直接関係のない内容は、株主総会の終了後にお問い合わせいただければ','詳しくご説明いたします。'],
+    zh:['与议案没有直接关系的问题，可在大会结束后咨询，','我们将为您详细说明。']}],
+  [74.4,{
+    ko:['그러면 지금부터 카카오뱅크의','2026년 정기 주주총회를 시작하겠습니다.'],
+    en:['We will now begin KakaoBank\'s','2026 Annual General Meeting of Shareholders.'],
+    ja:['それでは、ただ今よりカカオバンクの','2026年定時株主総会を開会いたします。'],
+    zh:['那么，现在开始 KakaoBank','2026 年定期股东大会。']}],
+  [80.5,{
+    ko:['정관 제27조에 따라 윤호영 대표이사께서','이번 정기 주주총회 의장을 맡아 주시겠습니다.'],
+    en:['Under Article 27 of the Articles of Incorporation, CEO Yun Ho-young','will chair this Annual General Meeting.'],
+    ja:['定款第27条に基づき、ユン・ホヨン代表取締役が','本定時株主総会の議長を務めます。'],
+    zh:['根据公司章程第 27 条，由尹镐英代表理事','担任本次定期股东大会议长。']}],
+  [87.9,{
+    ko:['의장께서는 의장석으로 등단해 주시겠습니다.',''],
+    en:['The Chair will now take the chair.',''],
+    ja:['議長は議長席にご登壇ください。',''],
+    zh:['请议长登上议长席。','']}]
 ];
 var CAPLBL={ko:['AI 자막 ON','AI 자막 OFF'],en:['AI Subtitles ON','AI Subtitles OFF'],
   ja:['AI字幕 ON','AI字幕 OFF'],zh:['AI字幕 ON','AI字幕 OFF']};
@@ -1128,10 +1341,11 @@ var CAP={on:true, hold:null, lang:'ko'};   /* hold — 현장 제어가 내려�
 function capLines(){
   if(CAP.hold) return CAP.hold;
   var v=document.getElementById('vid');
-  /* 길이를 아직 모르면 경과 시간으로 대신 흘려 준다 */
-  var pos=(v&&v.duration) ? (v.currentTime%v.duration)/v.duration : (CLOCK.t%120)/120;
+  /* 대본은 받아 적은 초에 맞춰 두었다. 길이를 아직 모르면 경과 시간으로 대신 흘려 준다 */
+  var dur=(v&&v.duration)||90;
+  var at=(v&&v.duration) ? (v.currentTime%dur) : (CLOCK.t%dur);
   var cue=SCRIPT[0];
-  SCRIPT.forEach(function(c){ if(pos>=c[0]) cue=c; });
+  SCRIPT.forEach(function(c){ if(at>=c[0]) cue=c; });
   var t=cue[1][CAP.lang]||cue[1].ko;
   return [t[0], t[1]];
 }

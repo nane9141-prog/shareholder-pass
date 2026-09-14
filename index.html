@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주주PASS 전자주주총회</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --fg:#0a0a0a; --muted:#737373; --border:#e8e8ea; --line:#f0f0f2; --bg:#f6f7f9; --card:#fff;
+    --brand:#2563eb; --brand-ink:#1d4ed8; --brand-50:#eff5ff;
+    --r:14px; --sh:0 1px 2px rgba(16,24,40,.04); --shmd:0 8px 30px rgba(16,24,40,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:'Pretendard',system-ui,sans-serif;
+    letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* header */
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+  .hd{height:64px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:baseline;gap:8px}
+  .brand img{height:20px;width:auto;display:block;align-self:center}
+  .brand small{font-weight:600;font-size:13px;color:var(--muted);letter-spacing:0}
+  .nav{display:flex;align-items:center;gap:22px;font-size:14px;color:#3f3f46}
+  .nav .sep{width:1px;height:14px;background:var(--border)}
+  .nav .login{font-weight:600;color:var(--fg)}
+
+  /* hero */
+  .hero{margin-top:20px;height:340px;border-radius:18px;position:relative;overflow:hidden;color:#fff;
+    background:#3b45c8 url("assets/main-banner.jpg") center/cover no-repeat}
+  .hero::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(100deg,rgba(16,22,72,.72) 0%,rgba(16,22,72,.42) 42%,rgba(16,22,72,0) 78%)}
+  .hero .in{position:relative;z-index:2;padding:56px}
+  .hero .ey{font-size:14px;font-weight:600;opacity:.85}
+  .hero h1{margin:10px 0 12px;font-size:40px;font-weight:800;line-height:1.15}
+  .hero p{margin:0;font-size:16px;opacity:.9}
+  .dots{position:absolute;left:56px;bottom:26px;z-index:2;display:flex;gap:7px}
+  .dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}
+  .dots i.on{width:22px;border-radius:9px;background:#fff}
+
+  /* login strip */
+  .loginrow{margin:26px 2px 0}
+  .loginrow .t{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:800}
+  .loginrow .t svg{width:20px;height:20px;stroke:var(--fg);fill:none;stroke-width:2}
+  .loginrow p{margin:8px 0 0;color:var(--muted);font-size:15px}
+
+  /* find */
+  .find{margin:34px 0 8px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .find h2{margin:0;font-size:24px;font-weight:800}
+  .search{display:flex;align-items:center;gap:10px;height:52px;width:380px;max-width:100%;
+    padding:0 18px;background:#fff;border:1px solid var(--border);border-radius:26px;box-shadow:var(--sh)}
+  .search svg{width:18px;height:18px;stroke:#a1a1aa;fill:none;stroke-width:2}
+  .search input{border:0;outline:0;font-family:inherit;font-size:15px;flex:1;background:none;color:var(--fg)}
+  .search input::placeholder{color:#a1a1aa}
+
+  /* company grid */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 28px;margin:20px 0 8px}
+  .co{display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;cursor:pointer;
+    transition:background .12s,box-shadow .12s}
+  .co:hover{background:#fff;box-shadow:var(--sh)}
+  .co .logo{width:52px;height:52px;border-radius:14px;flex:none;object-fit:contain;background:#fff;box-shadow:var(--sh)}
+  .co .info{min-width:0}
+  .co .nm{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700}
+  .co .sub{margin-top:3px;font-size:13px;color:var(--muted)}
+  .co.live{background:#fff;box-shadow:var(--shmd);outline:1.5px solid var(--brand-50)}
+
+  /* status chips */
+  .chip{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:9999px;font-size:11px;font-weight:700;white-space:nowrap}
+  .chip.dday{background:#fff1f2;color:#e11d48}
+  .chip.dn{background:#eff6ff;color:#2563eb}
+  .chip.live{background:#e11d48;color:#fff;gap:5px}
+  .chip.live i{width:5px;height:5px;border-radius:50%;background:#fff}
+  .chip.end{background:#f4f4f5;color:#8a8a8f}
+
+  .pager{display:flex;justify-content:center;gap:7px;margin:20px 0 40px}
+  .pager i{width:7px;height:7px;border-radius:50%;background:#d4d4d8}.pager i.on{width:20px;border-radius:9px;background:#9a9aa0}
+
+  /* footer */
+  footer{border-top:1px solid var(--border);background:#fff;margin-top:20px}
+  .ft{padding:26px 0 34px;color:var(--muted);font-size:13px}
+  .ft .links{display:flex;gap:14px;margin-bottom:14px}
+  .ft .links b{color:#3f3f46}
+  .ft .co2{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+  .ft .kudos{font-weight:800;color:#c7c7cc;letter-spacing:.08em}
+  @media(max-width:920px){.grid{grid-template-columns:1fr}.hero h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hd">
+    <a class="brand" href="index.html"><img src="assets/logo-pass.svg" alt="주주PASS" width="73" height="20"><small>전자주주총회</small></a>
+    <nav class="nav"><span>이용안내</span><span>고객센터</span><span class="sep"></span><a class="login" href="#">로그인</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="in">
+      <div class="ey">주주PASS 전자주주총회</div>
+      <h1>함께 만드는 기업의 미래</h1>
+      <p>언제 어디서나 투명하고 안전하게 주주총회에 참여하실 수 있습니다</p>
+    </div>
+    <div class="dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+  </section>
+
+  <section class="loginrow">
+    <div class="t">로그인 <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    <p>로그인하고 내가 보유한 기업의 주주총회 소식을 확인해보세요!</p>
+  </section>
+
+  <section class="find">
+    <h2>주주총회 찾기</h2>
+    <label class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" placeholder="기업을 검색해 보세요" autocomplete="off"></label>
+  </section>
+
+  <section class="grid" id="grid"></section>
+  <div class="pager"><i class="on"></i><i></i><i></i><i></i></div>
+</main>
+
+<footer>
+  <div class="wrap ft">
+    <div class="links"><span>이용약관</span><b>개인정보처리방침</b><span>이메일무단수집거부</span></div>
+    <div class="co2">
+      <div><b>주소</b> 서울특별시 마포구 마포대로 78 · <b>고객센터</b> 02-332-7727 · <b>이메일</b> help@irkudos.com<br>
+        <span style="color:#a1a1aa">© IR KUDOS All rights reserved. Powered by IR KUDOS.</span></div>
+      <div class="kudos">IR KUDOS</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* 데모 표시용 기업 목록 — 실제 통합 시 CX.companies 로 교체.
+   카카오뱅크만 실데이터(CX.meeting, 제10기 진행) 연결, 나머지는 목업. */
+var MEETING = (window.CX && CX.meeting) || { name:'제10기 정기주주총회' };
+var COMPANIES = [
+  {nm:'카카오뱅크', img:'kakaobank', term:MEETING.name, status:'live', href:'company.html', live:true},
+  {nm:'현대', img:'hyundai', term:'제9기 정기주주총회', status:'dday'},
+  {nm:'신세계', img:'shinsegae', term:'제9기 정기주주총회', status:'end'},
+  {nm:'기아', img:'kia', term:'제9기 정기주주총회', status:'end'},
+  {nm:'고려아연', img:'korea-zinc', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
+  {nm:'한미반도체', img:'hanmi', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
+  {nm:'달바', img:'dalba', term:'제9기 정기주주총회', status:'end'},
+  {nm:'GS', img:'gs', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
+  {nm:'한화에어로스페이스', img:'hanwha-aero', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
+  {nm:'미래에셋증권', img:'mirae-asset', term:'제9기 정기주주총회', status:'end'},
+  {nm:'농심', img:'nongshim', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
+  {nm:'HD현대', img:'hd-hyundai', term:'제9기 정기주주총회', status:'end'},
+  {nm:'신한지주', img:'shinhan', term:'제9기 정기주주총회', status:'end'},
+  {nm:'무신사', img:'musinsa', term:'제9기 정기주주총회', status:'dn', d:'D-12'},
+  {nm:'대한항공', img:'korean-air', term:'제9기 정기주주총회', status:'end'}
+];
+function chip(c){
+  if(c.status==='live') return '<span class="chip live"><i></i>LIVE</span>';
+  if(c.status==='dday') return '<span class="chip dday">D-day</span>';
+  if(c.status==='dn')   return '<span class="chip dn">'+(c.d||'D-12')+'</span>';
+  return '<span class="chip end">종료</span>';
+}
+function render(list){
+  document.getElementById('grid').innerHTML = list.map(function(c){
+    return '<a class="co'+(c.live?' live':'')+'"'+(c.href?' href="'+c.href+'"':'')+'>'
+      +'<img class="logo" src="assets/logo-'+c.img+'.png" alt="'+c.nm+'" width="52" height="52">'
+      +'<span class="info"><span class="nm">'+c.nm+' '+chip(c)+'</span>'
+      +'<span class="sub">'+c.term+(c.status==='end'?' 종료':'')+'</span></span></a>';
+  }).join('');
+}
+render(COMPANIES);
+document.getElementById('q').addEventListener('input', function(e){
+  var v=e.target.value.trim();
+  render(v ? COMPANIES.filter(function(c){return c.nm.indexOf(v)>=0;}) : COMPANIES);
+});
+</script>
+</body>
+</html>

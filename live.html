@@ -68,6 +68,9 @@
   .cap .lines{display:flex;flex-direction:column;gap:0;min-height:48px}
   .cap .lines span{font-size:16px;line-height:24px;font-weight:500;color:#151419}
   .cap.off .lines span{color:#A7AAB1}
+  /* 꺼 두면 빈 자리를 남기지 않고 칩 줄만 남긴다 */
+  .cap.off .caph{padding-bottom:0}
+  .cap.off .lines{display:none}
   /* 언어 고르기 */
   .lsel{position:relative;flex:none}
   .lsel .lbtn{display:flex;align-items:center;gap:4px;height:18px;padding:0;border:0;background:none;

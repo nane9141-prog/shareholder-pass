@@ -126,6 +126,9 @@
   .stat .h .ttl{display:flex;flex-direction:column;gap:4px;min-width:0}
   .stat .h b{font-size:24px;line-height:31px;font-weight:700;color:#151419}
   .stat .h .mt{font-size:16px;line-height:24px;font-weight:700;color:#151419}
+  .stat .h .soon{flex:none;display:inline-flex;align-items:center;height:22px;padding:0 10px;
+    background:#fff;border:1px solid #E5E7EB;border-radius:44px;
+    font-size:12px;font-weight:700;color:#525252;white-space:nowrap}
   .stat .h .live{flex:none;height:22px;padding:0 8px;background:#FE3A4B;border:1px solid #FE3A4B;
     box-shadow:0 0 8px 4px rgba(233,8,27,.4);border-radius:44px;
     font-size:12px;line-height:16px;font-weight:700;color:#fff}
@@ -777,6 +780,9 @@ function typeLabel(no){
       e.outerHTML='<span class="wait">중계 준비 중</span>';
     });
     document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=co.nm+' · 곧 시작합니다'; });
+    document.querySelectorAll('.stat .h .live').forEach(function(e){
+      e.outerHTML='<span class="soon">곧 시작</span>';
+    });
   }
 })();
 document.getElementById('mtName').textContent=M.name;
@@ -1497,6 +1503,7 @@ function buildEx(){
 
 /* ---- 경과 타이머/* ---- 경과 타이머 — 현장 제어 시계가 오면 그 값으로 맞춘다 ---- */
 var CLOCK={t:725,run:true};
+if(window.__PRE){ CLOCK.t=0; CLOCK.run=false; }   /* 아직 열리지 않았다 — 0에서 멈춰 둔다 */
 (function(){
   var el=document.getElementById('sTime');
   function paint(){var t=Math.max(0,Math.round(CLOCK.t)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
@@ -1720,7 +1727,7 @@ function syncVid(){
   document.querySelector('.vid').classList.add('playing');
 }
 function applyClock(c){
-  if(!c||!c.at) return;
+  if(window.__PRE||!c||!c.at) return;
   var drift=(Date.now()-c.at)/1000;
   CLOCK.t=c.t+(c.run?drift:0); CLOCK.run=!!c.run;
   VWANT=c; syncVid();

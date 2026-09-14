@@ -6,7 +6,7 @@
 <title>카카오뱅크 · 제10기 정기주주총회 LIVE — 주주PASS</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
-  :root{--fg:#0a0a0a;--muted:#737373;--border:#e8e8ea;--line:#f1f1f3;--bg:#f6f7f9;--card:#fff;
+  :root{--fg:#0a0a0a;--muted:#737373;--border:#e8e8ea;--line:#f1f1f3;--bg:#fff;--card:#fff;
     --brand:#2563eb;--brand-ink:#1d4ed8;--brand-50:#eff5ff;--ink:#171717;
     --sh:0 1px 2px rgba(16,24,40,.05);--shmd:0 10px 34px rgba(16,24,40,.12)}
   *{box-sizing:border-box}
@@ -93,16 +93,25 @@
   .ac .kid{display:flex;align-items:center;gap:8px}
 
   /* right side */
-  .stat{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh);padding:18px}
-  .stat .h{display:flex;align-items:flex-start;justify-content:space-between}
-  .stat .h b{font-size:17px;font-weight:800}.stat .h .mt{font-size:13px;color:var(--muted);margin-top:2px}
-  .stat .g{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
-  .stat .g .k{font-size:12px;color:var(--muted)}
-  .stat .g .v{font-size:17px;font-weight:800;margin-top:3px}
-  .stat .g .v.link{color:var(--brand);cursor:pointer;display:inline-flex;align-items:center;gap:3px}
-  .stat .g .v.link svg{width:14px;height:14px;stroke:var(--brand);fill:none;stroke-width:2.4}
+  /* 주총정보 — 회색 판 하나에 회사명과 세 가지 수치를 얹는다 */
+  .stat{background:#F3F4F6;border:0;border-radius:12px;box-shadow:none;padding:20px;
+    display:flex;flex-direction:column;gap:20px}
+  .stat .h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+  .stat .h .ttl{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .stat .h b{font-size:24px;line-height:31px;font-weight:700;color:#151419}
+  .stat .h .mt{font-size:16px;line-height:24px;font-weight:700;color:#151419}
+  .stat .h .live{flex:none;height:22px;padding:0 8px;background:#FE3A4B;border:1px solid #FE3A4B;
+    box-shadow:0 0 8px 4px rgba(233,8,27,.4);border-radius:44px;
+    font-size:12px;line-height:16px;font-weight:700;color:#fff}
+  .stat .g{display:flex;align-items:center;gap:8px}
+  .stat .g>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .stat .g .k{font-size:14px;line-height:21px;font-weight:500;color:#6B7078}
+  .stat .g .v{font-size:18px;line-height:27px;font-weight:700;color:#151419}
+  .stat .g .v.link{display:inline-flex;align-items:center;gap:2px;cursor:pointer;
+    font-size:16px;line-height:24px;font-weight:700;color:#151419}
+  .stat .g .v.link svg{width:24px;height:24px;stroke:#151419;fill:none;stroke-width:2}
 
-  .tabs{display:flex;gap:22px;border-bottom:1px solid var(--border);margin:18px 0 16px}
+  .tabs{display:flex;gap:22px;border-bottom:1px solid var(--border);margin:24px 0 16px}
   .tabs button{border:0;background:none;font-size:15px;font-weight:700;color:#a1a1aa;padding:0 0 12px;border-bottom:2px solid transparent;margin-bottom:-1px}
   .tabs button.on{color:var(--fg);border-bottom-color:var(--ink)}
   .pane{display:none}.pane.on{display:block}
@@ -253,42 +262,9 @@
   .qitem .ans .lock{font-size:16px;line-height:24px;font-weight:500;color:#6B7078}
   .qempty{padding:40px 12px;text-align:center;color:#6B7078;font-size:16px;line-height:24px}
 
-  /* 의안 상태 리스트 (Figma: 의안 상태별 표시) */
-  .alist{display:flex;flex-direction:column;gap:8px}
-  .agrp{font-size:12px;font-weight:700;color:#8a8a8f;padding:8px 2px 2px}
-  .acard2{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
-  .acard2.cur{background:#f8fbff;border-color:#dbe7ff}
-  .arow{display:flex;align-items:center;gap:10px}
-  .arow+.arow{margin-top:10px}
-  .anum{min-width:22px;height:22px;padding:0 6px;border-radius:6px;background:#f3f4f6;color:#151419;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
-  .anum.act{background:#151419;color:#fff}
-  .anum.sub{border-radius:8px;height:24px}
-  .atitle2{flex:1;font-size:15px;font-weight:600;color:#151419;min-width:0}
-  .atitle2.mute{color:#a7aab1}
-  .atype2{font-size:13px;color:#6b7078;flex:none}
-  .atype2.amend{color:#0071f3;font-weight:600}
-  .astat{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;flex:none}
-  .astat i{width:6px;height:6px;border-radius:50%}
-  .astat.wait{color:#a7aab1}.astat.wait i{background:#a7aab1}
-  .astat.vote{color:#0071f3}.astat.vote i{background:#0071f3}
-  .astat.cnt{color:#0dad7e}.astat.cnt i{background:#0dad7e}
+  /* 의안 결과 배지 */
   .arb{display:inline-flex;align-items:center;height:24px;padding:2px 8px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;flex:none}
   .arb.pass{background:#0071f3}.arb.fail{background:#e9081b}.arb.disc{background:#151419}.arb.wd{background:#a7aab1}
-  .asub{padding-left:32px}
-  .alegend{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:9px 16px;align-items:center;font-size:11px;color:#8a8a8f}
-  .acard2{cursor:pointer}
-  .chev{margin-left:2px;width:16px;height:16px;stroke:#a1a1aa;fill:none;stroke-width:2;transition:transform .15s;flex:none}
-  .acard2.open .chev{transform:rotate(180deg)}
-  .adet{display:none;margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}
-  .acard2.open .adet{display:block}
-  .adet .drow{display:flex;gap:12px;padding:5px 0;font-size:13.5px;line-height:1.6}
-  .adet .dk{flex:none;width:76px;color:#8a8a8f;font-weight:600}
-  .adet .dv{flex:1;color:#3f3f46}
-  .adet .cand2{display:flex;flex-direction:column;gap:7px}
-  .adet .cand2 .c{display:flex;align-items:center;gap:8px;font-size:13px;color:#3f3f46}
-  .adet .cand2 .c .rk{width:16px;height:16px;border-radius:5px;background:#e5e7eb;color:#374151;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
-  .adet .cand2 .c.el .rk{background:#0071f3;color:#fff}
-  .adet .cand2 .c .el2{margin-left:auto;font-size:11px;font-weight:700;color:#0071f3}
 
   /* overlay + modal */
   .ovl{position:fixed;inset:0;background:rgba(10,12,20,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:24px}
@@ -385,11 +361,10 @@
     <!-- RIGHT -->
     <div>
       <div class="stat">
-        <div class="h"><div><b>카카오뱅크</b><div class="mt" id="sMt">제10기 정기주주총회</div></div><span class="live"><i></i>LIVE</span></div>
+        <div class="h"><div class="ttl"><b>카카오뱅크</b><span class="mt" id="sMt">제10기 정기주주총회</span></div><span class="live"><i></i>LIVE</span></div>
         <div class="g">
           <div><div class="k">시간 경과</div><div class="v" id="sTime">00:12:05</div></div>
           <div><div class="k">의안 진행 현황</div><div class="v" id="sProg">2 / 6</div></div>
-          <div><div class="k">출석 의결권</div><div class="v" id="sAtt">63.6%</div></div>
           <div><div class="k">의결권 행사현황</div><div class="v link" id="openEx">확인하기 <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div></div>
         </div>
       </div>
@@ -422,7 +397,6 @@
       <!-- vote -->
       <div class="pane" data-p="vote">
         <div class="box vc" id="voteCard"></div>
-        <div class="box"><h4>의안 상세</h4><div class="alist" id="voteList"></div></div>
       </div>
 
       <!-- qna -->
@@ -554,8 +528,6 @@ function typeLabel(no){
 document.getElementById('mtName').textContent=M.name;
 document.getElementById('sMt').textContent=M.name;
 document.getElementById('vTitle').textContent=M.name;
-var attPct=U.pct(M.attendShares,M.sharesVoting);
-document.getElementById('sAtt').textContent=attPct.toFixed(1)+'%';
 function renderProg(){
   var curIdx=units.map(function(a){return a.no;}).indexOf(CURRENT);
   var progTxt=(curIdx>=0?curIdx+1:1)+' / '+units.length;
@@ -780,67 +752,6 @@ function candBars(d){
   }).join('')+'</div>';
 }
 renderVote();
-
-/* ---- 의안 상세 (conexus 미반영 — 시연용 임의 작성) ---- */
-var DETAIL={
- '제1호':[['의안 요지','제10기(2025.1.1~12.31) 별도 및 연결 재무제표 승인'],
-   ['제안 이유','상법 제449조에 따른 정기주주총회 승인 안건으로 상정'],
-   ['주요 내용','별도 당기순이익 4,820억 원 · 연결 당기순이익 5,130억 원, 결산배당 주당 750원(배당성향 20%)'],
-   ['의결 정족수','출석의결권 과반수 및 발행주식총수 1/4 이상']],
- '제2-1호':[['의안 요지','정관 제32조(집중투표 배제) 조항 삭제'],
-   ['제안 이유','소수주주의 이사 선임 참여 기회 확대 및 지배구조 투명성 제고'],
-   ['주요 내용','2인 이상 이사 선임 시 주주의 집중투표 청구를 허용'],
-   ['의결 정족수','출석의결권 2/3 이상 및 발행주식총수 1/3 이상(특별결의)']],
- '제2-2호':[['의안 요지','정관 제30조 신설 — 전자적 방법에 의한 주주총회 개최 근거 마련'],
-   ['제안 이유','개정 상법 시행에 따른 전자주주총회 근거 규정 정비'],
-   ['주요 내용','현장·전자 병행형 개최, 전자투표 및 전자위임장 상시 운영 근거 마련'],
-   ['의결 정족수','출석의결권 2/3 이상 및 발행주식총수 1/3 이상(특별결의)']],
- '제3호':[['의안 요지','선임할 이사 수 결정 — 회사제안(4인 중 2인)과 주주제안(5인 중 2인) 중 택일'],
-   ['제안 이유','회사안과 주주제안이 선임 방식에서 양립 불가하여 우선 표결'],
-   ['주요 내용','가결된 안에 따라 후속 집중투표(제4호)를 진행하고, 부결된 안은 폐기'],
-   ['의결 정족수','출석의결권 과반수(보통결의)']],
- '제4-1호':[['의안 요지','회사 추천 사외이사 후보 4인 중 2인을 집중투표로 선임'],
-   ['제안 이유','제3호에서 회사제안이 가결됨에 따른 후속 이사 선임'],
-   ['배분 방식','보유주식 × 선임예정 2인 만큼 의결권 배분, 최다득표 순 2인 선임'],
-   ['의결 정족수','집중투표 최다득표 순']],
- '제4-2호':[['의안 요지','주주 추천 사외이사 후보 5인 중 2인을 집중투표로 선임'],
-   ['제안 이유','제3호에서 주주제안이 부결됨에 따라 본 안건은 폐기'],
-   ['배분 방식','보유주식 × 선임예정 2인 만큼 의결권 배분, 최다득표 순 2인 선임'],
-   ['의결 정족수','집중투표 최다득표 순']]
-};
-function detailHtml(no){
-  var rows=(DETAIL[no]||[]).map(function(kv){
-    return '<div class="drow"><span class="dk">'+kv[0]+'</span><span class="dv">'+kv[1]+'</span></div>';
-  }).join('');
-  var d=CXD.center[no];
-  if(d&&d.type==='집중투표'&&d.cands){
-    var discarded=(CXD.decided==='회사'&&no==='제4-2호')||(CXD.decided==='주주'&&no==='제4-1호');
-    rows+='<div class="drow"><span class="dk">후보</span><span class="dv"><div class="cand2">'+d.cands.map(function(c){
-      return '<div class="c'+(!discarded&&c.elected?' el':'')+'"><span class="rk">'+c.rank+'</span>'+c.name
-        +(!discarded&&c.elected?'<span class="el2">선임</span>':'')+'</div>';
-    }).join('')+'</div></span></div>';
-  }
-  return '<div class="adet">'+rows+'</div>';
-}
-function renderVoteList(){
-  var h='';
-  CXD.agenda.forEach(function(a){
-    if(a.header){ h+='<div class="agrp">'+chip(a.no)+' · '+a.nm+'</div>'; return; }
-    h+='<div class="acard2" data-no="'+a.no+'">'
-      +'<div class="arow"><span class="anum">'+num(a.no)+'</span>'
-      +'<span class="atitle2">'+a.nm+'</span><span class="atype2">'+typeLabel(a.no)+'</span>'
-      +'<svg class="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>';
-    if(a.children) a.children.forEach(function(c){
-      h+='<div class="arow asub"><span class="anum sub act">↳ '+num(c.no)+'</span><span class="atitle2">'+c.nm+'</span></div>';
-    });
-    h+=detailHtml(a.no)+'</div>';
-  });
-  document.getElementById('voteList').innerHTML=h;
-  document.querySelectorAll('#voteList .acard2').forEach(function(card){
-    card.addEventListener('click',function(){card.classList.toggle('open');});
-  });
-}
-renderVoteList();
 
 /* ---- 질의 작성 ----
    관련 의안을 '총회 진행 전반'으로 둘지 의안 하나로 좁힐지 먼저 고르고,

@@ -52,6 +52,10 @@
   .vid .scene .lg{width:52px;height:52px;border-radius:14px;object-fit:contain;background:#fff;margin-bottom:14px;display:block}
   .vid .scene .t{font-size:26px;font-weight:800;opacity:.92}.vid .scene .t2{font-size:14px;opacity:.6;margin-top:4px}
   .vid .badge{position:absolute;left:12px;top:12px}
+  /* 아직 중계가 열리지 않은 기업 — 화면은 그대로 두고 표시만 바꾼다 */
+  .wait{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 8px;border-radius:9999px;
+    background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:700}
+  .vid.pre video,.vid.pre .snd{display:none}
   .vid .lang{position:absolute;right:12px;top:12px;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.4);color:#fff;font-size:12px;font-weight:600;border-radius:8px;padding:5px 9px}
   .vid .lang svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
   .doneflag.wait2{background:#f7f8fa;color:#71717a;font-weight:600}
@@ -549,7 +553,7 @@
         <div class="box"><h4>참석 정보</h4>
           <div class="kv"><span class="k">이름</span><span class="v">박성용</span></div>
           <div class="kv"><span class="k">출석 구분</span><span class="v">출석 완료</span></div>
-          <div class="kv"><span class="k">보유 주식수</span><span class="v">1,200주</span></div>
+          <div class="kv"><span class="k">보유 주식수</span><span class="v" id="myHeld">1,200주</span></div>
         </div>
         <div class="box"><h4>실시간 공지사항</h4><div id="ntList"></div></div>
         <div class="box"><h4>주주총회 자료</h4>
@@ -762,6 +766,18 @@ function typeLabel(no){
   document.querySelectorAll('.mtsel .co').forEach(function(e){ e.textContent=co.nm; });
   document.querySelectorAll('.stat .h b').forEach(function(e){ e.textContent=co.nm; });
   document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=co.nm+' · 생중계'; });
+  window.__CO=co;
+  /* 중계 영상은 카카오뱅크만 준비돼 있다 — 나머지는 시작 전으로 보인다 */
+  if(co.key!=='kakaobank'){
+    window.__PRE=true;
+    var box=document.querySelector('.vid');
+    if(box){ box.classList.add('pre'); box.classList.remove('playing'); }
+    var v=document.getElementById('vid'); if(v){ v.pause(); v.removeAttribute('src'); v.load(); }
+    document.querySelectorAll('.vid .badge .live').forEach(function(e){
+      e.outerHTML='<span class="wait">중계 준비 중</span>';
+    });
+    document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=co.nm+' · 곧 시작합니다'; });
+  }
 })();
 document.getElementById('mtName').textContent=M.name;
 document.getElementById('sMt').textContent=M.name;
@@ -813,6 +829,13 @@ document.querySelectorAll('.tabs button').forEach(function(b){
    한 장 안에서 표결 전·표결 중·집계 중·행사 완료가 이어진다. 아래 행사 바만 상태에 따라 바뀐다. */
 function pct(part,whole){return whole?(part/whole*100):0;}
 var MY={held:1200, limit:0};        /* 내 의결권 — 참석 정보와 같은 수치 */
+(function(){                        /* 고른 기업의 보유 주식수를 그대로 쓴다 */
+  var co=window.__CO; if(!co) return;
+  function n(t){ return parseInt(String(t||'').replace(/[^0-9]/g,''),10)||0; }
+  MY.held=n(co.shares)||MY.held; MY.limit=n(co.limit);
+  var el=document.getElementById('myHeld');
+  if(el) el.textContent=MY.held.toLocaleString('en-US')+'주';
+})();
 var CAST={};                        /* 의안별 내가 행사한 값 */
 var CHOICE={pro:'찬성',con:'반대',abs:'기권'};
 
@@ -1687,6 +1710,7 @@ function paintLeft(){
    받은 값을 들고 있다가 메타데이터가 오면 그때 맞춘다. */
 var VWANT=null;
 function syncVid(){
+  if(window.__PRE) return;
   var v=document.getElementById('vid');
   if(!v||!VWANT||v.readyState<1||!v.duration) return;
   var c=VWANT, drift=(Date.now()-c.at)/1000;

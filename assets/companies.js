@@ -14,7 +14,7 @@ window.PASS_CO = [
     date: '2026년 3월 27일 (금)', time: '오전 10:00',
     place: '경기 성남시 분당구 네이버 1784 커넥트홀',
     hero: ['#b7f5c9', '#03c75a'], ink: '#0b3d20',
-    mine: true, kind: '보통주', shares: '820주', limit: '0주', dday: 'D-14' },
+    mine: true, kind: '보통주', shares: '20,000주', limit: '0주', dday: 'D-14' },
 
   { key: 'hyundai', nm: '현대', term: '제9기 정기주주총회', status: 'dday',
     date: '2026년 3월 20일 (금)', time: '오전 9:00',

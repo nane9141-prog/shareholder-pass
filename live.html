@@ -133,9 +133,13 @@
     font-size:16px;line-height:24px;font-weight:700;color:#151419}
   .stat .g .v.link svg{width:24px;height:24px;stroke:#151419;fill:none;stroke-width:2}
 
-  .tabs{display:flex;gap:22px;border-bottom:1px solid var(--border);margin:24px 0 16px}
-  .tabs button{border:0;background:none;font-size:15px;font-weight:700;color:#a1a1aa;padding:0 0 12px;border-bottom:2px solid transparent;margin-bottom:-1px}
-  .tabs button.on{color:var(--fg);border-bottom-color:var(--ink)}
+  /* 탭 — 눌리는 자리와 밑줄이 글씨보다 넓도록 좌우 여백을 버튼이 갖는다 */
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin:24px 0 16px}
+  .tabs button{border:0;background:none;font-family:inherit;letter-spacing:inherit;
+    font-size:16px;line-height:24px;font-weight:700;color:#6B7078;
+    padding:12px 16px;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
+  .tabs button:first-child{padding-left:0}
+  .tabs button.on{color:#151419;border-bottom-color:#272929}
   .pane{display:none}.pane.on{display:block}
 
   .box{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh);padding:18px;margin-bottom:14px}
@@ -406,13 +410,13 @@
   .am-b{padding:16px 28px 12px;display:flex;flex-direction:column;gap:16px}
   .am-b .lb{font-size:14px;line-height:18px;font-weight:700;color:#151419}
   .aggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .ag{display:flex;flex-direction:column;align-items:center;gap:8px;height:98px;padding:10px 0;
+  .aggrid .ag{display:flex;flex-direction:column;align-items:center;gap:8px;height:98px;padding:10px 0;
     border:1px solid #EEF0F2;border-radius:10px;background:#fff;cursor:pointer;
     font-family:inherit;letter-spacing:inherit}
-  .ag.sel{background:#F8F8FA;border-color:#272929}
-  .ag .lg2{width:52px;height:52px;border:1px solid rgba(0,0,0,.05);border-radius:16px;
+  .aggrid .ag.sel{background:#F8F8FA;border-color:#272929}
+  .aggrid .ag .lg2{width:52px;height:52px;border:1px solid rgba(0,0,0,.05);border-radius:16px;
     display:flex;align-items:center;justify-content:center;font-weight:800}
-  .ag .nm2{font-size:12px;line-height:16px;font-weight:700;color:#151419;text-align:center}
+  .aggrid .ag .nm2{font-size:12px;line-height:16px;font-weight:700;color:#151419;text-align:center}
   .am-a{padding:12px 28px 32px}
   .am-a button{width:100%;height:48px;border:0;border-radius:8px;background:#151419;
     font-family:inherit;font-size:16px;line-height:24px;font-weight:700;letter-spacing:inherit;color:#fff}
@@ -999,10 +1003,13 @@ document.getElementById('qWrite').addEventListener('click',function(){
 document.getElementById('qCancel').addEventListener('click',function(){closeM('qOvl');});
 document.getElementById('qSubmit').addEventListener('click',function(){
   var ta=document.getElementById('qBody'), sel=document.getElementById('qTarget');
+  var kind=QKIND==='a'?'수정동의':null;
+  var amtype=kind?document.getElementById('qAmType').value:null;
   QUES.unshift({name:PASSNAME, mine:true, time:nowHm(), date:todayStr()+' '+nowHm(),
-    ag:sel.value, q:ta.value.trim(), priv:false,
-    kind:QKIND==='a'?'수정동의':null,
-    amtype:QKIND==='a'?document.getElementById('qAmType').value:null});
+    ag:sel.value, q:ta.value.trim(), priv:false, kind:kind, amtype:amtype});
+  /* 현장 제어의 질의 목록에도 같은 건이 올라간다 */
+  cxPush('cx.qna',{id:'PASS-'+Date.now(), name:PASSNAME, t:'개인', sh:MY.held,
+    tm:nowHm(), ag:sel.value, kind:kind, amtype:amtype, q:ta.value.trim()});
   ta.value=''; document.getElementById('qLen').textContent='0';
   document.getElementById('qSubmit').disabled=true;
   closeM('qOvl'); renderQ();
@@ -1013,10 +1020,10 @@ var PASSNAME=(window.PASS_USER&&PASS_USER.name)||'박성용';
 
 /* ---- 질의 목록 (전체/내가 쓴 질의, 답변·공개범위) ---- */
 var QUES=[
-  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2호',q:'ESG 경영 목표 달성을 위한 올해 구체적 실행 계획은 무엇인지요.',ans:'탄소중립 로드맵 2030을 기준으로 사업장별 감축 목표를 설정하고 분기별 공시할 예정입니다.',pub:true},
-  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2호',q:'정관 변경 중 전자투표 상시 도입 조항이 기존 서면투표권을 제약하는 것은 아닌지 설명 부탁드립니다.',ans:'정관상 배제조항이 없어 청구 가능하나, 이사회는 단일 후보로 진행하고 있습니다.',pub:true},
-  {name:'황**',mine:false,time:'10:07',ag:'제2호',q:'집중투표제 배제 조항 삭제 시 향후 이사 선임 절차가 어떻게 달라지나요?',ans:'2인 이상 이사 선임 시 주주가 집중투표를 청구할 수 있게 됩니다.',pub:true},
-  {name:'황**',mine:false,time:'10:07',ag:'제2호',q:'전자주주총회 도입 후 현장 참석 주주의 권리는 동일하게 보장되는지 궁금합니다.',priv:true}
+  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2-1호',q:'ESG 경영 목표 달성을 위한 올해 구체적 실행 계획은 무엇인지요.',ans:'탄소중립 로드맵 2030을 기준으로 사업장별 감축 목표를 설정하고 분기별 공시할 예정입니다.',pub:true},
+  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2-2호',q:'정관 변경 중 전자투표 상시 도입 조항이 기존 서면투표권을 제약하는 것은 아닌지 설명 부탁드립니다.',ans:'정관상 배제조항이 없어 청구 가능하나, 이사회는 단일 후보로 진행하고 있습니다.',pub:true},
+  {name:'황**',mine:false,time:'10:07',ag:'제2-1호',q:'집중투표제 배제 조항 삭제 시 향후 이사 선임 절차가 어떻게 달라지나요?',ans:'2인 이상 이사 선임 시 주주가 집중투표를 청구할 수 있게 됩니다.',pub:true},
+  {name:'황**',mine:false,time:'10:07',ag:'제2-2호',q:'전자주주총회 도입 후 현장 참석 주주의 권리는 동일하게 보장되는지 궁금합니다.',priv:true}
 ];
 var QFILTER='all';
 function qAvatar(){return '<span class="av"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></span>';}
@@ -1435,6 +1442,13 @@ setInterval(paintCap, 500); paintCap();
 /* ---- conexus 현장 제어와 잇기 ----
    제어 화면과 이 화면이 같은 호스트에서 열려 있으면, localStorage 한 칸을 통해
    의안·표결 단계·송출 내용과 영상 위치가 그대로 넘어온다. 서버는 쓰지 않는다. */
+/* 시청 화면은 읽기만 하던 칸에 질의 한 건만 얹는다 — 현장 제어가 같은 칸을 보고 있다 */
+function cxPush(K,item){
+  var s={};
+  try{ s=JSON.parse(localStorage.getItem(K)||'{}'); }catch(e){}
+  s.list=(s.list||[]).concat([item]); s.ts=Date.now();
+  try{ localStorage.setItem(K,JSON.stringify(s)); }catch(e){}
+}
 function cxRead(K,on){
   function get(){ try{ return JSON.parse(localStorage.getItem(K)||'{}'); }catch(e){ return {}; } }
   window.addEventListener('storage',function(e){ if(e.key===K) on(get()); });

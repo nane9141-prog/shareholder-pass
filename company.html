@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
 <style>
   :root{
-    --fg:#0a0a0a; --muted:#737373; --border:#e8e8ea; --line:#f1f1f3; --bg:#f6f7f9; --card:#fff;
+    --fg:#0a0a0a; --muted:#737373; --border:#e8e8ea; --line:#f1f1f3; --bg:#fff; --card:#fff;
     --brand:#2563eb; --brand-ink:#1d4ed8; --brand-50:#eff5ff; --ink:#171717;
     --r:14px; --sh:0 1px 2px rgba(16,24,40,.05); --shmd:0 8px 30px rgba(16,24,40,.08);
   }
@@ -198,6 +198,8 @@
   .btn{display:flex;align-items:center;justify-content:center;height:44px;margin-top:12px;border-radius:11px;background:var(--brand);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
   .btn:hover{background:var(--brand-ink)}
   .plist .pt{font-size:15px;font-weight:800;margin:2px 0 12px}
+  /* 두 묶음은 한 장 안에 둔다 — 카드가 둘로 나뉘어 붙어 있으면 경계가 어지럽다 */
+  .plist .pgrp+.pgrp{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
   .pitem{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-top:1px solid var(--line);cursor:pointer}
   .pitem:first-of-type{border-top:0}
   .pitem .nm{font-size:14px;font-weight:600}
@@ -333,16 +335,17 @@ else dchip.remove();
 /* ---- 주주카드 — 총회 상태를 배지와 버튼으로 보여 준다 ----
    진행 중이면 바로 들어갈 수 있고, 끝난 총회는 확인증만 받는다. */
 (function(){
+  /* 총회 전에는 신청, 열려 있으면 입장, 끝난 뒤에는 지난 기록 보기 */
   var S = {
-    live: { bs:[['출석',''],['행사 완료','blue']], btn:'생중계 참여하기', href:'live.html', dark:true },
-    end:  { bs:[['출석',''],['행사 완료','blue']], btn:'행사 확인증 발급', line:true },
+    live: { bs:[['출석',''],['행사 완료','blue']], btn:'전자주주총회 입장', href:'live.html?co='+CO.key, dark:true },
+    end:  { bs:[['출석',''],['행사 완료','blue']], btn:'의결권 행사 내역 보기', href:'mypage.html#vote', line:true },
     dday: { bs:[], btn:'사전 참석 신청', dark:true },
     dn:   { bs:[], btn:'사전 참석 신청', dark:true }
   };
   var st = S[CO.status] || S.dn;
   var badges = st.bs.map(function(b){ return '<span class="sb '+b[1]+'">'+b[0]+'</span>'; }).join('');
   var btn = st.href
-    ? '<a class="btn" href="'+st.href+'">'+st.btn+'</a>'
+    ? '<a class="btn'+(st.line?' line':'')+'" href="'+st.href+'">'+st.btn+'</a>'
     : '<div class="btn'+(st.line?' line':'')+'" id="sideBtn">'+st.btn+'</div>';
   document.getElementById('sideCard').innerHTML =
      '<div class="u-h">'+PASS_USER.name+badges+'</div>'
@@ -351,10 +354,7 @@ else dchip.remove();
     +'<div class="kv"><span class="k">제한주식수</span><span class="v">'+(CO.limit||'0주')+'</span></div>'
     + btn;
   var b = document.getElementById('sideBtn');
-  if (b) b.addEventListener('click', function(){
-    alert(st.line ? '의결권 행사 확인증을 발급했습니다. 등록된 이메일로 보내 드립니다.'
-                  : '사전 참석 신청이 접수되었습니다.');
-  });
+  if (b) b.addEventListener('click', function(){ alert('사전 참석 신청이 접수되었습니다.'); });
 })();
 
 /* ---- 의안 목록 — 번호 배지 + 제목 + 결의 구분, 펼치면 설명과 자료 ---- */
@@ -473,13 +473,13 @@ document.getElementById('prepList').innerHTML=PREP.map(function(g){
       }).join('')+'</div></div>';
 }).join('');
 
-document.getElementById('sideGroups').innerHTML=PREP.map(function(g){
-  return '<div class="card plist"><div class="pt">'+g.k+'</div>'
+document.getElementById('sideGroups').innerHTML='<div class="card plist">'+PREP.map(function(g){
+  return '<div class="pgrp"><div class="pt">'+g.k+'</div>'
     +g.items.map(function(x){
         return '<div class="pitem"><div><div class="nm">'+x.nm+'</div><div class="sub">'+x.p+'</div></div>'
           +'<svg class="cv" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>';
       }).join('')+'</div>';
-}).join('');
+}).join('')+'</div>';
 /* ---- 사전 질의 — 총회 전까지 3건까지 고쳐 쓸 수 있다 ---- */
 var QMAX=3;
 var QA=[

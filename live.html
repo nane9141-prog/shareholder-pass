@@ -307,6 +307,9 @@
   .qitem .ans.priv{background:#F8F8FA}.qitem .ans.priv b{color:#6B7078}
   .qitem .ans .lock{font-size:16px;line-height:24px;font-weight:500;color:#6B7078}
   .qempty{padding:40px 12px;text-align:center;color:#6B7078;font-size:16px;line-height:24px}
+  /* 행사현황 표의 진행 상태 — 아직 결과가 나오지 않은 의안 */
+  .est{font-size:12px;font-weight:600}
+  .est.wait{color:#A7AAB1}.est.vote{color:#0071F3}.est.cnt{color:#0DAD7E}
 
   /* 의안 결과 배지 */
   .arb{display:inline-flex;align-items:center;height:24px;padding:2px 8px;border-radius:8px;font-size:13px;font-weight:600;color:#fff;flex:none}
@@ -674,6 +677,7 @@
   </div>
 </div>
 
+<script src="assets/companies.js"></script>
 <script src="assets/agenda.js"></script>
 <script>
 /* ---- CX(SSOT) 폴백: 실제 통합 시 cx-data.js(window.CX) 사용 ---- */
@@ -743,6 +747,20 @@ function typeLabel(no){
   return d.type==='집중투표'?'집중투표':d.type==='양립불가'?'양립불가':d.type==='특별결의'?'특별결의':'보통결의';
 }
 
+/* 주소의 co 값이 가리키는 기업으로 갈아 끼운다 — 없으면 카카오뱅크 그대로다 */
+(function(){
+  var key=(new URLSearchParams(location.search)).get('co');
+  var co=key && window.PASS_FIND ? PASS_FIND(key) : null;
+  if(!co) return;
+  M.org=co.nm; M.name=co.term;
+  document.title=co.nm+' · '+co.term+' LIVE — 주주PASS';
+  document.querySelectorAll('img.lg').forEach(function(im){
+    im.src='assets/logo-'+co.key+'.png'; im.alt=co.nm;
+  });
+  document.querySelectorAll('.mtsel .co').forEach(function(e){ e.textContent=co.nm; });
+  document.querySelectorAll('.stat .h b').forEach(function(e){ e.textContent=co.nm; });
+  document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=co.nm+' · 생중계'; });
+})();
 document.getElementById('mtName').textContent=M.name;
 document.getElementById('sMt').textContent=M.name;
 document.getElementById('vTitle').textContent=M.name;
@@ -1355,12 +1373,15 @@ function askAuth(done){
 
 /* ---- 주총 스위처 모달 ---- */
 var MEETINGS=[
-  {nm:'카카오뱅크 제10기 정기주주총회',cur:true,attend:true,live:true},
-  {nm:'네이버 제27기 정기주주총회',live:true},
-  {nm:'SK하이닉스 제78기 정기주주총회'},
-  {nm:'LG전자 제24기 정기주주총회'}
+  {key:'kakaobank',nm:'카카오뱅크 제10기 정기주주총회',cur:true,attend:true,live:true},
+  {key:'naver',nm:'네이버 제27기 정기주주총회',attend:true,live:true},
+  {key:'sk',nm:'SK하이닉스 제78기 정기주주총회'},
+  {key:'lg',nm:'LG전자 제24기 정기주주총회'}
 ];
 function renderMt(){
+  /* 지금 보고 있는 주총에 표시를 옮긴다 */
+  var here=(new URLSearchParams(location.search)).get('co')||'kakaobank';
+  MEETINGS.forEach(function(m){ m.cur=(m.key===here); });
   /* 머리글의 LIVE 는 지금 열려 있는 주총이 하나라도 있을 때만 */
   var live=MEETINGS.some(function(m){return m.live;});
   document.getElementById('mtLive').style.display = live ? '' : 'none';
@@ -1379,51 +1400,77 @@ function renderMt(){
 renderMt();
 document.getElementById('mtSel').addEventListener('click',function(){openM('mtOvl');});
 document.getElementById('mtCancel').addEventListener('click',function(){closeM('mtOvl');});
-document.getElementById('mtOk').addEventListener('click',function(){closeM('mtOvl');});
+document.getElementById('mtOk').addEventListener('click',function(){
+  var el=document.querySelector('#mtList .mm-item.sel');
+  var m=el?MEETINGS[+el.dataset.i]:null;
+  closeM('mtOvl');
+  if(!m || m.cur) return;
+  /* 생중계 중인 주총만 시청 화면이 있다 — 나머지는 기업 화면으로 보낸다 */
+  if(m.live) location.href='live.html?co='+m.key;
+  else location.href='company.html?co='+m.key;
+});
 
 /* ---- 의결권 행사현황 오버레이 ---- */
 document.getElementById('openEx').addEventListener('click',function(){buildEx();openM('exOvl');});
 document.getElementById('exClose').addEventListener('click',function(){closeM('exOvl');});
-function chSplit(v){ // 채널 분해 (사전80/현장13.3/온라인6.7 근사)
-  var pre=Math.round(v*0.8), on=Math.round(v*0.1333), onl=Math.round(v)-pre-on; return [pre,on,onl];
+/* 진행한 만큼만 — 표결 전에도 사전 의결권은 이미 들어와 있으므로 수치가 0 이 아니다 */
+function exFrac(no){
+  var k=(VS[no]||{}).s;
+  if(k==='result') return 1;
+  if(k==='cnt') return 0.95;
+  if(k==='vote') return 0.9;
+  return 0.8;                      /* 아직 상정 전 — 사전투표분만 */
+}
+function exState(no){
+  var vs=VS[no]||{s:'wait'};
+  if(vs.s==='result') return {r:{pass:'가결',fail:'부결',disc:'폐기',wd:'철회'}[vs.r]||'가결'};
+  if(vs.s==='cnt')  return {t:'<span class="est cnt">집계중</span>'};
+  if(vs.s==='vote') return {t:'<span class="est vote">투표중</span>'};
+  return {t:'<span class="est wait">대기</span>'};
 }
 function resBadge(r){ if(r==='가결')return '<span class="rb pass">가결</span>'; if(r==='부결')return '<span class="rb fail">부결</span>'; if(r==='폐기')return '<span class="rb disc">폐기</span>'; return '—'; }
 function buildEx(){
-  var head='<thead><tr><th class="l">의안명</th><th>총 행사가능의결권</th><th>총 행사의결권</th><th>사전의결권</th><th>현장투표</th><th>온라인투표</th><th>찬성</th><th>반대</th><th>기권</th><th>찬성률</th><th class="c">결과</th></tr></thead>';
+  var head='<thead><tr><th class="l">의안명</th><th>총 행사가능의결권</th><th>총 행사의결권</th>'
+    +'<th>찬성</th><th>반대</th><th>기권</th><th>찬성률</th><th class="c">결과</th></tr></thead>';
   var rows='';
-  function normalRow(no,name,d,discarded){
-    var base=d.for+d.against+d.abs, exercised=base;
-    var s=chSplit(exercised);
-    var result = discarded?'폐기':(pct(d.for,base)>= (d.thrLabel&&d.thrLabel.indexOf('2/3')>=0?66.7:50)?'가결':'부결');
+  function cells(no,name,d,discarded,f){
+    var F=Math.round(d['for']*f), A=Math.round(d.against*f), B=Math.round((d.abs||0)*f);
+    var base=F+A+B;
+    var st=exState(no);
+    var res = discarded ? resBadge('폐기') : (st.r ? resBadge(st.r) : st.t);
     var cls=discarded?' class="disc"':'';
-    return '<tr'+cls+'><td class="l">'+chip(no)+' '+name+'</td><td>'+comma(M.attendShares)+'</td><td>'+comma(exercised)+'</td>'
-      +'<td>'+comma(s[0])+'</td><td>'+comma(s[1])+'</td><td>'+comma(s[2])+'</td>'
-      +'<td>'+comma(d.for)+'</td><td>'+comma(d.against)+'</td><td>'+comma(d.abs)+'</td>'
-      +'<td>'+pct(d.for,base).toFixed(1)+'%</td><td class="c">'+resBadge(result)+'</td></tr>';
+    return '<tr'+cls+'><td class="l">'+chip(no)+' '+name+'</td><td>'+comma(M.attendShares)+'</td><td>'+comma(base)+'</td>'
+      +'<td>'+comma(F)+'</td><td>'+comma(A)+'</td><td>'+comma(B)+'</td>'
+      +'<td>'+pct(F,base).toFixed(1)+'%</td><td class="c">'+res+'</td></tr>';
   }
   CXD.agenda.forEach(function(a){
-    if(a.header){ rows+='<tr class="grp"><td colspan="11">'+chip(a.no)+' · '+a.nm+'</td></tr>'; return; }
+    if(a.header){ rows+='<tr class="grp"><td colspan="8">'+chip(a.no)+' · '+a.nm+'</td></tr>'; return; }
     var d=CXD.center[a.no]; if(!d) return;
-    if(d.type==='보통결의'||d.type==='특별결의'){ rows+=normalRow(a.no,d.name,d,false); }
+    var f=exFrac(a.no);
+    if(d.type==='보통결의'||d.type==='특별결의'){ rows+=cells(a.no,d.name,d,false,f); }
     else if(d.type==='양립불가'){
-      d.options.forEach(function(o){ rows+=normalRow(o.no,o.name,o,false); });
+      d.options.forEach(function(o){ rows+=cells(a.no,o.name,o,false,f); });
     }else if(d.type==='집중투표'){
       var discarded = (CXD.decided==='회사'&&a.no==='제4-2호')||(CXD.decided==='주주'&&a.no==='제4-1호');
-      rows+='<tr class="grp"><td colspan="11">'+chip(a.no)+' · '+d.name+(discarded?'  <span class="rb disc">폐기</span>':'')+'</td></tr>';
-      var tot=d.cands.reduce(function(x,c){return x+c.votes;},0);
+      var st=exState(a.no);
+      rows+='<tr class="grp"><td colspan="8">'+chip(a.no)+' · '+d.name
+        +(discarded?'  <span class="rb disc">폐기</span>':(st.t||''))+'</td></tr>';
+      var tot=d.cands.reduce(function(x,c){return x+c.votes*f;},0);
       d.cands.forEach(function(c){
-        var s=chSplit(c.votes);
-        var cls=discarded?' class="disc"':'';
-        rows+='<tr'+cls+'><td class="l">'+chip(c.no||('제 '+c.rank))+' '+c.name+'</td><td></td><td>'+comma(c.votes)+'</td>'
-          +'<td>'+comma(s[0])+'</td><td>'+comma(s[1])+'</td><td>'+comma(s[2])+'</td><td></td><td></td><td></td>'
-          +'<td>'+pct(c.votes,tot).toFixed(1)+'%</td><td class="c">'+(discarded?'<span class="rb disc">폐기</span>':(c.elected?'<span class="rb pass">선임</span>':'<span class="rb disc">미선임</span>'))+'</td></tr>';
+        var v=Math.round(c.votes*f), cls=discarded?' class="disc"':'';
+        /* 아직 표결 전이면 선임 여부를 말할 수 없다 */
+        var mark = discarded ? '<span class="rb disc">폐기</span>'
+          : (st.r ? (c.elected?'<span class="rb pass">선임</span>':'<span class="rb disc">미선임</span>') : st.t);
+        rows+='<tr'+cls+'><td class="l">'+chip(c.no||('제 '+c.rank))+' '+c.name+'</td><td></td><td>'+comma(v)+'</td>'
+          +'<td></td><td></td><td></td>'
+          +'<td>'+pct(v,tot).toFixed(1)+'%</td><td class="c">'+mark+'</td></tr>';
       });
     }
   });
   document.getElementById('exTbl').innerHTML=head+'<tbody>'+rows+'</tbody>';
 }
 
-/* ---- 경과 타이머 — 현장 제어 시계가 오면 그 값으로 맞춘다 ---- */
+/* ---- 경과 타이머/* ---- 경과 타이머 — 현장 제어 시계가 오면 그 값으로 맞춘다 ---- */
 var CLOCK={t:725,run:true};
 (function(){
   var el=document.getElementById('sTime');

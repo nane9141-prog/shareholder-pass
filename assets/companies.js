@@ -10,6 +10,12 @@ window.PASS_CO = [
     hero: ['#ffe98a', '#ffd21f'], ink: '#1a1a1a',
     mine: true, kind: '보통주', shares: '1,200주', limit: '500주', dday: 'D-14' },
 
+  { key: 'naver', nm: '네이버', term: '제27기 정기주주총회', status: 'live',
+    date: '2026년 3월 27일 (금)', time: '오전 10:00',
+    place: '경기 성남시 분당구 네이버 1784 커넥트홀',
+    hero: ['#b7f5c9', '#03c75a'], ink: '#0b3d20',
+    mine: true, kind: '보통주', shares: '820주', limit: '0주', dday: 'D-14' },
+
   { key: 'hyundai', nm: '현대', term: '제9기 정기주주총회', status: 'dday',
     date: '2026년 3월 20일 (금)', time: '오전 9:00',
     place: '서울 서초구 현대차 본사 대강당',

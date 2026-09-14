@@ -143,6 +143,8 @@
 
   .box{background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh);padding:18px;margin-bottom:14px}
   .box h4{margin:0 0 12px;font-size:15px;font-weight:800}
+  /* 질의·발언은 글이 곧 내용이다 — 테두리와 안여백을 두지 않는다 */
+  .box.flat{background:none;border:0;box-shadow:none;padding:0}
   .kv{display:flex;justify-content:space-between;font-size:14px;padding:7px 0}
   .kv .k{color:var(--muted)}.kv .v{font-weight:600;display:flex;align-items:center;gap:8px}
   .notice{display:flex;align-items:center;gap:8px;width:100%;padding:8px 0;border:0;background:none;
@@ -391,8 +393,8 @@
   .chk input:checked+.bx svg{stroke:#fff}
   .chk .tx{font-size:14px;line-height:21px;font-weight:700;color:#151419}
   /* 신청한 발언 */
-  .splist{display:flex;flex-direction:column;gap:12px}
-  .spitem{display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #EEF0F2;border-radius:12px}
+  .splist{display:flex;flex-direction:column;gap:24px}
+  .spitem{display:flex;flex-direction:column;gap:8px}
   .spitem .m{display:flex;align-items:center;gap:8px}
   .spitem .kd{height:22px;padding:2px 6px;border:1px solid #EEF0F2;border-radius:6px;
     font-size:12px;line-height:16px;font-weight:700;color:#151419}
@@ -563,7 +565,7 @@
 
       <!-- qna -->
       <div class="pane" data-p="qna">
-        <div class="box">
+        <div class="box flat">
           <div class="qfilter">
             <button class="qf on" data-f="all">전체 <b id="qcAll">0</b></button>
             <button class="qf" data-f="mine">내가 쓴 질의 <b id="qcMine">0</b></button>
@@ -575,7 +577,7 @@
 
       <!-- speak -->
       <div class="pane" data-p="speak">
-        <div class="box">
+        <div class="box flat">
           <div class="qhead"><span class="t">발언 신청</span><button class="qwrite" id="spReq">발언 신청</button></div>
           <div class="splist" id="spList"></div>
         </div>

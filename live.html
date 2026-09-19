@@ -751,20 +751,15 @@ var U=CXD.util, comma=U.comma, chip=U.chip;
 var M=CXD.meeting;
 var units=CXD.agenda.filter(function(a){return !a.header;});
 
-/* ---- 데모 라이브 상태 + 상태 헬퍼 (좌측 의안 진행현황 케이스) ---- */
-var CURRENT='제2-1호';
+/* ---- 라이브 상태 + 상태 헬퍼 (좌측 의안 진행현황) ----
+   처음에는 모든 의안이 대기 · 진행 0 / N 이고, 현장 제어가 보내는 진행 상황(cx.live)만 따른다. */
+var CURRENT=(CXD.agenda.filter(function(a){return !a.header;})[0]||{}).no;
+var PROG=0;   /* 상정했거나 끝난 의안 수 */
 /* 현장 제어에서 넘어오는 표결 상태 */
 var LIVE={sec:null};
 var STAGE={0:'wait',1:'wait',2:'vote',3:'cnt'};
-/* 데모 상태: 대기·투표중·집계중 + 결과(가결/부결/폐기/철회) + 수정 동의·의결권없음(회색) */
-var VS={
-  '제1호':  {s:'result',r:'pass'},           // 가결
-  '제2-1호':{s:'vote',cur:true},             // 투표중(현재)
-  '제2-2호':{s:'wait',amend:true},           // 대기 + 수정 동의
-  '제3호':  {s:'cnt'},                        // 집계중(양립불가·하위)
-  '제4-1호':{s:'result',r:'fail'},            // 부결
-  '제4-2호':{s:'result',r:'disc',mute:true}  // 폐기(의결권 없음·회색)
-};
+/* 의안별 상태: 대기·투표중·집계중 + 결과(가결/부결/폐기/철회) — 비어 있으면 모두 대기 */
+var VS={};
 function num(no){return String(no).replace(/제|호/g,'');}
 function resBadgeV(r){
   return {pass:'<span class="arb pass">가결</span>',fail:'<span class="arb fail">부결</span>',
@@ -808,7 +803,7 @@ document.getElementById('sMt').textContent=M.name;
 document.getElementById('vTitle').textContent=M.name;
 function renderProg(){
   var curIdx=units.map(function(a){return a.no;}).indexOf(CURRENT);
-  var progTxt=(curIdx>=0?curIdx+1:1)+' / '+units.length;
+  var progTxt=PROG+' / '+units.length;
   document.getElementById('sProg').textContent=progTxt;
   document.getElementById('apCnt').textContent=progTxt;
 }
@@ -1351,9 +1346,9 @@ function renderSp(){
     var ta=document.getElementById('spBody');
     SPQ.unshift({kind:SPKIND==='a'?'수정동의':'발언', ag:document.getElementById('spTarget').value,
       tx:ta.value.trim(), st:'대기'});
-    /* 발언으로 신청한 수정 동의도 현장 제어의 수정 동의 탭으로 올라간다 */
-    if(SPKIND==='a') cxPush('cx.qna',{id:'PASS-'+Date.now(), name:PASSNAME, t:'개인', sh:MY.held,
-      tm:nowHm(), ag:document.getElementById('spTarget').value, kind:'수정동의', via:'발언', q:ta.value.trim()});
+    /* 발언 신청은 현장 제어의 발언 대기 목록으로, 발언으로 신청한 수정 동의는 수정 동의 탭으로 올라간다 */
+    cxPush('cx.qna',{id:'PASS-'+Date.now(), name:PASSNAME, t:'개인', sh:MY.held,
+      tm:nowHm(), ag:document.getElementById('spTarget').value, kind:SPKIND==='a'?'수정동의':'발언', via:'발언', q:ta.value.trim()});
     ta.value=''; document.getElementById('spLen').textContent='0';
     document.getElementById('spAgree').checked=false; spCheck();
     closeM('spOvl'); renderSp();
@@ -1753,6 +1748,9 @@ function applyLive(s){
     else if(n>i) VS[a.no]={s:'wait'};
     else VS[a.no]=stVS(a.no);
   });
+  /* 진행 수 — 끝난 의안 수와 '지금 의안까지(상정했으면 포함)' 중 큰 쪽 */
+  var doneN=units.filter(function(a){ return VS[a.no]&&VS[a.no].s==='result'; }).length;
+  PROG=Math.min(units.length, Math.max(doneN, i+(stage>=1?1:0)));
   renderProg(); renderApl(); renderVote(); paintLeft(); renderQ();
 }
 

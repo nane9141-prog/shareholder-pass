@@ -72,6 +72,6 @@ window.PASS_FIND = function (key) {
   if (!k && /live\.html$/.test(location.pathname)) k = 'kakaobank';
   if (k && !window.PASS_CO.some(function (c) { return c.key === k; })) k = window.PASS_CO[0].key;
   var l = document.createElement('link');
-  l.rel = 'icon'; l.href = k ? 'assets/logo-' + k + '.png' : 'assets/logo-pass.svg';
+  l.rel = 'icon'; l.href = k ? 'assets/fav-' + k + '.png' : 'assets/fav-pass.svg';   /* 탭 전용 정사각형(여백·그림자 없음) */
   document.head.appendChild(l);
 })();

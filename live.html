@@ -347,6 +347,7 @@
   .modal h3{margin:0 0 16px;font-size:20px;line-height:26px;font-weight:700;color:#151419}
   .fld{margin-bottom:16px}
   .fld label{display:block;font-size:14px;line-height:18px;font-weight:500;color:#151419;margin-bottom:4px}
+  .fld .req{font-style:normal;color:#E9081B;margin-left:2px}
   .seg{display:flex;gap:8px}
   .seg button{flex:1;height:41px;border:1px solid #EEF0F2;border-radius:8px;background:#fff;
     font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit;color:#151419}
@@ -549,6 +550,7 @@
         <button data-t="vote">의안 투표</button>
         <button data-t="qna">질의</button>
         <button data-t="speak">발언</button>
+        <button data-t="amend">수정 동의</button>
       </div>
 
       <!-- info -->
@@ -589,6 +591,14 @@
           <div class="splist" id="spList"></div>
         </div>
       </div>
+
+      <!-- amend -->
+      <div class="pane" data-p="amend">
+        <div class="box flat">
+          <div class="qhead"><span class="t">수정 동의</span><button class="qwrite" id="amWrite">수정 동의 신청</button></div>
+          <div class="qlist" id="amList"></div>
+        </div>
+      </div>
     </div>
   </div>
 </main>
@@ -625,9 +635,6 @@
 <div class="ovl" id="spOvl">
   <div class="modal">
     <h3>발언 신청 <span id="spCnt">(1/1)</span></h3>
-    <div class="fld"><label>유형</label>
-      <div class="seg" id="spKind"><button type="button" class="on" data-v="s">발언</button><button type="button" data-v="a">수정동의</button></div>
-    </div>
     <div class="fld"><label>대상</label><select class="sel" id="spTarget"></select></div>
     <div class="fld"><label id="spBodyLb">발언 내용</label>
       <div class="tabox"><textarea class="ta" id="spBody" maxlength="100" placeholder="발언하실 내용을 요약해 작성해 주세요."></textarea>
@@ -667,14 +674,19 @@
 <!-- 질의 작성 모달 -->
 <div class="ovl" id="qOvl">
   <div class="modal">
-    <h3>질의 작성 <span id="qCnt">(1/3)</span></h3>
-    <div class="fld"><label>유형</label>
-      <div class="seg" id="qKind"><button type="button" class="on" data-v="q">질의</button><button type="button" data-v="a">수정동의</button></div>
+    <h3><span id="qTitle">질의 작성</span> <span id="qCnt">(1/3)</span></h3>
+    <div class="fld" id="qAmKindF" style="display:none"><label>유형</label>
+      <div class="seg" id="qAmKind"><button type="button" class="on" data-v="am">수정 동의</button><button type="button" data-v="pr">의사진행 동의</button></div>
     </div>
-    <div class="fld"><label>대상</label><select class="sel" id="qTarget"></select></div>
-    <div class="fld" id="qAmFld" style="display:none"><label>수정 유형</label>
+    <div class="fld" id="qTargetF"><label id="qTargetLb">대상</label><select class="sel" id="qTarget"></select></div>
+    <div class="fld" id="qAmFld" style="display:none"><label>수정 유형<i class="req">*</i></label>
       <select class="sel" id="qAmType">
-        <option>금액 조정</option><option>조건 변경</option><option>내용 추가</option><option>의제 변경</option>
+        <option>금액 조정</option><option>조건 변경</option><option>내용 추가</option>
+      </select>
+    </div>
+    <div class="fld" id="qPrFld" style="display:none"><label>의사진행 유형<i class="req">*</i></label>
+      <select class="sel" id="qPrType">
+        <option>총회 연기</option><option>총회 속행</option><option>정회 요청</option><option>심의 중단 요청</option><option>심의 재개 요청</option><option>표결 방식 변경</option><option>표결 순서 변경</option><option>의장 불신임</option><option>검사인 선임</option><option>임시의장 선임</option>
       </select>
     </div>
     <div class="fld"><label id="qBodyLb">질의 내용</label>
@@ -686,7 +698,7 @@
   </div>
 </div>
 
-<script src="assets/companies.js"></script>
+<script src="assets/companies.js?v=4"></script>
 <script src="assets/agenda.js"></script>
 <script>
 /* ---- CX(SSOT) 폴백: 실제 통합 시 cx-data.js(window.CX) 사용 ---- */
@@ -737,11 +749,11 @@ var CURRENT='제2-1호';
 /* 현장 제어에서 넘어오는 표결 상태 */
 var LIVE={sec:null};
 var STAGE={0:'wait',1:'wait',2:'vote',3:'cnt'};
-/* 데모 상태: 대기·투표중·집계중 + 결과(가결/부결/폐기/철회) + 수정동의·의결권없음(회색) */
+/* 데모 상태: 대기·투표중·집계중 + 결과(가결/부결/폐기/철회) + 수정 동의·의결권없음(회색) */
 var VS={
   '제1호':  {s:'result',r:'pass'},           // 가결
   '제2-1호':{s:'vote',cur:true},             // 투표중(현재)
-  '제2-2호':{s:'wait',amend:true},           // 대기 + 수정동의
+  '제2-2호':{s:'wait',amend:true},           // 대기 + 수정 동의
   '제3호':  {s:'cnt'},                        // 집계중(양립불가·하위)
   '제4-1호':{s:'result',r:'fail'},            // 부결
   '제4-2호':{s:'result',r:'disc',mute:true}  // 폐기(의결권 없음·회색)
@@ -781,7 +793,7 @@ function typeLabel(no){
     });
     document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=co.nm+' · 곧 시작합니다'; });
     document.querySelectorAll('.stat .h .live').forEach(function(e){
-      e.outerHTML='<span class="soon">곧 시작</span>';
+      e.outerHTML='<span class="soon">11:00 시작</span>';
     });
   }
 })();
@@ -1040,9 +1052,9 @@ var QMAXL=3;
   document.getElementById('qTarget').innerHTML=units.map(function(a){
     return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
   }).join('');
-  dressSelect('qTarget'); dressSelect('qAmType');
+  dressSelect('qTarget'); dressSelect('qAmType'); dressSelect('qPrType');
 })();
-/* 질의와 수정동의는 채워야 하는 칸도, 안내 문구도, 제출 버튼 이름도 다르다 */
+/* 질의와 수정 동의는 채워야 하는 칸도, 안내 문구도, 제출 버튼 이름도 다르다 */
 var QKIND='q';
 var QFORM={
   q:{ label:'질의 내용', submit:'질의 제출하기', amend:false,
@@ -1051,26 +1063,32 @@ var QFORM={
              '접수된 질의는 운영진 검토 후 순차적으로 의장에게 전달됩니다.',
              '비방, 욕설 등 부적절한 표현이 포함된 질의는 접수가 제한될 수 있습니다.',
              '답변은 주총 현장에서 음성 또는 화면 텍스트로 안내됩니다.'] },
-  a:{ label:'내용', submit:'수정동의 제출하기', amend:true,
+  a:{ label:'내용', submit:'수정 동의 제출하기', amend:true,
       ph:'원안을 어떻게 고칠지 구체적으로 작성해 주세요. (예: 배당금을 주당 750원에서 800원으로 조정)',
-      rules:['수정동의는 해당 의안의 표결이 개시되기 전까지 제출할 수 있습니다.',
-             '접수된 수정동의는 운영진 검토 후 의장에게 전달되며, 상정 여부는 의장이 판단합니다.',
-             '상정된 수정동의는 원안보다 먼저 표결하며, 가결되면 원안은 폐기됩니다.',
+      rules:['수정 동의는 해당 의안의 표결이 개시되기 전까지 제출할 수 있습니다.',
+             '접수된 수정 동의는 운영진 검토 후 의장에게 전달되며, 상정 여부는 의장이 판단합니다.',
+             '상정된 수정 동의는 원안보다 먼저 표결하며, 가결되면 원안은 폐기됩니다.',
              '상정 결과는 주총 현장에서 음성 또는 화면 텍스트로 안내됩니다.'] }
 };
+/* 수정 동의 탭 — 수정 동의(대상 의안 + 수정 유형) · 의사진행 동의(의사진행 유형만) */
+var AMK='am';
 function paintQForm(){
-  var f=QFORM[QKIND];
-  document.getElementById('qAmFld').style.display = f.amend ? '' : 'none';
+  var f=QFORM[QKIND], pr=(f.amend && AMK==='pr');
+  document.getElementById('qTitle').textContent = f.amend ? '수정 동의 신청' : '질의 작성';
+  document.getElementById('qCnt').style.display = f.amend ? 'none' : '';
+  document.getElementById('qAmKindF').style.display = f.amend ? '' : 'none';
+  document.querySelectorAll('#qAmKind button').forEach(function(b){ b.classList.toggle('on', b.dataset.v===AMK); });
+  document.getElementById('qTargetF').style.display = pr ? 'none' : '';
+  document.getElementById('qTargetLb').innerHTML = f.amend ? '대상 의안<i class="req">*</i>' : '대상';
+  document.getElementById('qPrFld').style.display = pr ? '' : 'none';
+  document.getElementById('qAmFld').style.display = (f.amend && !pr) ? '' : 'none';
   document.getElementById('qBodyLb').textContent = f.label;
-  document.getElementById('qBody').placeholder = f.ph;
-  document.getElementById('qSubmit').textContent = f.submit;
+  document.getElementById('qBody').placeholder = pr ? '의사진행 동의를 제안하는 사유를 구체적으로 작성해 주세요.' : f.ph;
+  document.getElementById('qSubmit').textContent = pr ? '의사진행 동의 제출하기' : f.submit;
   document.getElementById('qRules').innerHTML = f.rules.join('<br>');
 }
-document.querySelectorAll('#qKind button').forEach(function(b){
-  b.addEventListener('click',function(){
-    document.querySelectorAll('#qKind button').forEach(function(x){x.classList.toggle('on',x===b);});
-    QKIND=b.dataset.v; paintQForm();
-  });
+document.querySelectorAll('#qAmKind button').forEach(function(b){
+  b.addEventListener('click',function(){ AMK=b.dataset.v; paintQForm(); });
 });
 paintQForm();
 (function(){
@@ -1116,7 +1134,9 @@ function dressSelect(id){
 }
 function openM(id){document.getElementById(id).classList.add('on');}
 function closeM(id){document.getElementById(id).classList.remove('on');}
+document.getElementById('amWrite').addEventListener('click',function(){ QKIND='a'; AMK='am'; paintQForm(); openM('qOvl'); });
 document.getElementById('qWrite').addEventListener('click',function(){
+  QKIND='q'; paintQForm();
   var used=QUES.filter(function(x){return x.mine;}).length;
   document.getElementById('qCnt').textContent='('+Math.min(used+1,QMAXL)+'/'+QMAXL+')';
   openM('qOvl');
@@ -1124,17 +1144,19 @@ document.getElementById('qWrite').addEventListener('click',function(){
 document.getElementById('qCancel').addEventListener('click',function(){closeM('qOvl');});
 document.getElementById('qSubmit').addEventListener('click',function(){
   var ta=document.getElementById('qBody'), sel=document.getElementById('qTarget');
-  var kind=QKIND==='a'?'수정동의':null;
-  var amtype=kind?document.getElementById('qAmType').value:null;
+  var kind=QKIND==='a'?'수정동의':null, pr=(kind && AMK==='pr');
+  var amtype=!kind?null:pr?document.getElementById('qPrType').value:document.getElementById('qAmType').value;
+  /* 의사진행 동의는 의안이 아니라 총회 진행에 대한 것 — 현장 제어에는 지금 의안으로 올린다 */
+  var ag=pr?'총회 진행 전반':sel.value;
   QUES.unshift({name:PASSNAME, mine:true, own:true, time:nowHm(), date:todayStr()+' '+nowHm(),
-    ag:sel.value, q:ta.value.trim(), priv:false, kind:kind, amtype:amtype});
+    ag:ag, q:ta.value.trim(), priv:false, kind:kind, amk:pr?'의사진행 동의':'수정 동의', amtype:amtype});
   /* 현장 제어의 질의 목록에도 같은 건이 올라간다 */
   cxPush('cx.qna',{id:'PASS-'+Date.now(), name:PASSNAME, t:'개인', sh:MY.held,
-    tm:nowHm(), ag:sel.value, kind:kind, amtype:amtype, q:ta.value.trim()});
+    tm:nowHm(), ag:pr?CURRENT:sel.value, kind:kind, amtype:pr?'의사진행 · '+amtype:amtype, via:'질의', q:ta.value.trim()});
   ta.value=''; document.getElementById('qLen').textContent='0';
   document.getElementById('qSubmit').disabled=true;
-  closeM('qOvl'); renderQ();
-  toast(kind ? '수정동의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.'
+  closeM('qOvl'); renderQ(); renderAm();
+  toast(pr ? '의사진행 동의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.' : kind ? '수정 동의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.'
              : '질의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.');
 });
 function nowHm(){ var d=new Date(); return (d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes(); }
@@ -1145,19 +1167,19 @@ var PASSNAME=(window.PASS_USER&&PASS_USER.name)||'박성용';
 /* 질의는 의안마다 쌓인다. 아직 상정하지 않은 의안의 질의는 목록에 나오지 않고,
    현장 제어가 의안을 넘길 때마다 그만큼 늘어난다. */
 var QUES=[
-  {name:'박성용',mine:true,time:'09:41',date:'2026.08.27 09:41',ag:'제1호',
+  {name:'박성용',mine:true,time:'09:41',date:'2026.09.29 09:41',ag:'제1호',
    q:'당기순이익 대비 배당성향을 어떤 기준으로 정하고 계신지 알고 싶습니다.',
    ans:'별도재무제표 당기순이익을 기준으로 약 27% 수준을 유지하고 있으며, 실적과 자본 상황을 함께 고려합니다.',pub:true},
   {name:'김**',mine:false,time:'09:44',ag:'제1호',
    q:'자기주식 취득이나 소각 계획이 있는지, 있다면 규모와 시기는 어떻게 되는지요.',
    ans:'주당가치 제고를 위해 이사회에서 지속 검토 중이며, 확정되는 대로 공시하겠습니다.',pub:true},
-  {name:'박성용',mine:true,time:'10:07',date:'2026.08.27 10:07',ag:'제2-1호',
+  {name:'박성용',mine:true,time:'10:07',date:'2026.09.29 10:07',ag:'제2-1호',
    q:'ESG 경영 목표 달성을 위한 올해 구체적 실행 계획은 무엇인지요.',
    ans:'탄소중립 로드맵 2030을 기준으로 사업장별 감축 목표를 설정하고 분기별 공시할 예정입니다.',pub:true},
   {name:'황**',mine:false,time:'10:09',ag:'제2-1호',
    q:'집중투표제 배제 조항 삭제 시 향후 이사 선임 절차가 어떻게 달라지나요?',
    ans:'2인 이상 이사를 선임할 때 주주가 집중투표를 청구하실 수 있게 됩니다.',pub:true},
-  {name:'박성용',mine:true,time:'10:21',date:'2026.08.27 10:21',ag:'제2-2호',
+  {name:'박성용',mine:true,time:'10:21',date:'2026.09.29 10:21',ag:'제2-2호',
    q:'정관 변경 중 전자투표 상시 도입 조항이 기존 서면투표권을 제약하는 것은 아닌지 설명 부탁드립니다.',
    ans:'서면투표는 그대로 유지되며, 전자적 방법을 선택지로 더하는 변경입니다.',pub:true},
   {name:'황**',mine:false,time:'10:24',ag:'제2-2호',
@@ -1171,6 +1193,8 @@ var QUES=[
   {name:'정**',mine:false,time:'11:04',ag:'제4-2호',
    q:'주주제안 후보의 추천 경위와 지분 요건 충족 여부를 알고 싶습니다.',priv:true}
 ];
+/* 시작 전 주총(카카오뱅크 외)에는 아직 질의·발언 내역이 없다 */
+if(window.__PRE) QUES.length=0;
 /* 표결 단위의 차례 — 진행한 의안까지만 질의를 보여 주는 잣대 */
 function agIdx(no){ return units.map(function(a){return a.no;}).indexOf(no); }
 function qSeen(x){
@@ -1182,7 +1206,7 @@ function qSeen(x){
 var QFILTER='all';
 function qAvatar(){return '<span class="av"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></span>';}
 function renderQ(){
-  var open=QUES.filter(qSeen);
+  var open=QUES.filter(function(x){ return !x.kind && qSeen(x); });
   var list=open.filter(function(x){return QFILTER==='mine'?x.mine:true;});
   var host=document.getElementById('qList');
   document.getElementById('qcAll').textContent=open.length;
@@ -1219,6 +1243,22 @@ document.querySelectorAll('.qfilter .qf').forEach(function(b){
 });
 renderQ();
 
+/* ---- 수정 동의 — 내가 제출한 수정 동의 ---- */
+function renderAm(){
+  var host=document.getElementById('amList');
+  var list=QUES.filter(function(x){ return x.kind && x.mine; });
+  if(!list.length){ host.innerHTML='<div class="qempty">제출한 수정 동의가 없습니다</div>'; return; }
+  host.innerHTML=list.map(function(x){
+    return '<div class="qitem"><div class="m"><span class="who">'+qAvatar()
+      +'<span class="nm">'+x.name+'</span><span>'+(x.date||x.time)+'</span>'
+      +'<span class="pv am">'+(x.amk||'수정 동의')+(x.amtype?' · '+x.amtype:'')+'</span></span>'
+      +'<span class="rt"><span class="ag">'+(x.ag==='총회 진행 전반'?x.ag:chip(x.ag))+'</span></span></div>'
+      +'<div class="q">'+x.q+'</div>'
+      +'<div class="ans priv"><span class="lock">운영진 검토 후 의장에게 전달됩니다</span></div></div>';
+  }).join('');
+}
+renderAm();
+
 /* ---- 실시간 공지사항 ----
    목록에는 제목만 두고, 누르면 전문을 모달로 펼친다. */
 var NOTICES=[
@@ -1251,16 +1291,16 @@ var NOTICES=[
 })();
 
 /* ---- 발언 신청 ----
-   발언과 수정동의는 같은 창에서 고른다. 송출에 동의하고 내용이 있어야 신청할 수 있다. */
+   발언과 수정 동의는 같은 창에서 고른다. 송출에 동의하고 내용이 있어야 신청할 수 있다. */
 var SPKIND='s';
 var SPFORM={
   s:{ label:'발언 내용', submit:'발언 신청하기', agree:'발언 내용의 실시간 송출에 동의합니다',
       ph:'발언하실 내용을 요약해 작성해 주세요.',
       rules:'회의당 1회·최대 3분, 의장 지명 후 마이크가 활성화됩니다. 발언은 실시간 송출·기록됩니다. '
             +'부적절한 발언 시 마이크가 차단될 수 있으며 법적 책임은 본인에게 있습니다.' },
-  a:{ label:'수정동의 내용', submit:'수정동의 신청하기', agree:'수정동의 내용의 실시간 송출에 동의합니다',
+  a:{ label:'수정 동의 내용', submit:'수정 동의 신청하기', agree:'수정 동의 내용의 실시간 송출에 동의합니다',
       ph:'원안을 어떻게 고칠지 구체적으로 작성해 주세요.',
-      rules:'수정동의는 해당 의안의 표결이 개시되기 전까지 신청할 수 있습니다. 의장 지명 후 마이크가 활성화되며 '
+      rules:'수정 동의는 해당 의안의 표결이 개시되기 전까지 신청할 수 있습니다. 의장 지명 후 마이크가 활성화되며 '
             +'제안 취지를 직접 설명하게 됩니다. 상정 여부는 의장이 판단하고, 상정되면 원안보다 먼저 표결합니다.' }
 };
 var SPQ=[];
@@ -1284,7 +1324,7 @@ function renderSp(){
   }
   host.innerHTML=SPQ.map(function(x){
     return '<div class="spitem"><div class="m">'
-      +'<span class="kd'+(x.kind==='수정동의'?' am':'')+'">'+x.kind+'</span>'
+      +'<span class="kd'+(x.kind==='수정동의'?' am':'')+'">'+String(x.kind).replace('수정동의','수정 동의')+'</span>'
       +'<span class="ag">'+chip(x.ag)+'</span>'
       +'<span class="st3"><i></i>'+x.st+'</span></div>'
       +'<div class="tx3">'+x.tx+'</div></div>';
@@ -1295,12 +1335,6 @@ function renderSp(){
     return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
   }).join('');
   dressSelect('spTarget');
-  document.querySelectorAll('#spKind button').forEach(function(b){
-    b.addEventListener('click',function(){
-      document.querySelectorAll('#spKind button').forEach(function(x){x.classList.toggle('on',x===b);});
-      SPKIND=b.dataset.v; paintSpForm();
-    });
-  });
   document.getElementById('spBody').addEventListener('input',function(){
     document.getElementById('spLen').textContent=this.value.length; spCheck();
   });
@@ -1311,10 +1345,13 @@ function renderSp(){
     var ta=document.getElementById('spBody');
     SPQ.unshift({kind:SPKIND==='a'?'수정동의':'발언', ag:document.getElementById('spTarget').value,
       tx:ta.value.trim(), st:'대기'});
+    /* 발언으로 신청한 수정 동의도 현장 제어의 수정 동의 탭으로 올라간다 */
+    if(SPKIND==='a') cxPush('cx.qna',{id:'PASS-'+Date.now(), name:PASSNAME, t:'개인', sh:MY.held,
+      tm:nowHm(), ag:document.getElementById('spTarget').value, kind:'수정동의', via:'발언', q:ta.value.trim()});
     ta.value=''; document.getElementById('spLen').textContent='0';
     document.getElementById('spAgree').checked=false; spCheck();
     closeM('spOvl'); renderSp();
-    toast((SPKIND==='a'?'수정동의':'발언')+' 신청이 접수되었습니다. 의장 지명 후 마이크가 켜집니다.');
+    toast((SPKIND==='a'?'수정 동의':'발언')+' 신청이 접수되었습니다. 의장 지명 후 마이크가 켜집니다.');
   });
   paintSpForm(); renderSp();
 })();
@@ -1437,8 +1474,8 @@ document.getElementById('mtOk').addEventListener('click',function(){
   closeM('mtOvl');
   if(!m || m.cur) return;
   /* 생중계 중인 주총만 시청 화면이 있다 — 나머지는 기업 화면으로 보낸다 */
-  if(m.live) location.href='live.html?co='+m.key;
-  else location.href='company.html?co='+m.key;
+  /* 다른 주총은 새 탭으로 연다 — 보고 있던 중계는 그대로 둔다 */
+  window.open((m.live?'live.html':'company.html')+'?co='+m.key,'_blank');
 });
 
 /* ---- 의결권 행사현황 오버레이 ---- */
@@ -1463,6 +1500,8 @@ function resBadge(r){ if(r==='가결')return '<span class="rb pass">가결</span
 function buildEx(){
   var head='<thead><tr><th class="l">의안명</th><th>총 행사가능의결권</th><th>총 행사의결권</th>'
     +'<th>찬성</th><th>반대</th><th>기권</th><th>찬성률</th><th class="c">결과</th></tr></thead>';
+  /* 시작 전 주총은 아직 행사 내역이 없다 */
+  if(window.__PRE){ document.getElementById('exTbl').innerHTML=head+'<tbody><tr><td class="c" colspan="8" style="padding:32px 0;color:#737373">아직 집계된 의결권 행사 내역이 없습니다</td></tr></tbody>'; return; }
   var rows='';
   function cells(no,name,d,discarded,f){
     var F=Math.round(d['for']*f), A=Math.round(d.against*f), B=Math.round((d.abs||0)*f);
@@ -1585,7 +1624,7 @@ var SCRIPT=[
 ];
 var CAPLBL={ko:['AI 자막 ON','AI 자막 OFF'],en:['AI Subtitles ON','AI Subtitles OFF'],
   ja:['AI字幕 ON','AI字幕 OFF'],zh:['AI字幕 ON','AI字幕 OFF']};
-var CAP={on:true, hold:null, lang:'ko'};   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
+var CAP={on:!window.__PRE, hold:null, lang:'ko'};   /* 시작 전 주총은 자막을 꺼 둔다 */   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
 function capLines(){
   if(CAP.hold) return CAP.hold;
   var v=document.getElementById('vid');
@@ -1601,6 +1640,7 @@ function paintCap(){
   var box=document.getElementById('cap'), sp=document.getElementById('capTxt').children;
   box.classList.toggle('off', !CAP.on);
   document.getElementById('capBtn').textContent='✨ '+CAPLBL[CAP.lang][CAP.on?0:1];
+  document.getElementById('capBtn').classList.toggle('on', CAP.on);
   var l = CAP.on ? capLines() : ['', ''];
   sp[0].textContent=l[0]; sp[1].textContent=l[1]||'';
 }
@@ -1662,7 +1702,7 @@ function applyLive(s){
       +'<div class="q">'+(s.q||'')+'</div>'+(s.a?'<div class="a">'+s.a+'</div>':'');
   }else if(s.cast==='speech'||s.cast==='amend'){
     vw.classList.add('cast');
-    box.innerHTML='<span class="k">'+(s.cast==='amend'?'수정동의':'발언')+'</span>'
+    box.innerHTML='<span class="k">'+(s.cast==='amend'?'수정 동의':'발언')+'</span>'
       +'<span class="who">'+(s.who||'')+'</span>'+(s.msg?'<div class="q">'+s.msg+'</div>':'');
   }else{
     vw.classList.remove('cast');

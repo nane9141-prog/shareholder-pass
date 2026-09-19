@@ -5,22 +5,28 @@ window.PASS_USER = { name: '박성용' };
 
 window.PASS_CO = [
   { key: 'kakaobank', nm: '카카오뱅크', term: '제10기 정기주주총회', status: 'live',
-    date: '2026년 3월 27일 (금)', time: '오전 10:00',
+    date: '2026년 9월 29일 (화)', time: '오전 10:00',
     place: '서울 영등포구 카카오뱅크 본사 대강당',
     hero: ['#ffe98a', '#ffd21f'], ink: '#1a1a1a',
     mine: true, kind: '보통주', shares: '1,200주', limit: '500주', dday: 'D-14' },
 
   { key: 'naver', nm: '네이버', term: '제27기 정기주주총회', status: 'live',
-    date: '2026년 3월 27일 (금)', time: '오전 10:00',
+    date: '2026년 9월 29일 (화)', time: '오전 10:00',
     place: '경기 성남시 분당구 네이버 1784 커넥트홀',
     hero: ['#b7f5c9', '#03c75a'], ink: '#0b3d20',
     mine: true, kind: '보통주', shares: '20,000주', limit: '0주', dday: 'D-14' },
 
-  { key: 'hyundai', nm: '현대', term: '제9기 정기주주총회', status: 'dday',
+  { key: 'hyundai', nm: '현대차', term: '제9기 정기주주총회', status: 'dday',
     date: '2026년 3월 20일 (금)', time: '오전 9:00',
     place: '서울 서초구 현대차 본사 대강당',
     hero: ['#7d97c8', '#0a2a66'], ink: '#fff',
-    mine: true, kind: '보통주', shares: '340주', limit: '0주', dday: 'D-day' },
+    kind: '보통주', shares: '340주', limit: '0주', dday: 'D-day' },
+
+  { key: 'kudoselectric', nm: '큐더스전자', term: '제9기 정기주주총회', status: 'dday',
+    date: '2026년 3월 20일 (금)', time: '오전 9:00',
+    place: '서울 강남구 큐더스전자 본사 대강당',
+    hero: ['#7fbf9a', '#0f5a36'], ink: '#fff',
+    mine: true, kind: '보통주', shares: '520주', limit: '0주', dday: 'D-day' },
 
   { key: 'shinsegae', nm: '신세계', term: '제9기 정기주주총회', status: 'end',
     date: '2026년 3월 13일 (금)', time: '오전 9:00',
@@ -41,7 +47,7 @@ window.PASS_CO = [
     mine: true, kind: '보통주', shares: '85주', limit: '0주', dday: 'D-12' },
 
   { key: 'hanmi', nm: '한미반도체', term: '제9기 정기주주총회', status: 'dn', d: 'D-12' },
-  { key: 'dalba', nm: '달바', term: '제9기 정기주주총회', status: 'end' },
+  { key: 'dalba', nm: '달바글로벌', term: '제9기 정기주주총회', status: 'end' },
   { key: 'gs', nm: 'GS', term: '제9기 정기주주총회', status: 'dn', d: 'D-12' },
   { key: 'hanwha-aero', nm: '한화에어로스페이스', term: '제9기 정기주주총회', status: 'dn', d: 'D-12' },
   { key: 'mirae-asset', nm: '미래에셋증권', term: '제9기 정기주주총회', status: 'end' },

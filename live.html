@@ -57,6 +57,10 @@
   .wait{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 8px;border-radius:9999px;
     background:rgba(255,255,255,.18);color:#fff;font-size:11px;font-weight:700}
   .vid.pre video,.vid.pre .snd{display:none}
+  /* 현장 제어에서 '총회 시작'을 누르기 전 — LIVE 대신 '중계 준비 중' */
+  .vid .badge .wait{display:none}
+  .vid.waiting .badge .live{display:none}
+  .vid.waiting .badge .wait{display:inline-flex}
   .vid .lang{position:absolute;right:12px;top:12px;display:flex;align-items:center;gap:5px;background:rgba(0,0,0,.4);color:#fff;font-size:12px;font-weight:600;border-radius:8px;padding:5px 9px}
   .vid .lang svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:1.8}
   .doneflag.wait2{background:#f7f8fa;color:#71717a;font-weight:600}
@@ -514,7 +518,7 @@
       <div class="vid">
         <div class="scene"><img class="lg" src="assets/logo-kakaobank.png" alt="카카오뱅크" width="52" height="52"><div class="t" id="vTitle">제10기 정기주주총회</div><div class="t2">카카오뱅크 · 생중계</div></div>
         <video id="vid" src="assets/kakaobank.mp4" muted playsinline loop preload="auto"></video>
-        <div class="badge"><span class="live"><i></i>LIVE</span></div>
+        <div class="badge"><span class="live"><i></i>LIVE</span><span class="wait">중계 준비 중</span></div>
         <button class="snd" id="vSnd" type="button"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>소리 켜기</button>
         <div class="castbox" id="castBox"></div>
       </div>
@@ -701,7 +705,7 @@
   </div>
 </div>
 
-<script src="assets/companies.js?v=9"></script>
+<script src="assets/companies.js?v=10"></script>
 <script src="assets/agenda.js"></script>
 <script>
 /* ---- CX(SSOT) 폴백: 실제 통합 시 cx-data.js(window.CX) 사용 ---- */
@@ -792,9 +796,7 @@ function typeLabel(no){
     var box=document.querySelector('.vid');
     if(box){ box.classList.add('pre'); box.classList.remove('playing'); }
     var v=document.getElementById('vid'); if(v){ v.pause(); v.removeAttribute('src'); v.load(); }
-    document.querySelectorAll('.vid .badge .live').forEach(function(e){
-      e.outerHTML='<span class="wait">중계 준비 중</span>';
-    });
+    if(box) box.classList.add('waiting');   /* LIVE 대신 '중계 준비 중' */
     document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=co.nm+' · 곧 시작합니다'; });
     document.querySelectorAll('.stat .h .live').forEach(function(e){
       e.outerHTML='<span class="soon">11:00 시작</span>';
@@ -1774,8 +1776,20 @@ function syncVid(){
   if(c.vpaused) v.pause(); else v.play().catch(function(){});
   document.querySelector('.vid').classList.add('playing');
 }
+/* 총회 시작 전(현장 제어 시계가 한 번도 돌지 않음)에는 준비 중 화면 — 시작 신호가 오면 생중계로 */
+function setWaiting(on){
+  var box=document.querySelector('.vid'); if(!box) return;
+  if(box.classList.contains('waiting')===on && box.__w) return; box.__w=1;
+  box.classList.toggle('waiting',on); box.classList.toggle('pre',on);
+  var nm=(window.__CO&&__CO.nm)||M.org;
+  document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=nm+(on?' · 곧 시작합니다':' · 생중계'); });
+  if(on){ box.classList.remove('playing'); var v=document.getElementById('vid'); if(v) v.pause(); }
+}
 function applyClock(c){
-  if(window.__PRE||!c||!c.at) return;
+  if(window.__PRE) return;
+  var started=!!(c&&c.at&&(c.run||c.t>0));
+  setWaiting(!started);
+  if(!started) return;
   var drift=(Date.now()-c.at)/1000;
   CLOCK.t=c.t+(c.run?drift:0); CLOCK.run=!!c.run;
   VWANT=c; syncVid();

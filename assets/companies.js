@@ -63,8 +63,8 @@ window.PASS_CO = [
 window.PASS_FIND = function (key) {
   var hit = window.PASS_CO.filter(function (c) { return c.key === key; })[0];
   return hit || window.PASS_CO[0];
-};
-
+};
+
 /* 브라우저 탭 아이콘 — 기업 화면(?co=)은 그 기업 로고, 목록·마이페이지는 주주PASS 로고.
    시청 화면은 co 가 없으면 카카오뱅크로 연다(live.html 과 같은 기본값). */
 (function () {
@@ -72,6 +72,6 @@ window.PASS_FIND = function (key) {
   if (!k && /live\.html$/.test(location.pathname)) k = 'kakaobank';
   if (k && !window.PASS_CO.some(function (c) { return c.key === k; })) k = window.PASS_CO[0].key;
   var l = document.createElement('link');
-  l.rel = 'icon'; l.href = k ? 'assets/fav-' + k + '.png' : 'assets/fav-pass.svg';   /* 탭 전용 정사각형(여백·그림자 없음) */
+  l.rel = 'icon'; l.href = k ? 'assets/fav-' + k + '.png?v=2' : 'assets/fav-pass.svg?v=2';   /* 탭 전용 정사각형(여백·그림자 없음) */
   document.head.appendChild(l);
-})();
+})();

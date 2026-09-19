@@ -8,6 +8,7 @@ window.PASS_CO = [
     date: '2026년 9월 29일 (화)', time: '오전 10:00',
     place: '서울 영등포구 카카오뱅크 본사 대강당',
     hero: ['#ffe98a', '#ffd21f'], ink: '#1a1a1a',
+    video: 'assets/kakaobank.mp4',
     mine: true, kind: '보통주', shares: '1,200주', limit: '500주', dday: 'D-14' },
 
   { key: 'naver', nm: '네이버', term: '제27기 정기주주총회', status: 'live',
@@ -22,11 +23,12 @@ window.PASS_CO = [
     hero: ['#7d97c8', '#0a2a66'], ink: '#fff',
     kind: '보통주', shares: '340주', limit: '0주', dday: 'D-day' },
 
-  { key: 'kudoselectric', nm: '큐더스전자', term: '제9기 정기주주총회', status: 'dday',
-    date: '2026년 3월 20일 (금)', time: '오전 9:00',
+  { key: 'kudoselectric', nm: '큐더스전자', term: '제10기 정기주주총회', status: 'live',
+    date: '2026년 9월 29일 (화)', time: '오전 10:00',
     place: '서울 강남구 큐더스전자 본사 대강당',
-    hero: ['#7fbf9a', '#0f5a36'], ink: '#fff',
-    mine: true, kind: '보통주', shares: '520주', limit: '0주', dday: 'D-day' },
+    hero: ['#1b2a3a', '#0a0f16'], ink: '#fff', banner: 'assets/banner-kudoselectric.jpg',
+    video: 'assets/kudoselectric.mp4',
+    mine: true, kind: '보통주', shares: '1,200주', limit: '500주', dday: 'D-14' },
 
   { key: 'shinsegae', nm: '신세계', term: '제9기 정기주주총회', status: 'end',
     date: '2026년 3월 13일 (금)', time: '오전 9:00',

@@ -31,7 +31,15 @@
   .nav{display:flex;align-items:center;gap:16px;font-size:14px;color:#3f3f46}
   .nav .u{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--fg)}
   .nav .u svg,.nav .exit svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
-  .nav .exit{display:flex;align-items:center;gap:6px;color:#52525b}
+  .nav .exit{display:flex;align-items:center;gap:6px;color:#52525b;cursor:pointer}
+  /* 퇴장 확인 — 신청 완료 모달과 같은 모양(왼쪽 정렬), 버튼 취소 · 퇴장하기 */
+  .xmod{width:320px;min-width:280px;max-width:360px;background:#fff;border-radius:12px;box-shadow:0 2px 12px -2px rgba(0,0,0,.15);overflow:hidden}
+  .xmod .ct{display:flex;flex-direction:column;gap:4px;padding:20px 20px 12px;text-align:left}
+  .xmod .tt{font-size:16px;line-height:24px;font-weight:700;letter-spacing:-.01em;color:#151419}
+  .xmod .ds{font-size:14px;line-height:21px;letter-spacing:-.01em;color:#151419}
+  .xmod .bg2{display:flex;gap:6px;padding:10px 20px 20px}
+  .xmod .bg2 button{flex:1;height:41px;padding:10px 12px;border:1px solid #EEF0F2;border-radius:8px;background:#fff;font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:-.01em;color:#151419;cursor:pointer}
+  .xmod .bg2 button.dark{background:#151419;border-color:#151419;color:#fff}
 
   .cols{display:grid;grid-template-columns:1.3fr 1fr;gap:22px;margin:18px 0 60px;align-items:start}
 
@@ -506,7 +514,7 @@
     <nav class="nav">
       <span class="u"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>박성용</span>
       <span class="divv"></span>
-      <span class="exit"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>퇴장하기</span>
+      <span class="exit" id="exitBtn" role="button" tabindex="0"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>퇴장하기</span>
     </nav>
   </div>
 </header>
@@ -1813,6 +1821,24 @@ document.getElementById('vSnd').addEventListener('click',function(){
     if(e.target===o || !o.contains(e.target)) e.preventDefault();
   },{passive:false});
 });
+</script>
+<div class="ovl" id="exitOvl">
+  <div class="xmod" role="dialog" aria-modal="true" aria-labelledby="exitTt">
+    <div class="ct"><div class="tt" id="exitTt">퇴장하시겠습니까?</div><div class="ds">이미 행사하신 의결권은 정상적으로 반영되며, 총회 진행 시간 내에는 언제든지 다시 입장하실 수 있습니다.</div></div>
+    <div class="bg2"><button type="button" id="exitNo">취소</button><button type="button" class="dark" id="exitGo">퇴장하기</button></div>
+  </div>
+</div>
+<script>
+/* 퇴장하기 — 확인 후 주주PASS 홈으로 */
+(function(){
+  var ov=document.getElementById('exitOvl');
+  function open(){ ov.classList.add('on'); document.getElementById('exitNo').focus(); }
+  document.getElementById('exitBtn').addEventListener('click',open);
+  document.getElementById('exitBtn').addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
+  document.getElementById('exitNo').addEventListener('click',function(){ ov.classList.remove('on'); });
+  ov.addEventListener('click',function(e){ if(e.target===ov) ov.classList.remove('on'); });
+  document.getElementById('exitGo').addEventListener('click',function(){ location.href='index.html'; });
+})();
 </script>
 </body>
 </html>

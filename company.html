@@ -12,6 +12,7 @@
     --r:14px; --sh:0 1px 2px rgba(16,24,40,.05); --shmd:0 8px 30px rgba(16,24,40,.08);
   }
   *{box-sizing:border-box}
+  html{scrollbar-gutter:stable}   /* 스크롤바 유무로 헤더가 좌우로 밀리지 않게 */
   body{margin:0;background:var(--bg);color:var(--fg);font-family:'Pretendard',system-ui,sans-serif;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
@@ -28,7 +29,9 @@
   .mtsel .co{font-weight:700;font-size:15px}
   .mtsel .mt{font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mtsel .cv{width:16px;height:16px;stroke:#a1a1aa;fill:none;stroke-width:2}
-  .nav{display:flex;align-items:center;gap:18px;font-size:14px;color:#3f3f46}
+  .nav{display:flex;align-items:center;gap:22px;font-size:14px;color:#3f3f46}   /* 통합 홈과 같은 메뉴 */
+  .nav .sep{width:1px;height:14px;background:var(--border)}
+  .nav .out{color:var(--muted);cursor:pointer}
   .nav .u{display:flex;align-items:center;gap:6px;font-weight:600;color:var(--fg)}
   .nav .u svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8}
 
@@ -234,8 +237,8 @@
         <span class="mt" id="mtName">제10기 정기주주총회</span>
         <svg class="cv" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
     </div>
-    <nav class="nav"><span>고객센터</span><span>이용안내</span>
-      <a class="u" id="navUser" href="mypage.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>박성용</a></nav>
+    <nav class="nav"><span>이용안내</span><span>고객센터</span><span class="sep"></span>
+      <a class="u" id="navUser" href="mypage.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>박성용</a><span class="out">로그아웃</span></nav>
   </div>
 </header>
 
@@ -322,7 +325,7 @@
   </div>
 </div>
 
-<script src="assets/companies.js?v=6"></script>
+<script src="assets/companies.js?v=8"></script>
 <script src="assets/agenda.js"></script>
 <script>
 /* CX(SSOT)가 있으면 그대로 사용, 없으면 데모 폴백. 실제 통합 시 cx-data.js 로드로 대체. */
@@ -361,8 +364,8 @@ else dchip.remove();
 (function(){
   /* 총회 전에는 신청, 열려 있으면 입장, 끝난 뒤에는 지난 기록 보기 */
   var S = {
-    live: { bs:[['출석',''],['행사 완료','blue']], btn:'전자주주총회 입장', href:'live.html?co='+CO.key, dark:true },
-    end:  { bs:[['출석',''],['행사 완료','blue']], btn:'의결권 행사 내역 보기', href:'mypage.html#vote', line:true },
+    live: { bs:[['출석','']], btn:'전자주주총회 입장', href:'live.html?co='+CO.key, dark:true },
+    end:  { bs:[['출석','']], btn:'의결권 행사 내역 보기', href:'mypage.html#vote', line:true },
     dday: { bs:[], btn:'사전 참석 신청', dark:true },
     dn:   { bs:[], btn:'사전 참석 신청', dark:true }
   };

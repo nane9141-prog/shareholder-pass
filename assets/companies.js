@@ -12,7 +12,7 @@ window.PASS_CO = [
     mine: true, kind: '보통주', shares: '1,200주', limit: '500주', dday: 'D-14' },
 
   { key: 'naver', nm: '네이버', term: '제27기 정기주주총회', status: 'live',
-    date: '2026년 9월 29일 (화)', time: '오전 10:00',
+    date: '2026년 9월 29일 (화)', time: '오전 11:00',
     place: '경기 성남시 분당구 네이버 1784 커넥트홀',
     hero: ['#b7f5c9', '#03c75a'], ink: '#0b3d20',
     mine: true, kind: '보통주', shares: '20,000주', limit: '0주', dday: 'D-14' },
@@ -42,8 +42,8 @@ window.PASS_CO = [
     hero: ['#6b6b6b', '#111'], ink: '#fff',
     mine: true, kind: '보통주', shares: '1,050주', limit: '120주' },
 
-  { key: 'korea-zinc', nm: '고려아연', term: '제9기 정기주주총회', status: 'dn', d: 'D-12',
-    date: '2026년 3월 31일 (화)', time: '오전 10:00',
+  { key: 'korea-zinc', nm: '고려아연', term: '제9기 정기주주총회', status: 'dn', d: 'D-14',
+    date: '2026년 10월 13일 (화)', time: '오전 10:00',
     place: '서울 강남구 본사 대회의실',
     hero: ['#5fbf9b', '#0f7d57'], ink: '#fff',
     mine: true, kind: '보통주', shares: '85주', limit: '0주', dday: 'D-12' },

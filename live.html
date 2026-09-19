@@ -715,6 +715,7 @@
 
 <script src="assets/companies.js?v=10"></script>
 <script src="assets/agenda.js"></script>
+<script src="assets/caption-kudoselectric.js?v=1"></script>
 <script>
 /* ---- CX(SSOT) 폴백: 실제 통합 시 cx-data.js(window.CX) 사용 ---- */
 var CXD = window.CX || {
@@ -1635,6 +1636,8 @@ var SCRIPT=[
 /* 대본 속 회사명은 지금 보고 있는 기업으로 */
 if(window.__CO && window.__CO.key!=='kakaobank') SCRIPT.forEach(function(c){ var L=c[1]; for(var k in L) L[k]=L[k].map(function(t){
   return String(t).replace(/카카오뱅크/g,__CO.nm).replace(/KakaoBank/g,__CO.nm).replace(/カカオバンク/g,__CO.nm); }); });
+/* 큐더스전자는 자기 영상에서 받아 적은 대본(4개 언어)을 쓴다 — assets/caption-kudoselectric.js */
+if(window.__CO && window.__CO.key==='kudoselectric' && window.CAP_KUDOS && window.CAP_KUDOS.length) SCRIPT=window.CAP_KUDOS;
 var CAPLBL={ko:['AI 자막 ON','AI 자막 OFF'],en:['AI Subtitles ON','AI Subtitles OFF'],
   ja:['AI字幕 ON','AI字幕 OFF'],zh:['AI字幕 ON','AI字幕 OFF']};
 var CAP={on:!window.__PRE, hold:null, lang:'ko'};   /* 시작 전 주총은 자막을 꺼 둔다 */   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */

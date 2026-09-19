@@ -715,7 +715,7 @@
 
 <script src="assets/companies.js?v=10"></script>
 <script src="assets/agenda.js"></script>
-<script src="assets/caption-kudoselectric.js?v=1"></script>
+<script src="assets/caption-kudoselectric.js?v=2"></script>
 <script>
 /* ---- CX(SSOT) 폴백: 실제 통합 시 cx-data.js(window.CX) 사용 ---- */
 var CXD = window.CX || {
@@ -1057,7 +1057,32 @@ renderVote();
 /* ---- 질의 작성 ----
    관련 의안을 '총회 진행 전반'으로 둘지 의안 하나로 좁힐지 먼저 고르고,
    내용이 한 글자라도 있어야 등록할 수 있다. 남은 횟수는 제목 옆에 적는다. */
-var QMAXL=3;
+/* 당일 규칙 — 전자주주총회 설정 › 진행 설정에서 저장한 값(cx.rules). 없으면 기본(질의 3 · 발언 1 · 동의 1) */
+function RULES(){
+  var r=null; try{ r=JSON.parse(localStorage.getItem('cx.rules')||'null'); }catch(e){} r=r||{};
+  return { ask:r.ask||{on:true,n:3}, speak:r.speak||{on:true,n:1,t:3}, amend:r.amend||{on:true,n:1} };
+}
+function ruleUsed(kind){
+  /* 이 화면에서 새로 제출한 것만 센다(own) — 예시로 들어 있는 '내가 쓴 질의'는 빼고 */
+  if(kind==='ask') return QUES.filter(function(x){ return x.own && x.kind!=='수정동의'; }).length;
+  if(kind==='speak') return SPQ.filter(function(x){ return x.kind==='발언'; }).length;
+  return QUES.filter(function(x){ return x.own && x.kind==='수정동의'; }).length + SPQ.filter(function(x){ return x.kind==='수정동의'; }).length;
+}
+/* 막을 이유가 있으면 안내 문구, 없으면 '' */
+function ruleBlock(kind){
+  var r=RULES()[kind], nm={ask:'질의는',speak:'발언은',amend:'동의는'}[kind], lb={ask:'질의',speak:'발언',amend:'동의'}[kind];
+  if(r.on===false) return '현재 당일 '+lb+' 신청을 받지 않습니다.';
+  if(ruleUsed(kind)>=r.n) return nm+' 1인당 '+r.n+'회까지 신청할 수 있습니다.';
+  return '';
+}
+function applyRuleText(){
+  var R=RULES();
+  QMAXL=R.ask.n;
+  QFORM.q.rules[0]='질의는 1인당 최대 '+R.ask.n+'회까지 가능하며, 제출 후 90초 뒤에 재질의할 수 있습니다.';
+  SPFORM.s.rules='회의당 '+R.speak.n+'회·최대 '+(R.speak.t||3)+'분, 의장 지명 후 마이크가 활성화됩니다. 발언은 실시간 송출·기록됩니다. '
+    +'부적절한 발언 시 마이크가 차단될 수 있으며 법적 책임은 본인에게 있습니다.';
+}
+var QMAXL=RULES().ask.n;
 (function(){
   document.getElementById('qTarget').innerHTML=units.map(function(a){
     return '<option value="'+a.no+'">'+chip(a.no)+' '+a.nm+'</option>';
@@ -1144,15 +1169,19 @@ function dressSelect(id){
 }
 function openM(id){document.getElementById(id).classList.add('on');}
 function closeM(id){document.getElementById(id).classList.remove('on');}
-document.getElementById('amWrite').addEventListener('click',function(){ QKIND='a'; AMK='am'; paintQForm(); openM('qOvl'); });
+document.getElementById('amWrite').addEventListener('click',function(){
+  var m=ruleBlock('amend'); if(m){ toast(m); return; }
+  QKIND='a'; AMK='am'; applyRuleText(); paintQForm(); openM('qOvl'); });
 document.getElementById('qWrite').addEventListener('click',function(){
-  QKIND='q'; paintQForm();
-  var used=QUES.filter(function(x){return x.mine;}).length;
+  var m=ruleBlock('ask'); if(m){ toast(m); return; }
+  QKIND='q'; applyRuleText(); paintQForm();
+  var used=ruleUsed('ask');
   document.getElementById('qCnt').textContent='('+Math.min(used+1,QMAXL)+'/'+QMAXL+')';
   openM('qOvl');
 });
 document.getElementById('qCancel').addEventListener('click',function(){closeM('qOvl');});
 document.getElementById('qSubmit').addEventListener('click',function(){
+  var bm=ruleBlock(QKIND==='a'?'amend':'ask'); if(bm){ toast(bm); closeM('qOvl'); return; }
   var ta=document.getElementById('qBody'), sel=document.getElementById('qTarget');
   var kind=QKIND==='a'?'수정동의':null, pr=(kind && AMK==='pr');
   var amtype=!kind?null:pr?document.getElementById('qPrType').value:document.getElementById('qAmType').value;
@@ -1349,9 +1378,12 @@ function renderSp(){
     document.getElementById('spLen').textContent=this.value.length; spCheck();
   });
   document.getElementById('spAgree').addEventListener('change',spCheck);
-  document.getElementById('spReq').addEventListener('click',function(){ openM('spOvl'); });
+  document.getElementById('spReq').addEventListener('click',function(){
+    var m=ruleBlock(SPKIND==='a'?'amend':'speak'); if(m && ruleBlock('speak') && ruleBlock('amend')){ toast(m); return; }
+    applyRuleText(); paintSpForm(); openM('spOvl'); });
   document.getElementById('spCancel').addEventListener('click',function(){ closeM('spOvl'); });
   document.getElementById('spSubmit').addEventListener('click',function(){
+    var bm=ruleBlock(SPKIND==='a'?'amend':'speak'); if(bm){ toast(bm); return; }
     var ta=document.getElementById('spBody');
     SPQ.unshift({kind:SPKIND==='a'?'수정동의':'발언', ag:document.getElementById('spTarget').value,
       tx:ta.value.trim(), st:'대기'});

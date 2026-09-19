@@ -203,6 +203,8 @@
   .ovl{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
     padding:24px;background:rgba(10,12,20,.55)}
   .ovl.on{display:flex}
+  html:has(.ovl.on),html:has(.ovl.on) body{overflow:hidden}   /* 모달이 떠 있는 동안 바깥은 스크롤되지 않는다 */
+  .ovl.on *{overscroll-behavior:contain}
   .amod{width:320px;min-width:280px;max-width:360px;background:#fff;border-radius:12px;
     box-shadow:0 2px 12px -2px rgba(0,0,0,.15);overflow:hidden}
   .amod .ct{display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px 20px 12px;text-align:center}
@@ -591,6 +593,15 @@ document.getElementById('sideGroups').addEventListener('click',function(e){
 });
 document.querySelectorAll('#agList .row').forEach(function(r){
   r.addEventListener('click',function(){ r.classList.toggle('open'); });
+});
+</script>
+<script>
+/* 모달이 떠 있으면 배경(어두운 영역)에서 휠·터치로 페이지가 밀리지 않게 한다 — iOS 는 overflow:hidden 만으로 막히지 않는다 */
+['wheel','touchmove'].forEach(function(ev){
+  document.addEventListener(ev,function(e){
+    var o=document.querySelector('.ovl.on'); if(!o) return;
+    if(e.target===o || !o.contains(e.target)) e.preventDefault();
+  },{passive:false});
 });
 </script>
 </body>

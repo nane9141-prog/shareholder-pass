@@ -327,6 +327,8 @@
   /* overlay + modal */
   .ovl{position:fixed;inset:0;background:rgba(10,12,20,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:24px}
   .ovl.on{display:flex}
+  html:has(.ovl.on),html:has(.ovl.on) body{overflow:hidden}   /* 모달이 떠 있는 동안 바깥은 스크롤되지 않는다 */
+  .ovl.on *{overscroll-behavior:contain}
   .sheet{background:#fff;border-radius:16px;box-shadow:var(--shmd);width:min(1180px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
   .sheet .sh{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border)}
   .sheet .sh .x{width:28px;height:28px;border:0;background:none;display:flex;align-items:center;justify-content:center}
@@ -1783,6 +1785,15 @@ setInterval(function(){ if(LIVE.sec!=null&&LIVE.sec>0){ LIVE.sec--; paintLeft();
 document.getElementById('vSnd').addEventListener('click',function(){
   var v=document.getElementById('vid'); v.muted=!v.muted;
   this.lastChild.textContent=v.muted?'소리 켜기':'소리 끄기';
+});
+</script>
+<script>
+/* 모달이 떠 있으면 배경(어두운 영역)에서 휠·터치로 페이지가 밀리지 않게 한다 — iOS 는 overflow:hidden 만으로 막히지 않는다 */
+['wheel','touchmove'].forEach(function(ev){
+  document.addEventListener(ev,function(e){
+    var o=document.querySelector('.ovl.on'); if(!o) return;
+    if(e.target===o || !o.contains(e.target)) e.preventDefault();
+  },{passive:false});
 });
 </script>
 </body>

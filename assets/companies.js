@@ -18,7 +18,7 @@ window.PASS_CO = [
     mine: true, kind: '보통주', shares: '20,000주', limit: '0주', dday: 'D-14' },
 
   { key: 'hyundai', nm: '현대차', term: '제9기 정기주주총회', status: 'dday',
-    date: '2026년 3월 20일 (금)', time: '오전 9:00',
+    date: '2026년 9월 29일 (화)', time: '오전 9:00',
     place: '서울 서초구 현대차 본사 대강당',
     hero: ['#7d97c8', '#0a2a66'], ink: '#fff',
     kind: '보통주', shares: '340주', limit: '0주', dday: 'D-day' },
@@ -63,4 +63,15 @@ window.PASS_CO = [
 window.PASS_FIND = function (key) {
   var hit = window.PASS_CO.filter(function (c) { return c.key === key; })[0];
   return hit || window.PASS_CO[0];
-};
+};
+
+/* 브라우저 탭 아이콘 — 기업 화면(?co=)은 그 기업 로고, 목록·마이페이지는 주주PASS 로고.
+   시청 화면은 co 가 없으면 카카오뱅크로 연다(live.html 과 같은 기본값). */
+(function () {
+  var k = new URLSearchParams(location.search).get('co');
+  if (!k && /live\.html$/.test(location.pathname)) k = 'kakaobank';
+  if (k && !window.PASS_CO.some(function (c) { return c.key === k; })) k = window.PASS_CO[0].key;
+  var l = document.createElement('link');
+  l.rel = 'icon'; l.href = k ? 'assets/logo-' + k + '.png' : 'assets/logo-pass.svg';
+  document.head.appendChild(l);
+})();

@@ -75,6 +75,17 @@
   .mcard .acts{display:flex;gap:8px}
   .mbtn{flex:1 1 0;min-width:0;height:41px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;padding:10px 12px;border:1px solid #eef0f2;border-radius:8px;background:#fff;font-size:14px;line-height:1.5;font-weight:700;letter-spacing:-.01em;color:#151419;text-decoration:none;white-space:nowrap}
   .mbtn.pri{background:#151419;border-color:#151419;color:#fff}
+  .ovl{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(10,12,20,.55)}
+  .ovl.on{display:flex}
+  html:has(.ovl.on),html:has(.ovl.on) body{overflow:hidden}
+  /* 사전 참석 신청 완료 — 기업 상세(company.html)의 알림 모달과 같은 모양, Figma 대로 왼쪽 정렬 */
+  .amod{width:320px;min-width:280px;max-width:360px;background:#fff;border-radius:12px;box-shadow:0 2px 12px -2px rgba(0,0,0,.15);overflow:hidden}
+  .amod .ct{display:flex;flex-direction:column;gap:4px;padding:20px 20px 12px;text-align:left}
+  .amod .tt{font-size:16px;line-height:24px;font-weight:700;letter-spacing:-.01em;color:#151419}
+  .amod .ds{font-size:14px;line-height:21px;letter-spacing:-.01em;color:#151419}
+  .amod .bg2{display:flex;padding:10px 20px 20px}
+  .amod .bg2 button{flex:1;height:41px;padding:10px 12px;border:0;border-radius:8px;background:#151419;font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:-.01em;color:#fff;cursor:pointer}
+  button.mbtn{font-family:inherit;cursor:pointer}
   .mbtn.off{background:#ebebeb;border-color:#ebebeb;color:#cbcdd2;pointer-events:none}
   .mempty{padding:40px 0;text-align:center;font-size:14px;color:#737373}
   @media(max-width:920px){.mcard{width:300px;padding:24px}}
@@ -171,7 +182,7 @@
   </div>
 </footer>
 
-<script src="assets/companies.js?v=5"></script>
+<script src="assets/companies.js?v=6"></script>
 <script>
 /* 기업 목록은 assets/companies.js 한 곳에서 온다. */
 var MEETING = (window.CX && CX.meeting) || { name:'제10기 정기주주총회' };
@@ -217,7 +228,7 @@ render(COMPANIES);
     var home='<a class="mbtn" href="company.html?co='+c.key+'">기업 홈</a>';
     if(c.status==='live') return home+'<a class="mbtn pri" href="live.html?co='+c.key+'">전자주주총회 입장</a>';
     if(c.status==='dday') return home+'<span class="mbtn off">신청 마감</span>';
-    if(c.status==='dn') return home+'<a class="mbtn pri" href="company.html?co='+c.key+'">사전 참석 신청</a>';
+    if(c.status==='dn') return home+'<button type="button" class="mbtn pri" data-apply>사전 참석 신청</button>';
     return home;
   }
   function draw(){
@@ -255,6 +266,22 @@ document.getElementById('q').addEventListener('input', function(e){
   var v=e.target.value.trim();
   render(v ? COMPANIES.filter(function(c){return c.nm.indexOf(v)>=0;}) : COMPANIES);
 });
+</script>
+<div class="ovl" id="apOvl">
+  <div class="amod" role="dialog" aria-modal="true" aria-labelledby="apTt">
+    <div class="ct"><div class="tt" id="apTt">사전 참석 신청이 완료되었습니다</div><div class="ds">주주총회 당일 이 페이지에서 바로 입장하실 수 있습니다. 사전 질의, 대리인 지정 등의 서비스는 마감 전까지 이용이 가능합니다.</div></div>
+    <div class="bg2"><button type="button" id="apOk">확인</button></div>
+  </div>
+</div>
+<script>
+/* 내 주주총회 카드의 '사전 참석 신청' — 신청 완료 안내(Figma 11268:201402) */
+(function(){
+  var ov=document.getElementById('apOvl');
+  document.addEventListener('click',function(e){ if(e.target.closest('[data-apply]')){ ov.classList.add('on'); document.getElementById('apOk').focus(); } });
+  document.getElementById('apOk').addEventListener('click',function(){ ov.classList.remove('on'); });
+  ov.addEventListener('click',function(e){ if(e.target===ov) ov.classList.remove('on'); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') ov.classList.remove('on'); });
+})();
 </script>
 </body>
 </html>

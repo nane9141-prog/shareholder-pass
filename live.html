@@ -793,6 +793,7 @@ var CURRENT=(CXD.agenda.filter(function(a){return !a.header;})[0]||{}).no;
 var PROG=0;   /* 상정했거나 끝난 의안 수 */
 /* 현장 제어에서 넘어오는 표결 상태 */
 var LIVE={sec:null};
+var STARTED=false;   /* 현장 제어 시계가 돌기 시작했는가 — 시작 전에는 의안을 모두 대기로 둔다 */
 var STAGE={0:'wait',1:'wait',2:'vote',3:'cnt'};
 /* 의안별 상태: 대기·투표중·집계중 + 결과(가결/부결/폐기/철회) — 비어 있으면 모두 대기 */
 var VS={};
@@ -1824,6 +1825,9 @@ function applyLive(s){
     paintCap();
   }
 
+  /* 총회가 아직 시작되지 않았으면(영상 재생 전) 의안 진행 상태는 반영하지 않는다 —
+     지난 회차의 남은 값 때문에 제1호가 진행 중처럼 보이면 안 된다 */
+  if(window.__PRE || !STARTED) return;
   if(!s.ag) return;
   var nos=units.map(function(a){return a.no;});
   var i=nos.indexOf(s.ag);
@@ -1886,11 +1890,21 @@ function setWaiting(on){
   document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=nm+(on?' · 곧 시작합니다':' · 생중계'); });
   if(on){ box.classList.remove('playing'); var v=document.getElementById('vid'); if(v) v.pause(); }
 }
+function resetAgenda(){
+  VS={}; PROG=0; LIVE.sec=null;
+  CURRENT=(units[0]||{}).no;
+  renderProg(); renderApl(); renderVote(); paintLeft();
+}
 function applyClock(c){
   if(window.__PRE) return;
   var started=!!(c&&c.at&&(c.run||c.t>0));
   setWaiting(!started);
-  if(!started) return;
+  if(!started){ if(STARTED!==false){ STARTED=false; } resetAgenda(); return; }
+  if(!STARTED){   /* 이제 막 시작 — 저장해 둔 진행 상태를 한 번 읽어 반영한다 */
+    STARTED=true;
+    var ls={}; try{ ls=JSON.parse(localStorage.getItem('cx.live')||'{}'); }catch(e){}
+    applyLive(ls);
+  }
   var drift=(Date.now()-c.at)/1000;
   CLOCK.t=c.t+(c.run?drift:0); CLOCK.run=!!c.run;
   VWANT=c; syncVid();

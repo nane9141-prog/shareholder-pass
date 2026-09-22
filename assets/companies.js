@@ -46,7 +46,7 @@ window.PASS_CO = [
     date: '2026년 10월 13일 (화)', time: '오전 10:00',
     place: '서울 강남구 본사 대회의실',
     hero: ['#5fbf9b', '#0f7d57'], ink: '#fff',
-    mine: true, kind: '보통주', shares: '85주', limit: '0주', dday: 'D-12' },
+    mine: true, kind: '보통주', shares: '85주', limit: '0주', dday: 'D-1' },
 
   { key: 'hanmi', nm: '한미반도체', term: '제9기 정기주주총회', status: 'dn', d: 'D-12' },
   { key: 'dalba', nm: '달바글로벌', term: '제9기 정기주주총회', status: 'end' },

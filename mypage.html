@@ -401,6 +401,9 @@ show();
 <script>
 (function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
 ChannelIO('boot', { pluginKey: '893190f3-0451-41b6-afe9-9da13375a7b5', hideChannelButtonOnBoot: true, customLauncherSelector: '#chatLauncher' });
+/* 메신저가 열리면 커스텀 런처를 숨겨 닫기 버튼과 겹치지 않게, 닫히면 다시 표시 */
+ChannelIO('onShowMessenger', function(){ var b=document.getElementById('chatLauncher'); if(b) b.style.display='none'; });
+ChannelIO('onHideMessenger', function(){ var b=document.getElementById('chatLauncher'); if(b) b.style.display=''; });
 </script>
 </body>
 </html>

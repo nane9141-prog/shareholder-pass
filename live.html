@@ -1892,6 +1892,9 @@ ChannelIO('boot', {
   hideChannelButtonOnBoot: true,          /* 기본 런처 숨김 */
   customLauncherSelector: '#chatLauncher' /* 블랙 커스텀 런처로 열기 */
 });
+/* 메신저가 열리면 커스텀 런처를 숨겨 닫기 버튼과 겹치지 않게, 닫히면 다시 표시 */
+ChannelIO('onShowMessenger', function(){ var b=document.getElementById('chatLauncher'); if(b) b.style.display='none'; });
+ChannelIO('onHideMessenger', function(){ var b=document.getElementById('chatLauncher'); if(b) b.style.display=''; });
 </script>
 </body>
 </html>

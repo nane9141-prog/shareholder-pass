@@ -57,6 +57,9 @@
   .mpg svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
   .mrow{display:flex;gap:24px;overflow-x:auto;scroll-behavior:smooth;scroll-snap-type:x mandatory;padding:4px 8px 16px;margin:-4px -8px 0;scrollbar-width:none}
   .mrow::-webkit-scrollbar{display:none}
+  .mrow{cursor:grab;user-select:none}
+  .mrow.dragging{cursor:grabbing;scroll-snap-type:none;scroll-behavior:auto}
+  .mrow img{-webkit-user-drag:none;user-drag:none}
   .mcard{flex:none;width:380px;box-sizing:border-box;scroll-snap-align:start;display:flex;flex-direction:column;gap:24px;padding:32px;background:#fff;border:1px solid #fff;border-radius:24px;filter:drop-shadow(2px 4px 5px rgba(0,0,0,.1))}
   .mcard .top{display:flex;align-items:center;gap:8px}
   .mcard .tt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -67,6 +70,10 @@
   .bdg.live{border-color:#e11d48;background:#e11d48;color:#fff;padding-top:3px;padding-bottom:1px}   /* LIVE(대문자)는 글자가 위로 떠 보여 1px 내린다 */
   .bdg.live i{width:5px;height:5px;border-radius:50%;background:#fff}
   .bdg.end{border-color:#eef0f2;background:#f4f4f5;color:#8a8a8f}
+  .bdg.gray{border-color:#eef0f2;background:#f4f4f5;color:#8a8a8f}          /* 일시중단 · 주총 연기 */
+  .mcard .term .lbl{font-size:12px;line-height:1.3;font-weight:500;color:#151419;margin-left:2px}   /* 사전투표완료 */
+  .mcard .term .lbl.blue{color:#0071f3}                                       /* 주주 · 위임 / 위임 */
+  .mcard .sh .gap{width:8px;flex:none}
   .mcard .when{display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.5;letter-spacing:-.01em;color:#151419}
   .mcard .when b{font-weight:500}
   .mcard .when span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -176,7 +183,7 @@
   <div class="wrap ft">
     <div class="links"><span>이용약관</span><b>개인정보처리방침</b><span>이메일무단수집거부</span></div>
     <div class="co2">
-      <div><b>주소</b> 서울시 국제금융로 8길 2 · <b>고객센터</b> 02-6011-2000 · <b>이메일</b> help@irkudos.com<br>
+      <div><b>주소</b> 서울시 영등포구 국제금융로 8길 2 · <b>고객센터</b> 02-6011-2000 · <b>이메일</b> help@irkudos.com<br>
         <span style="color:#a1a1aa">© IR KUDOS All rights reserved. Powered by IR KUDOS.</span></div>
       <div class="kudos">IR KUDOS</div>
     </div>
@@ -212,30 +219,51 @@ render(COMPANIES);
 /* 내 주주총회 — Figma 카드. 진행중(LIVE)은 '전자주주총회 입장', 진행예정은 '사전 참석 신청'(당일은 신청 마감), 종료는 기업 홈만 */
 (function(){
   /* 순서: 큐더스전자 → 진행중 → 진행예정 → 종료 */
-  var RANK={live:0,dday:1,dn:1,end:2};
+  var RANK={live:0,paused:0,dday:1,dn:1,postponed:1,end:2};
   var mine=COMPANIES.filter(function(c){return c.mine;}).map(function(c,i){return [c,i];}).sort(function(a,b){
     var ka=a[0].key==='kudoselectric'?-1:RANK[a[0].status], kb=b[0].key==='kudoselectric'?-1:RANK[b[0].status];
     return ka-kb||a[1]-b[1];
   }).map(function(x){return x[0];});
-  var GRP={live:'on', dday:'up', dn:'up', end:'end'};
+  var GRP={live:'on', paused:'on', dday:'up', dn:'up', postponed:'up', end:'end'};
   var F=[['all','전체'],['on','진행중'],['up','진행예정'],['end','종료']], cur='all';
   document.getElementById('myCnt').textContent=mine.length;
   function when(c){
     var m=/(\d{4})년\s*(\d+)월\s*(\d+)일\s*\((.)\)/.exec(c.date||'');
     var d=m ? m[1]+'.'+('0'+m[2]).slice(-2)+'.'+('0'+m[3]).slice(-2)+'('+m[4]+')' : (c.date||'');
-    return d+' '+(c.time||'');
+    return d+' '+(c.time||'')+(c.status==='postponed'?' → 다음 일정 미정':'');
   }
+  /* Figma '기업카드 상태별' 12케이스
+     status: live(투표 중) · paused(일시중단) · postponed(주총 연기) · end(종료) · dday/dn(진행예정)
+     apply : none(신청 가능·철회 후) · applied(신청완료/철회가능) · closed(신청 마감·미신청) · locked(신청/철회 불가)
+     prevoted: 사전투표 완료 라벨 · entry:false → 진행중 입장불가 · role: both(주주·위임) / proxy(위임) */
   function bdg(c){
-    if(c.status==='live') return '<span class="bdg live"><i></i>LIVE</span>';
-    if(c.status==='end') return '<span class="bdg end">종료</span>';
-    return '<span class="bdg">'+(c.status==='dday'?'D-day':(c.dday||c.d||'D-12'))+'</span>';
+    var lab='';
+    if(c.prevoted) lab+='<span class="lbl">사전투표완료</span>';
+    if(c.role==='both') lab+='<span class="lbl blue">주주 · 위임</span>';
+    else if(c.role==='proxy') lab+='<span class="lbl blue">위임</span>';
+    if(c.status==='live') return '<span class="bdg live"><i></i>투표 중</span>'+lab;
+    if(c.status==='end') return '<span class="bdg end">종료</span>'+lab;
+    if(c.status==='paused') return '<span class="bdg gray">일시중단</span>'+lab;
+    if(c.status==='postponed') return '<span class="bdg gray">주총 연기</span>'+lab;
+    return '<span class="bdg">'+(c.status==='dday'?'D-day':(c.dday||c.d||'D-12'))+'</span>'+lab;
   }
   function acts(c){
     var home='<a class="mbtn" href="company.html?co='+c.key+'">기업 홈</a>';
-    if(c.status==='live') return home+'<a class="mbtn pri" href="live.html?co='+c.key+'">전자주주총회 입장</a>';
-    if(c.status==='dday') return home+'<span class="mbtn off">신청 마감</span>';
-    if(c.status==='dn') return home+'<button type="button" class="mbtn pri" data-apply>사전 참석 신청</button>';
-    return home;
+    if(c.status==='live') return c.entry===false ? home : home+'<a class="mbtn pri" href="live.html?co='+c.key+'">전자주주총회 입장</a>';
+    if(c.status==='paused'||c.status==='postponed'||c.status==='end') return home;
+    /* 진행예정 (dday · dn) — 사전 참석 신청 상태별 */
+    var ap=c.apply||'none';
+    if(ap==='locked') return home;
+    if(ap==='closed'||c.status==='dday') return home+'<span class="mbtn off">신청 마감</span>';
+    if(ap==='applied') return home+'<button type="button" class="mbtn" data-withdraw>사전 참석 철회</button>';
+    return home+'<button type="button" class="mbtn pri" data-apply>사전 참석 신청</button>';
+  }
+  function sharesRow(c){
+    var own='<span>보유 주식</span><b>'+(c.shares||'-')+'</b>';
+    var px='<span>위임받은 주식</span><b>'+(c.proxyShares||'-')+'</b>';
+    if(c.role==='proxy') return '<div class="sh">'+px+'</div>';
+    if(c.role==='both') return '<div class="sh">'+own+'<span class="gap"></span>'+px+'</div>';
+    return '<div class="sh">'+own+'</div>';
   }
   function draw(){
     document.getElementById('myChips').innerHTML=F.map(function(f){
@@ -245,15 +273,30 @@ render(COMPANIES);
     var list=mine.filter(function(c){ return cur==='all'||GRP[c.status]===cur; });
     var row=document.getElementById('mygrid');
     row.innerHTML=list.map(function(c){
-      return '<div class="mcard"><div class="top"><div class="tt"><div class="nm">'+c.nm+'</div>'
+      return '<div class="mcard" data-key="'+c.key+'"><div class="top"><div class="tt"><div class="nm">'+c.nm+'</div>'
         +'<div class="term">'+c.term+bdg(c)+'</div></div>'
         +'<img class="lg" src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="50" height="50"></div>'
         +'<div class="when"><b>'+when(c)+'</b><span>'+(c.place||'')+'</span></div>'
-        +'<div class="sh"><span>보유 주식</span><b>'+(c.shares||'-')+'</b></div>'
+        +sharesRow(c)
         +'<div class="acts">'+acts(c)+'</div></div>';
     }).join('')||'<div class="mempty">해당하는 주주총회가 없습니다.</div>';
     row.scrollLeft=0; arrows();
   }
+  /* 사전 참석 신청 → 완료 안내 후 '철회' 버튼으로, 철회 → 다시 '신청' 버튼으로 */
+  var pendingKey=null;
+  function findCo(k){ return mine.filter(function(x){return x.key===k;})[0]; }
+  function showAp(t,d){ var ov=document.getElementById('apOvl'); if(!ov) return;
+    var tt=document.getElementById('apTt'), ds=ov.querySelector('.ds'); if(tt) tt.textContent=t; if(ds) ds.textContent=d;
+    ov.classList.add('on'); var ok=document.getElementById('apOk'); if(ok) ok.focus(); }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('[data-apply]');
+    if(a){ var card=a.closest('.mcard'); pendingKey=card?card.dataset.key:null;
+      showAp('사전 참석 신청이 완료되었습니다','주주총회 당일 이 페이지에서 바로 입장하실 수 있습니다. 사전 질의, 대리인 지정 등의 서비스는 마감 전까지 이용이 가능합니다.'); return; }
+    var w=e.target.closest('[data-withdraw]');
+    if(w){ var card2=w.closest('.mcard'); var c=findCo(card2?card2.dataset.key:null);
+      if(c){ c.apply='none'; draw(); showAp('사전 참석 신청이 철회되었습니다','마감 전까지 \'사전 참석 신청\'을 다시 누르시면 재신청할 수 있습니다.'); } }
+  });
+  window.__myApplyDone=function(){ var c=findCo(pendingKey); if(c){ c.apply='applied'; draw(); } pendingKey=null; };
   var row=document.getElementById('mygrid');
   function arrows(){
     document.getElementById('myPrev').disabled=row.scrollLeft<=2;
@@ -283,11 +326,47 @@ document.getElementById('q').addEventListener('input', function(e){
 /* 내 주주총회 카드의 '사전 참석 신청' — 신청 완료 안내(Figma 11268:201402) */
 (function(){
   var ov=document.getElementById('apOvl');
-  document.addEventListener('click',function(e){ if(e.target.closest('[data-apply]')){ ov.classList.add('on'); document.getElementById('apOk').focus(); } });
-  document.getElementById('apOk').addEventListener('click',function(){ ov.classList.remove('on'); });
+  document.getElementById('apOk').addEventListener('click',function(){ ov.classList.remove('on'); if(window.__myApplyDone) window.__myApplyDone(); });
   ov.addEventListener('click',function(e){ if(e.target===ov) ov.classList.remove('on'); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') ov.classList.remove('on'); });
 })();
+</script>
+<script>
+/* 홈 주주총회 카드 — 마우스 클릭·드래그로 좌우 스크롤 */
+(function(){
+  var row=document.getElementById('mygrid'); if(!row) return;
+  var down=false, moved=false, sx=0, sl=0;
+  row.addEventListener('mousedown',function(e){
+    if(e.button!==0) return;
+    down=true; moved=false; sx=e.pageX; sl=row.scrollLeft;
+    row.classList.add('dragging');
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!down) return;
+    var dx=e.pageX-sx;
+    if(!moved && Math.abs(dx)>4) moved=true;
+    if(moved){ e.preventDefault(); row.scrollLeft=sl-dx; }
+  });
+  function end(){ if(!down) return; down=false; row.classList.remove('dragging'); setTimeout(function(){ moved=false; },0); }
+  window.addEventListener('mouseup',end);
+  /* 드래그로 끝난 경우 카드 안 버튼 클릭은 무시한다 */
+  row.addEventListener('click',function(e){ if(moved){ e.stopPropagation(); e.preventDefault(); } },true);
+})();
+</script>
+<!-- 채널톡 (demo.iroffice.co.kr 과 동일 채널) — 기본 런처 숨기고 블랙 커스텀 런처 사용 -->
+<style>
+  .ch-launcher{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:#0a0a0a;border:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;padding:0;
+    transition:transform .12s ease,box-shadow .12s ease}
+  .ch-launcher:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.28)}
+  .ch-launcher svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<button id="chatLauncher" class="ch-launcher" type="button" aria-label="채널톡 상담">
+  <svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H8l-4 3v-5.2A8 8 0 0 1 3 12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/><circle cx="9" cy="12" r=".6"/><circle cx="12" cy="12" r=".6"/><circle cx="15" cy="12" r=".6"/></svg>
+</button>
+<script>
+(function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+ChannelIO('boot', { pluginKey: '893190f3-0451-41b6-afe9-9da13375a7b5', hideChannelButtonOnBoot: true, customLauncherSelector: '#chatLauncher' });
 </script>
 </body>
 </html>

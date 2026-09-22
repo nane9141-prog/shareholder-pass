@@ -387,5 +387,20 @@ function show(){
 window.addEventListener('hashchange', show);
 show();
 </script>
+<!-- 채널톡 (demo.iroffice.co.kr 과 동일 채널) — 기본 런처 숨기고 블랙 커스텀 런처 사용 -->
+<style>
+  .ch-launcher{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:#0a0a0a;border:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;padding:0;
+    transition:transform .12s ease,box-shadow .12s ease}
+  .ch-launcher:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.28)}
+  .ch-launcher svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+</style>
+<button id="chatLauncher" class="ch-launcher" type="button" aria-label="채널톡 상담">
+  <svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H8l-4 3v-5.2A8 8 0 0 1 3 12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/><circle cx="9" cy="12" r=".6"/><circle cx="12" cy="12" r=".6"/><circle cx="15" cy="12" r=".6"/></svg>
+</button>
+<script>
+(function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
+ChannelIO('boot', { pluginKey: '893190f3-0451-41b6-afe9-9da13375a7b5', hideChannelButtonOnBoot: true, customLauncherSelector: '#chatLauncher' });
+</script>
 </body>
 </html>

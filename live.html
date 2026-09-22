@@ -365,17 +365,16 @@
   .fld .req{font-style:normal;color:#E9081B;margin-left:2px}
   /* 신청 방식 — 라디오 (Figma RadioSet / small) */
   .rads{display:flex;align-items:center;gap:20px}
-  .rad{display:inline-flex;align-items:center;gap:4px;cursor:pointer}
-  .rad input{position:absolute;opacity:0;width:0;height:0}
-  .rad .dot{width:18px;height:18px;flex:none;border-radius:1000px;background:#fff;border:1px solid #EEF0F2;overflow:hidden}
-  .rad:hover input:not(:checked):not(:disabled)+.dot{border-color:#272929}
-  .rad input:checked+.dot{border:5px solid #151419}
-  .rad input:disabled+.dot{background:#F3F4F6;border:1px solid #EEF0F2}
-  .rad .tx{font-size:14px;line-height:1.5;letter-spacing:-.14px;color:#151419}
-  .rad input:disabled~.tx{color:#CBCDD2}
-  .rad input:disabled{cursor:default}
-  .rad:has(input:disabled){cursor:default}
-  .rad input:focus-visible+.dot{outline:2px solid #151419;outline-offset:2px}
+  .rads .rad{display:inline-flex;align-items:center;gap:4px;margin:0;cursor:pointer;font-size:14px;font-weight:400}   /* .fld label 규칙을 덮는다 */
+  .rads .rad input{position:absolute;opacity:0;width:0;height:0}
+  .rads .rad .dot{display:block;width:18px;height:18px;flex:none;border-radius:1000px;background:#fff;border:1px solid #EEF0F2}
+  .rads .rad:hover input:not(:checked):not(:disabled)+.dot{border-color:#272929}
+  .rads .rad input:checked+.dot{border:5px solid #151419}
+  .rads .rad input:disabled+.dot{background:#F3F4F6;border:1px solid #EEF0F2}
+  .rads .rad .tx{font-size:14px;line-height:1.5;letter-spacing:-.14px;font-weight:400;color:#151419}
+  .rads .rad input:disabled~.tx{color:#CBCDD2}
+  .rads .rad:has(input:disabled){cursor:default}
+  .rads .rad input:focus-visible+.dot{outline:2px solid #151419;outline-offset:2px}
   .seg{display:flex;gap:8px}
   .seg button{flex:1;height:41px;border:1px solid #EEF0F2;border-radius:8px;background:#fff;
     font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit;color:#151419}

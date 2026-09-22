@@ -99,6 +99,16 @@
   .obtn{height:26px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:#fff;
     font-size:12px;line-height:18px;font-weight:500;color:var(--fg);white-space:nowrap}
   .obtn.brand{border-color:var(--brand);color:var(--brand)}
+  .obtn.dim{border-color:#B2D5FF;color:#B2D5FF;cursor:default}     /* 신청 마감 */
+  .obtn.off{border-color:#EEF0F2;color:#CBCDD2;cursor:default}     /* 종료된 총회 */
+  /* 페이지네이션 */
+  .pg{display:flex;align-items:center;justify-content:center;gap:16px;padding-top:24px}
+  .pg:empty{display:none}
+  .pg button{min-width:24px;height:24px;display:flex;align-items:center;justify-content:center;
+    border:0;background:none;font-family:inherit;font-size:14px;line-height:21px;color:var(--sub);cursor:pointer}
+  .pg button.on{font-weight:700;color:var(--fg)}
+  .pg .nav svg{width:20px;height:20px;stroke:var(--fg);fill:none;stroke-width:1.8}
+  .pg .nav[disabled]{opacity:.3;cursor:default}
   .empty{padding:40px;text-align:center;font-size:14px;color:var(--sub)}
 
   /* 의결권 행사 상세 */
@@ -154,7 +164,7 @@
     <div class="grp"><span class="gl">내 정보 설정</span>
       <a class="m" href="#account" data-v="account">개인정보</a></div>
     <div class="grp"><span class="gl">주주총회 내역</span>
-      <a class="m" href="#apply" data-v="apply">신청 내역</a>
+      <a class="m" href="#apply" data-v="apply">사전 참석 신청 내역</a>
       <a class="m" href="#attend" data-v="attend">출석 내역</a>
       <a class="m" href="#qna" data-v="qna">질의 및 발언 내역</a>
       <a class="m" href="#vote" data-v="vote">의결권 행사 내역</a></div>
@@ -177,9 +187,10 @@
     </div>
 
     <!-- 신청 내역 · 출석 내역 · 질의 및 발언 내역 · 의결권 행사 내역 -->
-    <div class="view" data-view="apply"><h1>신청 내역</h1><div style="height:24px"></div>
+    <div class="view" data-view="apply"><h1>사전 참석 신청 내역</h1><div style="height:24px"></div>
       <div class="chips" data-chips="apply"></div><div style="height:24px"></div>
-      <div class="list" data-list="apply"></div></div>
+      <div class="list" data-list="apply"></div>
+      <div class="pg" data-pg="apply"></div></div>
 
     <div class="view" data-view="attend"><h1>출석 내역</h1><div style="height:24px"></div>
       <div class="chips" data-chips="attend"></div><div style="height:24px"></div>
@@ -241,7 +252,11 @@ var HISTORY = [
   { key:'kia',       apply:'done',  attend:'site',   qna:{pre:3,day:1,say:1}, vote:'done',
     at:'2026.03.12 08:47', shares:'1,050주' },
   { key:'korea-zinc',apply:'open',  attend:'none',   qna:{pre:0,day:0,say:0}, vote:'todo',
-    at:'-',                shares:'85주' }
+    at:'-',                shares:'85주' },
+  { key:'naver',     apply:'open',  attend:'none',   qna:{pre:0,day:0,say:0}, vote:'todo',
+    at:'-',                shares:'420주', closed:true },
+  { key:'nongshim',  apply:'done',  attend:'site',   qna:{pre:0,day:0,say:0}, vote:'done',
+    at:'2026.03.10 09:12', shares:'150주', ended:true }
 ];
 
 var ATTEND = { site:['출석','blue'], online:['출석','blue'], proxy:['위임','purple'], none:['불참','gray'] };
@@ -249,12 +264,19 @@ var VOTE   = { done:['행사완료','blue'], todo:['미행사','gray'] };
 
 var VIEWS = {
   apply: {
-    chips: [['all','전체'], ['done','신청 완료'], ['open','미신청']],
-    match: function(h,f){ return f==='all' || h.apply===f; },
+    chips: [['all','전체'], ['done','신청완료'], ['open','미신청']],
+    count: true,                                   /* 칩에 건수를 붙인다 */
+    page: 5,
+    match: function(h,f){ return f==='all' || (f==='done' ? h.apply==='done' : h.apply!=='done'); },
+    sub: function(h,c){ return h.ended ? c.term+' 종료' : c.term+'・'+c.date; },
     right: function(h){
+      if(h.ended) return h.apply==='done'
+        ? '<span class="obtn off">신청 철회</span>'
+        : '<span class="obtn off">신청 마감</span>';
+      if(h.closed) return '<span class="obtn dim">신청 마감</span>';
       return h.apply==='done'
-        ? '<button class="obtn" type="button">상세보기</button>'
-        : '<button class="obtn brand" type="button">신청하기</button>';
+        ? '<button class="obtn" type="button">신청 철회</button>'
+        : '<button class="obtn brand" type="button">사전 참석 신청</button>';
     }
   },
   attend: {
@@ -296,27 +318,46 @@ var VIEWS = {
 };
 var FILTER = { apply:'all', attend:'all', qna:'all', vote:'all' };
 
+var PAGE = { apply:1, attend:1, qna:1, vote:1 };
 function drawView(name){
   var V=VIEWS[name];
   document.querySelector('[data-chips="'+name+'"]').innerHTML = V.chips.map(function(c){
-    return '<button class="chip'+(FILTER[name]===c[0]?' on':'')+'" type="button" data-f="'+c[0]+'">'+c[1]+'</button>';
+    var n = V.count ? HISTORY.filter(function(h){ return V.match(h,c[0]); }).length : null;
+    return '<button class="chip'+(FILTER[name]===c[0]?' on':'')+'" type="button" data-f="'+c[0]+'">'
+      + c[1] + (n===null?'':' '+n) + '</button>';
   }).join('');
   var rows=HISTORY.filter(function(h){ return V.match(h,FILTER[name]); });
-  var host=document.querySelector('[data-list="'+name+'"]');
+  var host=document.querySelector('[data-list="'+name+'"]'), pg=document.querySelector('[data-pg="'+name+'"]');
+  if(pg) pg.innerHTML='';
   if(!rows.length){ host.innerHTML='<div class="empty">해당하는 내역이 없습니다</div>'; return; }
-  host.innerHTML=rows.map(function(h){
-    var c=co(h.key);
+  var size=V.page||0, pages=size?Math.max(1,Math.ceil(rows.length/size)):1;
+  if(PAGE[name]>pages) PAGE[name]=pages;
+  var view=size ? rows.slice((PAGE[name]-1)*size, PAGE[name]*size) : rows;
+  host.innerHTML=view.map(function(h){
+    var c=co(h.key), sub=V.sub?V.sub(h,c):(c.term+'・'+c.date);
     return '<button class="item" type="button" data-key="'+h.key+'">'
       +'<img src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="46" height="46">'
       +'<span class="txt"><span class="nm">'+c.nm+'</span>'
-      +'<span class="mt">'+c.term+'・'+c.date+'</span></span>'
+      +'<span class="mt">'+sub+'</span></span>'
       +'<span class="right">'+V.right(h)+'</span></button>';
   }).join('');
+  if(pg && pages>1){
+    var n='';
+    for(var i=1;i<=pages;i++) n+='<button type="button" class="'+(i===PAGE[name]?'on':'')+'" data-p="'+i+'">'+i+'</button>';
+    pg.innerHTML=n+'<button type="button" class="nav" data-p="next"'+(PAGE[name]>=pages?' disabled':'')+' aria-label="다음">'
+      +'<svg viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>';
+  }
 }
 ['apply','attend','qna','vote'].forEach(function(name){
   document.querySelector('[data-chips="'+name+'"]').addEventListener('click',function(e){
     var b=e.target.closest('[data-f]'); if(!b) return;
-    FILTER[name]=b.dataset.f; drawView(name);
+    FILTER[name]=b.dataset.f; PAGE[name]=1; drawView(name);
+  });
+  var pg=document.querySelector('[data-pg="'+name+'"]');
+  if(pg) pg.addEventListener('click',function(e){
+    var b=e.target.closest('[data-p]'); if(!b||b.disabled) return;
+    PAGE[name] = b.dataset.p==='next' ? PAGE[name]+1 : +b.dataset.p;
+    drawView(name);
   });
   document.querySelector('[data-list="'+name+'"]').addEventListener('click',function(e){
     var it=e.target.closest('[data-key]'); if(!it) return;

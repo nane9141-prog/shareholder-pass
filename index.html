@@ -67,8 +67,10 @@
   .mcard .term{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:16px;line-height:1.5;font-weight:500;letter-spacing:-.01em;color:#151419}
   .mcard .lg{width:50px;height:50px;flex:none;border-radius:12px;background:#fff;box-shadow:0 2px 12px -2px rgba(0,0,0,.15);object-fit:contain}
   .bdg{display:inline-flex;align-items:center;gap:4px;height:22px;box-sizing:border-box;padding:2px 8px;border:1px solid #0071f3;border-radius:1000px;background:rgba(255,255,255,.8);font-size:12px;line-height:1.3;font-weight:500;color:#0071f3;white-space:nowrap}
-  .bdg.live{border-color:#e11d48;background:#e11d48;color:#fff;padding-top:3px;padding-bottom:1px}   /* LIVE(대문자)는 글자가 위로 떠 보여 1px 내린다 */
-  .bdg.live i{width:5px;height:5px;border-radius:50%;background:#fff}
+  .bdg.live{border-color:#e11d48;background:#e11d48;color:#fff}
+  .bdg.live i{width:5px;height:5px;border-radius:50%;background:#fff;flex:none}          /* 점은 뱃지 정중앙 */
+  .bdg.live b{display:inline-block;position:relative;top:1px;font-weight:500}            /* LIVE(대문자)만 1px 내려 광학 정렬 */
+  .bdg.dday{border-color:#e11d48;background:#fff;color:#e11d48}                          /* D-day — 레드 아웃라인 */
   .bdg.end{border-color:#eef0f2;background:#f4f4f5;color:#8a8a8f}
   .bdg.gray{border-color:#eef0f2;background:#f4f4f5;color:#8a8a8f}          /* 일시중단 · 주총 연기 */
   .mcard .term .lbl{font-size:12px;line-height:1.3;font-weight:500;color:#151419;margin-left:2px}   /* 사전투표완료 */
@@ -190,7 +192,7 @@
   </div>
 </footer>
 
-<script src="assets/companies.js?v=11"></script>
+<script src="assets/companies.js?v=12"></script>
 <script>
 /* 기업 목록은 assets/companies.js 한 곳에서 온다. */
 var MEETING = (window.CX && CX.meeting) || { name:'제10기 정기주주총회' };
@@ -218,11 +220,17 @@ render(COMPANIES);
 
 /* 내 주주총회 — Figma 카드. 진행중(LIVE)은 '전자주주총회 입장', 진행예정은 '사전 참석 신청'(당일은 신청 마감), 종료는 기업 홈만 */
 (function(){
-  /* 순서: 큐더스전자 → 진행중 → 진행예정 → 종료 */
+  /* 순서: 큐더스전자 → 진행중(LIVE) → 진행예정(D-day 임박순) → 종료 */
   var RANK={live:0,paused:0,dday:1,dn:1,postponed:1,end:2};
+  function ddays(c){
+    if(c.status==='dday') return 0;
+    var m=/D-\s*(\d+)/.exec(c.dday||c.d||''); return m?+m[1]:999;
+  }
   var mine=COMPANIES.filter(function(c){return c.mine;}).map(function(c,i){return [c,i];}).sort(function(a,b){
     var ka=a[0].key==='kudoselectric'?-1:RANK[a[0].status], kb=b[0].key==='kudoselectric'?-1:RANK[b[0].status];
-    return ka-kb||a[1]-b[1];
+    if(ka!==kb) return ka-kb;
+    if(ka===1){ var da=ddays(a[0]), db=ddays(b[0]); if(da!==db) return da-db; }   /* 진행예정은 임박한 순 */
+    return a[1]-b[1];
   }).map(function(x){return x[0];});
   var GRP={live:'on', paused:'on', dday:'up', dn:'up', postponed:'up', end:'end'};
   var F=[['all','전체'],['on','진행중'],['up','진행예정'],['end','종료']], cur='all';
@@ -241,11 +249,12 @@ render(COMPANIES);
     if(c.prevoted) lab+='<span class="lbl">사전투표완료</span>';
     if(c.role==='both') lab+='<span class="lbl blue">주주 · 위임</span>';
     else if(c.role==='proxy') lab+='<span class="lbl blue">위임</span>';
-    if(c.status==='live') return '<span class="bdg live"><i></i>투표 중</span>'+lab;
+    if(c.status==='live') return '<span class="bdg live"><i></i><b>LIVE</b></span>'+lab;
     if(c.status==='end') return '<span class="bdg end">종료</span>'+lab;
     if(c.status==='paused') return '<span class="bdg gray">일시중단</span>'+lab;
     if(c.status==='postponed') return '<span class="bdg gray">주총 연기</span>'+lab;
-    return '<span class="bdg">'+(c.status==='dday'?'D-day':(c.dday||c.d||'D-12'))+'</span>'+lab;
+    if(c.status==='dday') return '<span class="bdg dday">D-day</span>'+lab;
+    return '<span class="bdg">'+(c.dday||c.d||'D-12')+'</span>'+lab;
   }
   function acts(c){
     var home='<a class="mbtn" href="company.html?co='+c.key+'">기업 홈</a>';

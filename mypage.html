@@ -101,6 +101,50 @@
   .obtn.brand{border-color:var(--brand);color:var(--brand)}
   .obtn.dim{border-color:#B2D5FF;color:#B2D5FF;cursor:default}     /* 신청 마감 */
   .obtn.off{border-color:#EEF0F2;color:#CBCDD2;cursor:default}     /* 종료된 총회 */
+  /* 언더라인 탭 */
+  .utabs{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--line)}
+  .utabs button{height:40px;padding:0 12px;border:0;background:none;font-family:inherit;
+    font-size:14px;line-height:21px;font-weight:500;color:var(--sub);cursor:pointer;
+    border-bottom:2px solid transparent;margin-bottom:-1px}
+  .utabs button.on{color:var(--fg);font-weight:700;border-bottom-color:var(--fg)}
+  /* 상태 배지 (목록 우측) */
+  .st{font-size:12px;line-height:18px;font-weight:700;white-space:nowrap}
+  .st.ok{color:var(--brand)}
+  .st.wait{color:var(--sub)}
+  .st.no{color:#E9081B}
+  .st.green{color:#12A368}
+  /* 상세 — 정보 행 */
+  .dcard{background:var(--bg);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px}
+  .dcard img{width:46px;height:46px;flex:none;border-radius:12px;object-fit:contain;background:#fff;
+    box-shadow:0 2px 12px -2px rgba(0,0,0,.15)}
+  .dcard .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .dcard .tx b{font-size:18px;line-height:24px;font-weight:700}
+  .dcard .tx span{font-size:12px;line-height:18px;color:var(--sub)}
+  .drow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+  .drow:last-child{border-bottom:0}
+  .drow .k{width:120px;flex:none;font-size:13px;line-height:20px;color:var(--sub)}
+  .drow .v{flex:1;min-width:0;font-size:14px;line-height:21px;color:var(--fg)}
+  .fcard{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);
+    border-radius:8px;background:#fff;font-size:13px;line-height:20px}
+  .fcard .fn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fcard .fs{color:var(--sub);font-size:12px}
+  .fcard svg{width:16px;height:16px;stroke:var(--sub);fill:none;stroke-width:1.6;flex:none}
+  .dacts{display:flex;gap:8px}
+  .dacts button{flex:1;height:41px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  .dacts .ghost{border:1px solid var(--line);background:#fff;color:var(--fg)}
+  .dacts .dark{border:0;background:var(--fg);color:#fff}
+  /* 확인 모달 */
+  .cfov{position:fixed;inset:0;z-index:410;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:16px}
+  .cfov.on{display:flex}
+  .cfbox{box-sizing:border-box;width:350px;max-width:100%;background:#fff;border-radius:12px;padding:20px;
+    display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+  .cfbox b{font-size:16px;line-height:24px;font-weight:700}
+  .cfbox p{font-size:13px;line-height:20px;color:#4C4F54;margin:0}
+  .cfbox .cap{font-size:12px;line-height:18px;color:#A7AAB1}
+  .cfacts{display:flex;gap:8px;margin-top:8px}
+  .cfacts button{flex:1;height:38px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+  .cfacts .ghost{border:1px solid var(--line);background:#fff;color:var(--fg)}
+  .cfacts .dark{border:0;background:var(--fg);color:#fff}
   /* 주주총회 타임라인 모달 */
   .tlov{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:16px}
   .tlov.on{display:flex}
@@ -197,9 +241,9 @@
       <a class="m" href="#qna" data-v="qna">질의 및 발언 내역</a>
       <a class="m" href="#vote" data-v="vote">의결권 행사 내역</a></div>
     <hr>
-    <div class="grp small">
-      <a class="m" href="index.html">주주총회 찾기</a>
-      <a class="m" href="#">이용안내</a></div>
+    <div class="grp">
+      <a class="m" href="#proxy" data-v="proxy">위임 · 대리내역</a>
+      <a class="m" href="#split" data-v="split">불통일 행사 신청 내역</a></div>
     <hr>
     <div class="grp small"><a class="m" href="index.html">로그아웃</a></div>
   </aside>
@@ -232,12 +276,30 @@
       <div class="chips" data-chips="vote"></div><div style="height:24px"></div>
       <div class="list" data-list="vote"></div></div>
 
+    <!-- 위임 · 대리내역 -->
+    <div class="view" data-view="proxy"><h1>위임 · 대리내역</h1><div style="height:20px"></div>
+      <div class="utabs" id="pxTabs">
+        <button type="button" class="on" data-pt="mine">내가 지정한 대리인</button>
+        <button type="button" data-pt="recv">나를 지정한 위임인</button></div>
+      <div style="height:20px"></div>
+      <div class="chips" data-chips="proxy"></div><div style="height:24px"></div>
+      <div class="list" data-list="proxy"></div></div>
+    <div class="view" data-view="proxy-detail" id="pxd"></div>
+
+    <!-- 불통일 행사 신청 내역 -->
+    <div class="view" data-view="split"><h1>불통일 행사 신청 내역</h1><div style="height:24px"></div>
+      <div class="chips" data-chips="split"></div><div style="height:24px"></div>
+      <div class="list" data-list="split"></div></div>
+    <div class="view" data-view="split-detail" id="spd"></div>
+
     <!-- 의결권 행사 상세 -->
     <div class="view" data-view="vote-detail" id="vd"></div>
   </section>
 </main>
 
 <!-- 주주총회 타임라인 -->
+<div class="cfov" id="cfOv" role="dialog" aria-modal="true"></div>
+
 <div class="tlov" id="tlOv" role="dialog" aria-modal="true" aria-labelledby="tlTitle">
   <div class="tlbox">
     <div class="tlhd"><b id="tlTitle">주주총회 타임라인</b>
@@ -353,7 +415,7 @@ var VIEWS = {
     }
   }
 };
-var FILTER = { apply:'all', attend:'all', qna:'all', vote:'all' };
+var FILTER = { apply:'all', attend:'all', qna:'all', vote:'all', proxy:'all', split:'all' };
 
 var PAGE = { apply:1, attend:1, qna:1, vote:1 };
 function drawView(name){
@@ -450,6 +512,210 @@ function drawDetail(key){
   $('vdCert').addEventListener('click', function(){ openTimeline(key); });
 }
 
+/* ---- 확인 모달(공통) ---- */
+function confirmBox(o){
+  var ov=document.getElementById('cfOv');
+  ov.innerHTML='<div class="cfbox"><b>'+esc(o.title)+'</b>'
+    +(o.desc?'<p>'+esc(o.desc)+'</p>':'')
+    +(o.cap?'<span class="cap">'+esc(o.cap)+'</span>':'')
+    +'<div class="cfacts">'
+    +(o.single?'':'<button type="button" class="ghost" data-no>'+esc(o.cancel||'취소')+'</button>')
+    +'<button type="button" class="dark" data-yes>'+esc(o.ok||'확인')+'</button></div></div>';
+  ov.classList.add('on');
+  ov.onclick=function(e){
+    if(e.target===ov||e.target.closest('[data-no]')){ ov.classList.remove('on'); return; }
+    if(e.target.closest('[data-yes]')){ ov.classList.remove('on'); if(o.onOk) o.onOk(); }
+  };
+}
+
+/* ---- 위임 · 대리내역 ----
+   mine = 내가 대리인을 지정한 건, recv = 나를 대리인으로 지정한 위임인의 건 */
+var PROXY = {
+  mine: [
+    { id:'m1', key:'hyundai',    who:'김철수', birth:'1985.04.02', sex:'남', sh:'800,000주', tel:'010-1111-2222', mail:'kim@example.com', st:'ok'   },
+    { id:'m2', key:'korea-zinc', who:'김철수', birth:'1985.04.02', sex:'남', sh:'800,000주', tel:'010-1111-2222', mail:'kim@example.com', st:'ok'   },
+    { id:'m3', key:'mirae-asset',who:'김철수', birth:'1985.04.02', sex:'남', sh:'800,000주', tel:'010-1111-2222', mail:'kim@example.com', st:'wait' },
+    { id:'m4', key:'shinhan',    who:'김철수', birth:'1985.04.02', sex:'남', sh:'800,000주', tel:'010-1111-2222', mail:'kim@example.com', st:'wait' },
+    { id:'m5', key:'kakaobank',  who:'김철수', birth:'1985.04.02', sex:'남', sh:'800,000주', tel:'010-1111-2222', mail:'kim@example.com', st:'no'   }
+  ],
+  recv: [
+    { id:'r1', key:'korea-zinc', who:'김철수', sh:'800,000주', tel:'010-1111-2222', mail:'kim@example.com',  st:'ok'   },
+    { id:'r2', key:'mirae-asset',who:'김철수', sh:'800,000주', tel:'010-1111-2222', mail:'kim@example.com',  st:'ok'   },
+    { id:'r3', key:'mirae-asset',who:'이영희', sh:'800,000주', tel:'010-1111-2222', mail:'park@example.com', st:'ok'   },
+    { id:'r4', key:'hyundai',    who:'이영희', sh:'800,000주', tel:'010-1111-2222', mail:'park@example.com', st:'wait' },
+    { id:'r5', key:'mirae-asset',who:'이영희', sh:'800,000주', tel:'010-1111-2222', mail:'park@example.com', st:'no'   }
+  ]
+};
+var PXST = { ok:['수락','ok'], wait:['수락 대기','wait'], no:['거절','no'] };
+var PXTAB='mine';
+function pxRows(){ return PROXY[PXTAB]; }
+function pxFind(id){
+  var all=PROXY.mine.concat(PROXY.recv);
+  for(var i=0;i<all.length;i++) if(all[i].id===id) return all[i];
+  return null;
+}
+function drawProxy(){
+  var host=document.querySelector('[data-list="proxy"]'), chips=document.querySelector('[data-chips="proxy"]');
+  if(!host) return;
+  var f=FILTER.proxy||'all';
+  var defs=[['all','전체'],['ok','수락'],['no','거절'],['wait','수락 대기']];
+  chips.innerHTML=defs.map(function(d){
+    var n=pxRows().filter(function(x){ return d[0]==='all'||x.st===d[0]; }).length;
+    return '<button class="chip'+(f===d[0]?' on':'')+'" type="button" data-f="'+d[0]+'">'+d[1]+' '+n+'</button>';
+  }).join('');
+  document.querySelectorAll('#pxTabs button').forEach(function(b){ b.classList.toggle('on', b.dataset.pt===PXTAB); });
+  var rows=pxRows().filter(function(x){ return f==='all'||x.st===f; });
+  if(!rows.length){ host.innerHTML='<div class="empty">해당하는 내역이 없습니다</div>'; return; }
+  host.innerHTML=rows.map(function(x){
+    var c=co(x.key), st=PXST[x.st];
+    var sub = PXTAB==='mine'
+      ? [x.who, x.birth, x.sex, x.sh+' 위임'].join(' · ')
+      : [x.who, x.sh+' 위임'].join(' · ');
+    return '<div class="item" role="button" tabindex="0" data-px="'+x.id+'">'
+      +'<img src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="46" height="46">'
+      +'<span class="txt"><span class="nm">'+esc(c.nm+' '+c.term)+'</span>'
+      +'<span class="mt">'+esc(sub)+'</span></span>'
+      +'<span class="right"><span class="st '+st[1]+'">'+st[0]+'</span></span></div>';
+  }).join('');
+}
+function fileRow(name){
+  return '<span class="fcard"><svg viewBox="0 0 24 24"><path d="M14 3v5h5"/><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/></svg>'
+    +'<span class="fn">'+esc(name)+'</span><span class="fs">4MB</span>'
+    +'<svg viewBox="0 0 24 24"><path d="M12 4v12m0 0 4-4m-4 4-4-4"/><path d="M4 20h16"/></svg></span>';
+}
+function drawProxyDetail(id){
+  var x=pxFind(id); if(!x){ location.hash='#proxy'; return; }
+  var c=co(x.key), st=PXST[x.st], mine=PROXY.mine.indexOf(x)>=0;
+  var who = mine ? '대리인' : '위임인';
+  document.getElementById('pxd').innerHTML=
+    '<button class="back" type="button" id="pxBack"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>위임 · 대리내역</button>'
+    +'<div style="height:12px"></div>'
+    +'<div class="dcard"><img src="assets/logo-'+c.key+'.png" alt="'+esc(c.nm)+'" width="46" height="46">'
+    +'<span class="tx"><b>'+esc(c.nm+' '+c.term)+'</b>'
+    +'<span>'+esc(c.date)+' 개최 · 주주명부 기준일 2025.12.31</span></span>'
+    +'<span class="st '+st[1]+'">'+st[0]+'</span></div>'
+    +'<div style="height:24px"></div>'
+    +'<div class="sect"><b>'+who+' 정보</b><div>'
+    +'<div class="drow"><span class="k">'+who+'</span><span class="v">'+esc(x.who)+'</span></div>'
+    +'<div class="drow"><span class="k">휴대폰 번호</span><span class="v">'+esc(x.tel)+'</span></div>'
+    +'<div class="drow"><span class="k">이메일 주소</span><span class="v">'+esc(x.mail)+'</span></div>'
+    +'<div class="drow"><span class="k">'+(mine?'위임한':'위임 받은')+' 주식수</span><span class="v">'+esc(x.sh)+'</span></div>'
+    +'<div class="drow"><span class="k">위임장</span>'+fileRow('위임장_'+c.nm+'.pdf')+'</div>'
+    +'</div></div>'
+    +'<div style="height:24px"></div>'
+    + (x.st!=='wait' ? '' :
+        (mine
+          ? '<div class="dacts"><button class="ghost" type="button" id="pxResend">인증링크 재발송</button>'
+            +'<button class="dark" type="button" id="pxCancel">대리인 지정 철회</button></div>'
+          : '<div class="dacts"><button class="ghost" type="button" id="pxNo">거절하기</button>'
+            +'<button class="dark" type="button" id="pxYes">수락하기</button></div>'));
+  document.getElementById('pxBack').addEventListener('click', function(){ location.hash='#proxy'; });
+  function on(bid,fn){ var b=document.getElementById(bid); if(b) b.addEventListener('click',fn); }
+  on('pxResend', function(){
+    confirmBox({ single:true, title:'인증링크 재발송 완료',
+      desc:'대리인 정보로 인증 링크를 다시 보내드렸습니다.',
+      cap:'수신 이메일: '+x.mail, ok:'확인' });
+  });
+  on('pxCancel', function(){
+    confirmBox({ title:'대리인 지정을 철회하시겠습니까?',
+      desc:'신청을 철회하시면 대리인에게 전달된 인증 링크가 무효화되며, 위임 신청이 취소됩니다.',
+      ok:'철회하기', onOk:function(){ x.st='no'; drawProxyDetail(id); } });
+  });
+  on('pxNo', function(){
+    confirmBox({ title:'대리인 위임을 거절하시겠습니까?',
+      desc:'위임을 거절하시면 해당 주주총회의 대리인 지정 신청이 취소되며, 위임인에게 거절 사실이 안내됩니다.',
+      ok:'거절하기', onOk:function(){ x.st='no'; drawProxyDetail(id); } });
+  });
+  on('pxYes', function(){
+    confirmBox({ title:'대리인 위임을 수락하시겠습니까?',
+      desc:'위임을 수락하시면 해당 주주총회에서 주주를 대신해 의결권을 행사하게 됩니다.',
+      cap:x.who+' · '+x.sh, ok:'수락하기', onOk:function(){ x.st='ok'; drawProxyDetail(id); } });
+  });
+}
+
+/* ---- 불통일 행사 신청 내역 ---- */
+var SPLIT = [
+  { id:'s1', key:'hyundai',   at:'2026.03.21', st:'in',  total:'800,000주', pro:'500,000주', con:'200,000주', abs:'100,000주' },
+  { id:'s2', key:'kia',       at:'2026.03.21', st:'ok',  total:'420,000주', pro:'300,000주', con:'100,000주', abs:'20,000주'  },
+  { id:'s3', key:'shinsegae', at:'2026.03.21', st:'no',  total:'150,000주', pro:'100,000주', con:'50,000주',  abs:'-'         },
+  { id:'s4', key:'kakaobank', at:'2026.03.21', st:'ok',  total:'1,200주',   pro:'800주',     con:'400주',     abs:'-'         },
+  { id:'s5', key:'nongshim',  at:'2026.03.21', st:'off', total:'60,000주',  pro:'40,000주',  con:'20,000주',  abs:'-'         }
+];
+var SPST = { in:['접수','green'], ok:['승인','ok'], no:['거절','no'], off:['취소','wait'] };
+function drawSplit(){
+  var host=document.querySelector('[data-list="split"]'), chips=document.querySelector('[data-chips="split"]');
+  if(!host) return;
+  var f=FILTER.split||'all';
+  var defs=[['all','전체'],['in','접수'],['ok','승인'],['no','거절'],['off','취소']];
+  chips.innerHTML=defs.map(function(d){
+    var n=SPLIT.filter(function(x){ return d[0]==='all'||x.st===d[0]; }).length;
+    return '<button class="chip'+(f===d[0]?' on':'')+'" type="button" data-f="'+d[0]+'">'+d[1]+' '+n+'</button>';
+  }).join('');
+  var rows=SPLIT.filter(function(x){ return f==='all'||x.st===f; });
+  if(!rows.length){ host.innerHTML='<div class="empty">해당하는 내역이 없습니다</div>'; return; }
+  host.innerHTML=rows.map(function(x){
+    var c=co(x.key), st=SPST[x.st];
+    return '<div class="item" role="button" tabindex="0" data-sp="'+x.id+'">'
+      +'<img src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="46" height="46">'
+      +'<span class="txt"><span class="nm">'+esc(c.nm+' '+c.term)+'</span>'
+      +'<span class="mt">'+esc(x.at)+' 신청</span></span>'
+      +'<span class="right"><span class="st '+st[1]+'">'+st[0]+'</span></span></div>';
+  }).join('');
+}
+function drawSplitDetail(id){
+  var x=null; SPLIT.forEach(function(r){ if(r.id===id) x=r; });
+  if(!x){ location.hash='#split'; return; }
+  var c=co(x.key), st=SPST[x.st];
+  document.getElementById('spd').innerHTML=
+    '<button class="back" type="button" id="spBack"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>불통일 행사 신청 내역</button>'
+    +'<div style="height:12px"></div>'
+    +'<div class="dcard"><img src="assets/logo-'+c.key+'.png" alt="'+esc(c.nm)+'" width="46" height="46">'
+    +'<span class="tx"><b>'+esc(c.nm+' '+c.term)+'</b>'
+    +'<span>'+esc(x.at)+' 신청 · '+esc(c.date)+' 개최</span></span>'
+    +'<span class="st '+st[1]+'">'+st[0]+'</span></div>'
+    +'<div style="height:24px"></div>'
+    +'<div class="sect"><b>신청 내역</b><div>'
+    +'<div class="drow"><span class="k">총 신청 주식수</span><span class="v">'+esc(x.total)+'</span></div>'
+    +'<div class="drow"><span class="k">찬성</span><span class="v">'+esc(x.pro)+'</span></div>'
+    +'<div class="drow"><span class="k">반대</span><span class="v">'+esc(x.con)+'</span></div>'
+    +'<div class="drow"><span class="k">기권</span><span class="v">'+esc(x.abs)+'</span></div>'
+    +'<div class="drow"><span class="k">사유서</span>'+fileRow('불통일행사_사유서_'+c.nm+'.pdf')+'</div>'
+    +'</div></div>'
+    +'<div style="height:24px"></div>'
+    + (x.st==='in' ? '<div class="dacts"><button class="dark" type="button" id="spCancel">신청 취소</button></div>' : '');
+  document.getElementById('spBack').addEventListener('click', function(){ location.hash='#split'; });
+  var b=document.getElementById('spCancel');
+  if(b) b.addEventListener('click', function(){
+    confirmBox({ title:'불통일 행사 신청을 취소하시겠습니까?',
+      desc:'취소하시면 접수된 불통일 행사 신청이 철회되며, 되돌릴 수 없습니다.',
+      ok:'신청 취소', onOk:function(){ x.st='off'; drawSplitDetail(id); } });
+  });
+}
+(function(){
+  var t=document.getElementById('pxTabs');
+  if(t) t.addEventListener('click', function(e){
+    var b=e.target.closest('[data-pt]'); if(!b) return;
+    PXTAB=b.dataset.pt; FILTER.proxy='all'; drawProxy();
+  });
+  [['proxy',drawProxy],['split',drawSplit]].forEach(function(d){
+    var ch=document.querySelector('[data-chips="'+d[0]+'"]');
+    if(ch) ch.addEventListener('click', function(e){
+      var b=e.target.closest('[data-f]'); if(!b) return;
+      FILTER[d[0]]=b.dataset.f; d[1]();
+    });
+  });
+  var pl=document.querySelector('[data-list="proxy"]');
+  if(pl) pl.addEventListener('click', function(e){
+    var it=e.target.closest('[data-px]'); if(!it) return;
+    location.hash='#proxy/'+it.dataset.px;
+  });
+  var sl=document.querySelector('[data-list="split"]');
+  if(sl) sl.addEventListener('click', function(e){
+    var it=e.target.closest('[data-sp]'); if(!it) return;
+    location.hash='#split/'+it.dataset.sp;
+  });
+})();
+
 /* ---- 주주총회 타임라인 모달 ----
    사전(참석 신청·전자투표·질의)과 당일(출석·질의·발언·현장투표·퇴장)을 날짜별로 묶어 보여 준다.
    '의결권 행사'가 있는 줄만 점을 채우고 배지를 붙인다. */
@@ -509,11 +775,16 @@ function openTimeline(key){
 function show(){
   var h=(location.hash||'#account').slice(1).split('/');
   var name=h[0], key=h[1];
-  if(!VIEWS[name] && name!=='account') name='account';
-  var view=(name==='vote' && key) ? 'vote-detail' : name;
+  var EXTRA={proxy:1, split:1};
+  if(!VIEWS[name] && !EXTRA[name] && name!=='account') name='account';
+  var view=((name==='vote'||name==='proxy'||name==='split') && key) ? name+'-detail' : name;
   document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('on', v.dataset.view===view); });
   document.querySelectorAll('.menu a.m').forEach(function(a){ a.classList.toggle('on', a.dataset.v===name); });
   if(view==='vote-detail') drawDetail(key);
+  else if(view==='proxy-detail') drawProxyDetail(key);
+  else if(view==='split-detail') drawSplitDetail(key);
+  else if(name==='proxy') drawProxy();
+  else if(name==='split') drawSplit();
   else if(VIEWS[name]) drawView(name);
   window.scrollTo(0,0);
 }

@@ -1643,8 +1643,7 @@ function buildEx(){
 }
 
 /* ---- 경과 타이머/* ---- 경과 타이머 — 현장 제어 시계가 오면 그 값으로 맞춘다 ---- */
-var CLOCK={t:725,run:true};
-if(window.__PRE){ CLOCK.t=0; CLOCK.run=false; }   /* 아직 열리지 않았다 — 0에서 멈춰 둔다 */
+var CLOCK={t:0,run:false};   /* 경과 시간은 현장 제어에서 '총회 시작'을 누른 뒤부터 흐른다 */
 (function(){
   var el=document.getElementById('sTime');
   function paint(){var t=Math.max(0,Math.round(CLOCK.t)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;
@@ -1893,6 +1892,7 @@ function setWaiting(on){
 }
 function resetAgenda(){
   VS={}; PROG=0; LIVE.sec=null;
+  CLOCK.t=0; CLOCK.run=false;   /* 아직 시작 전 — 경과 시간도 0에서 멈춘다 */
   CURRENT=(units[0]||{}).no;
   renderProg(); renderApl(); renderVote(); paintLeft();
 }

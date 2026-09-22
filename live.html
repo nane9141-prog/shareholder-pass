@@ -78,12 +78,13 @@
   .cap{margin-top:8px;background:#F8F8FA;border:0;border-radius:12px;padding:12px 16px;
     display:flex;flex-direction:column}
   .cap .caph{display:flex;align-items:center;justify-content:space-between;gap:4px;padding-bottom:8px}
-  .cap .on{display:inline-flex;align-items:center;gap:4px;height:22px;padding:2px 8px;
-    border:0;border-radius:1000px;background:linear-gradient(90deg,#E8DFFC 0%,#C6E0FD 100%);
+  /* 칩은 켜짐/꺼짐 모두 같은 모양 — .on 클래스가 빠져도 버튼 기본 스타일로 돌아가지 않게 id 로 잡는다 */
+  .cap #capBtn{display:inline-flex;align-items:center;gap:4px;height:22px;padding:2px 8px;box-sizing:border-box;
+    border:1px solid transparent;border-radius:1000px;background:linear-gradient(90deg,#E8DFFC 0%,#C6E0FD 100%);
     font-family:inherit;font-size:12px;line-height:18px;font-weight:700;letter-spacing:inherit;
     color:#0071F3;cursor:pointer}
   /* 꺼진 상태 — 배경만으로는 패널과 구분이 안 돼 흰 배경 + 아웃라인으로 둔다 */
-  .cap.off .on{box-sizing:border-box;background:#fff;border:1px solid #E5E5E5;color:#737373}
+  .cap.off #capBtn{background:#fff;border-color:#E5E5E5;color:#737373}
   .cap .lines{display:flex;flex-direction:column;gap:0;min-height:48px}
   .cap .lines span{font-size:16px;line-height:24px;font-weight:500;color:#151419}
   .cap.off .lines span{color:#A7AAB1}

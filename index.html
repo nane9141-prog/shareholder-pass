@@ -62,8 +62,9 @@
   .mrow{--fl:0px;--fr:0px;
     -webkit-mask-image:linear-gradient(to right,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%);
             mask-image:linear-gradient(to right,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%)}
-  .mrow.fade-l{--fl:64px}
-  .mrow.fade-r{--fr:64px}
+  .mrow.fade-l{--fl:112px}
+  .mrow.fade-r{--fr:140px}          /* 오른쪽은 더 넓게 — 경계에서 잘리지 않고 서서히 사라지게 */
+  .mrow::after{content:'';flex:none;width:8px}   /* 끝 카드가 경계에 딱 붙지 않도록 여유 */
   .mrow.dragging{cursor:grabbing;scroll-snap-type:none;scroll-behavior:auto}
   .mrow img{-webkit-user-drag:none;user-drag:none}
   .mcard{flex:none;width:380px;box-sizing:border-box;scroll-snap-align:start;display:flex;flex-direction:column;gap:24px;padding:32px;background:#fff;border:1px solid #fff;border-radius:24px;filter:drop-shadow(2px 4px 5px rgba(0,0,0,.1))}

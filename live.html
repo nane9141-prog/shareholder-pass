@@ -1149,8 +1149,13 @@ function paintQForm(){
   document.getElementById('qTargetLb').innerHTML = f.amend ? '대상 의안<i class="req">*</i>' : '대상';
   document.getElementById('qPrFld').style.display = pr ? '' : 'none';
   document.getElementById('qAmFld').style.display = (f.amend && !pr) ? '' : 'none';
-  /* 신청 방식에 따라 입력 칸을 질의 케이스 / 발언 케이스로 바꾼다 */
-  var sf=SPFORM.a;
+  /* 신청 방식에 따라 입력 칸을 질의 케이스 / 발언 케이스로 바꾼다.
+     SPFORM 은 아래에서 선언되므로 발언 케이스일 때만 지연 참조한다(초기 실행 순서 보호) */
+  var sf=(spoken && window.SPFORM && SPFORM.a) ? SPFORM.a : {
+    label:'동의 내용', submit:'동의 신청하기', agree:'동의 내용의 실시간 송출에 동의합니다',
+    ph:'원안을 어떻게 고칠지 구체적으로 작성해 주세요.',
+    rules:'동의는 해당 의안의 표결이 개시되기 전까지 신청할 수 있습니다. 의장 지명 후 마이크가 활성화되며 제안 취지를 직접 설명하게 됩니다.'
+  };
   document.getElementById('qBodyLb').textContent = spoken ? sf.label : f.label;
   document.getElementById('qBody').placeholder = pr
     ? (spoken ? '의사진행 동의를 제안하는 사유를 요약해 작성해 주세요.' : '의사진행 동의를 제안하는 사유를 구체적으로 작성해 주세요.')

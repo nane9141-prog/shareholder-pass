@@ -78,7 +78,7 @@
   /* 기업 행 목록 */
   .list{display:flex;flex-direction:column;gap:2px}
   .item{display:flex;align-items:center;gap:12px;padding:8px;border-radius:8px;width:100%;
-    border:0;background:none;text-align:left}
+    border:0;background:none;text-align:left;box-sizing:border-box;cursor:pointer}
   .item:hover{background:var(--bg)}
   .item>img{width:46px;height:46px;flex:none;border-radius:12px;object-fit:contain;background:#fff;
     box-shadow:0 2px 12px -2px rgba(0,0,0,.15)}
@@ -335,11 +335,12 @@ function drawView(name){
   var view=size ? rows.slice((PAGE[name]-1)*size, PAGE[name]*size) : rows;
   host.innerHTML=view.map(function(h){
     var c=co(h.key), sub=V.sub?V.sub(h,c):(c.term+'・'+c.date);
-    return '<button class="item" type="button" data-key="'+h.key+'">'
+    /* 행 안에 버튼이 들어가므로 행 자체는 div — button 중첩은 파서가 끊어 낸다 */
+    return '<div class="item" role="button" tabindex="0" data-key="'+h.key+'">'
       +'<img src="assets/logo-'+c.key+'.png" alt="'+c.nm+'" width="46" height="46">'
       +'<span class="txt"><span class="nm">'+c.nm+'</span>'
       +'<span class="mt">'+sub+'</span></span>'
-      +'<span class="right">'+V.right(h)+'</span></button>';
+      +'<span class="right">'+V.right(h)+'</span></div>';
   }).join('');
   if(pg && pages>1){
     var n='';

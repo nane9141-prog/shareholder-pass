@@ -1729,7 +1729,7 @@ if(window.__CO && window.__CO.key!=='kakaobank') SCRIPT.forEach(function(c){ var
 if(window.__CO && window.__CO.key==='kudoselectric' && window.CAP_KUDOS && window.CAP_KUDOS.length) SCRIPT=window.CAP_KUDOS;
 var CAPLBL={ko:['AI 자막 ON','AI 자막 OFF'],en:['AI Subtitles ON','AI Subtitles OFF'],
   ja:['AI字幕 ON','AI字幕 OFF'],zh:['AI字幕 ON','AI字幕 OFF']};
-var CAP={on:!window.__PRE, hold:null, lang:'ko'};   /* 시작 전 주총은 자막을 꺼 둔다 */   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
+var CAP={on:false, auto:1, hold:null, lang:'ko'};   /* 진입 시엔 꺼 둔 채로 — 영상이 실제로 재생되면 자동으로 켠다 */   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
 function capLines(){
   if(CAP.hold) return CAP.hold;
   var v=document.getElementById('vid');
@@ -1768,7 +1768,10 @@ function paintCap(){
   });
   document.addEventListener('click',function(){ wrap.classList.remove('open'); });
 })();
-document.getElementById('capBtn').addEventListener('click',function(){ CAP.on=!CAP.on; paintCap(); });
+document.getElementById('capBtn').addEventListener('click',function(){ CAP.on=!CAP.on; CAP.auto=0; paintCap(); });
+/* 영상이 돌기 시작하면 자막을 켠다. 주주가 직접 껐다 켠 뒤로는 건드리지 않는다 */
+(function(){ var v=document.getElementById('vid'); if(!v) return;
+  v.addEventListener('playing',function(){ if(CAP.auto && !window.__PRE){ CAP.on=true; CAP.auto=0; paintCap(); } }); })();
 setInterval(paintCap, 500); paintCap();
 
 /* ---- conexus 현장 제어와 잇기 ----

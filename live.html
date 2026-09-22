@@ -292,7 +292,7 @@
   .cand .cr .t{height:12px;border-radius:6px;background:#f0f0f2;overflow:hidden}.cand .cr .t i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,#93b4fb,#2563eb)}
   .cand .cr:not(.el) .t i{background:linear-gradient(90deg,#c9c9cf,#8a8a92)}
   .qhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .qhead .t{font-size:14px;font-weight:700}
+  .qhead .t{font-size:16px;line-height:24px;font-weight:700;color:#151419}   /* 질의 탭(.qfilter .qf)과 같은 스타일 */
   .qwrite{height:34px;padding:0 14px;border:1px solid var(--border);border-radius:9px;background:#fff;font-size:13px;font-weight:700}
   .qcard{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
   .qcard .m{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
@@ -363,6 +363,15 @@
   .fld{margin-bottom:16px}
   .fld label{display:block;font-size:14px;line-height:18px;font-weight:500;color:#151419;margin-bottom:4px}
   .fld .req{font-style:normal;color:#E9081B;margin-left:2px}
+  /* 신청 방식 — 라디오 */
+  .rads{display:flex;align-items:center;gap:20px}
+  .rad{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;line-height:21px;color:#151419}
+  .rad input{position:absolute;opacity:0;width:0;height:0}
+  .rad .dot{width:18px;height:18px;flex:none;border:1px solid #D7D9DF;border-radius:50%;background:#fff;
+    display:inline-flex;align-items:center;justify-content:center}
+  .rad input:checked+.dot{border-color:#151419}
+  .rad input:checked+.dot:after{content:'';width:9px;height:9px;border-radius:50%;background:#151419}
+  .rad input:focus-visible+.dot{outline:2px solid #151419;outline-offset:2px}
   .seg{display:flex;gap:8px}
   .seg button{flex:1;height:41px;border:1px solid #EEF0F2;border-radius:8px;background:#fff;
     font-family:inherit;font-size:14px;line-height:21px;font-weight:700;letter-spacing:inherit;color:#151419}
@@ -697,7 +706,13 @@
   <div class="modal">
     <h3><span id="qTitle">질의 작성</span> <span id="qCnt">(1/3)</span></h3>
     <div class="fld" id="qAmKindF" style="display:none"><label>유형</label>
-      <div class="seg" id="qAmKind"><button type="button" class="on" data-v="am">동의</button><button type="button" data-v="pr">의사진행 동의</button></div>
+      <div class="seg" id="qAmKind"><button type="button" class="on" data-v="am">수정 동의</button><button type="button" data-v="pr">의사진행 동의</button></div>
+    </div>
+    <div class="fld" id="qViaF" style="display:none"><label>신청 방식<i class="req">*</i></label>
+      <div class="rads" id="qVia">
+        <label class="rad"><input type="radio" name="qvia" value="질의" checked><span class="dot"></span><span class="tx">질의</span></label>
+        <label class="rad"><input type="radio" name="qvia" value="발언"><span class="dot"></span><span class="tx">발언</span></label>
+      </div>
     </div>
     <div class="fld" id="qTargetF"><label id="qTargetLb">대상</label><select class="sel" id="qTarget"></select></div>
     <div class="fld" id="qAmFld" style="display:none"><label>수정 유형<i class="req">*</i></label>
@@ -714,6 +729,8 @@
       <div class="tabox"><textarea class="ta" id="qBody" maxlength="100" placeholder="해당 안건 또는 진행 절차에 대한 질의 내용을 구체적으로 작성해 주세요."></textarea>
         <div class="cnt"><span id="qLen">0</span>/100</div></div>
     </div>
+    <label class="chk" id="qAgreeF" style="display:none"><input type="checkbox" id="qAgree"><span class="bx"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <span class="tx" id="qAgreeTx">동의 내용의 실시간 송출에 동의합니다</span></label>
     <div class="rules" id="qRules"></div>
     <div class="mact"><button class="cancel" id="qCancel">취소</button><button class="ok" id="qSubmit" disabled>등록하기</button></div>
   </div>
@@ -1113,30 +1130,48 @@ var QFORM={
 };
 /* 동의 탭 — 동의(대상 의안 + 수정 유형) · 의사진행 동의(의사진행 유형만) */
 var AMK='am';
+function qVia(){ var r=document.querySelector('#qVia input:checked'); return r?r.value:'질의'; }
+function qOkState(){
+  var ta=document.getElementById('qBody'), ag=document.getElementById('qAgree');
+  var needAgree=(QFORM[QKIND].amend && qVia()==='발언');
+  document.getElementById('qSubmit').disabled = !ta.value.trim() || (needAgree && !ag.checked);
+}
 function paintQForm(){
-  var f=QFORM[QKIND], pr=(f.amend && AMK==='pr');
+  var f=QFORM[QKIND], pr=(f.amend && AMK==='pr'), via=qVia(), spoken=(f.amend && via==='발언');
   document.getElementById('qTitle').textContent = f.amend ? '동의 신청' : '질의 작성';
-  document.getElementById('qCnt').style.display = f.amend ? 'none' : '';
+  /* 동의도 횟수를 함께 보여 준다 — (사용+1 / 최대) */
+  var cnt=document.getElementById('qCnt'); cnt.style.display='';
+  if(f.amend){ var an=RULES().amend.n, au=ruleUsed('amend'); cnt.textContent='('+Math.min(au+1,an)+'/'+an+')'; }
   document.getElementById('qAmKindF').style.display = f.amend ? '' : 'none';
   document.querySelectorAll('#qAmKind button').forEach(function(b){ b.classList.toggle('on', b.dataset.v===AMK); });
+  document.getElementById('qViaF').style.display = f.amend ? '' : 'none';
   document.getElementById('qTargetF').style.display = pr ? 'none' : '';
   document.getElementById('qTargetLb').innerHTML = f.amend ? '대상 의안<i class="req">*</i>' : '대상';
   document.getElementById('qPrFld').style.display = pr ? '' : 'none';
   document.getElementById('qAmFld').style.display = (f.amend && !pr) ? '' : 'none';
-  document.getElementById('qBodyLb').textContent = f.label;
-  document.getElementById('qBody').placeholder = pr ? '의사진행 동의를 제안하는 사유를 구체적으로 작성해 주세요.' : f.ph;
-  document.getElementById('qSubmit').textContent = pr ? '의사진행 동의 제출하기' : f.submit;
-  document.getElementById('qRules').innerHTML = f.rules.join('<br>');
+  /* 신청 방식에 따라 입력 칸을 질의 케이스 / 발언 케이스로 바꾼다 */
+  var sf=SPFORM.a;
+  document.getElementById('qBodyLb').textContent = spoken ? sf.label : f.label;
+  document.getElementById('qBody').placeholder = pr
+    ? (spoken ? '의사진행 동의를 제안하는 사유를 요약해 작성해 주세요.' : '의사진행 동의를 제안하는 사유를 구체적으로 작성해 주세요.')
+    : (spoken ? sf.ph : f.ph);
+  document.getElementById('qSubmit').textContent = spoken ? sf.submit : (pr ? '의사진행 동의 제출하기' : f.submit);
+  document.getElementById('qAgreeF').style.display = spoken ? '' : 'none';
+  document.getElementById('qAgreeTx').textContent = sf.agree;
+  document.getElementById('qRules').innerHTML = spoken ? sf.rules : f.rules.join('<br>');
+  qOkState();
 }
 document.querySelectorAll('#qAmKind button').forEach(function(b){
   b.addEventListener('click',function(){ AMK=b.dataset.v; paintQForm(); });
 });
+document.querySelectorAll('#qVia input').forEach(function(r){ r.addEventListener('change',paintQForm); });
+document.getElementById('qAgree').addEventListener('change',qOkState);
 paintQForm();
 (function(){
   var ta=document.getElementById('qBody');
   ta.addEventListener('input',function(){
     document.getElementById('qLen').textContent=ta.value.length;
-    document.getElementById('qSubmit').disabled=!ta.value.trim();
+    qOkState();
   });
 })();
 /* 알림 — 같은 자리에 한 줄, 잠시 뒤 스스로 사라진다 */
@@ -1177,7 +1212,10 @@ function openM(id){document.getElementById(id).classList.add('on');}
 function closeM(id){document.getElementById(id).classList.remove('on');}
 document.getElementById('amWrite').addEventListener('click',function(){
   var m=ruleBlock('amend'); if(m){ toast(m); return; }
-  QKIND='a'; AMK='am'; applyRuleText(); paintQForm(); openM('qOvl'); });
+  QKIND='a'; AMK='am';
+  var r0=document.querySelector('#qVia input[value="질의"]'); if(r0) r0.checked=true;
+  document.getElementById('qAgree').checked=false;
+  applyRuleText(); paintQForm(); openM('qOvl'); });
 document.getElementById('qWrite').addEventListener('click',function(){
   var m=ruleBlock('ask'); if(m){ toast(m); return; }
   QKIND='q'; applyRuleText(); paintQForm();
@@ -1190,17 +1228,21 @@ document.getElementById('qSubmit').addEventListener('click',function(){
   var bm=ruleBlock(QKIND==='a'?'amend':'ask'); if(bm){ toast(bm); closeM('qOvl'); return; }
   var ta=document.getElementById('qBody'), sel=document.getElementById('qTarget');
   var kind=QKIND==='a'?'수정동의':null, pr=(kind && AMK==='pr');
+  var via=kind?qVia():'질의';
   var amtype=!kind?null:pr?document.getElementById('qPrType').value:document.getElementById('qAmType').value;
   /* 의사진행 동의는 의안이 아니라 총회 진행에 대한 것 — 현장 제어에는 지금 의안으로 올린다 */
   var ag=pr?'총회 진행 전반':sel.value;
   QUES.unshift({name:PASSNAME, mine:true, own:true, time:nowHm(), date:todayStr()+' '+nowHm(),
-    ag:ag, q:ta.value.trim(), priv:false, kind:kind, amk:pr?'의사진행 동의':'동의', amtype:amtype});
+    ag:ag, q:ta.value.trim(), priv:false, kind:kind, amk:pr?'의사진행 동의':'수정 동의', amtype:amtype, via:via});
   /* 현장 제어의 질의 목록에도 같은 건이 올라간다 */
   cxPush('cx.qna',{id:'PASS-'+Date.now(), name:PASSNAME, t:'개인', sh:MY.held,
-    tm:nowHm(), ag:pr?CURRENT:sel.value, kind:kind, amtype:pr?'의사진행 · '+amtype:amtype, via:'질의', q:ta.value.trim()});
+    tm:nowHm(), ag:pr?CURRENT:sel.value, kind:kind, amtype:pr?'의사진행 · '+amtype:amtype, via:via, q:ta.value.trim()});
+  /* 발언으로 신청한 동의는 발언 대기 목록에도 올린다 */
+  if(via==='발언') SPQ.unshift({kind:'수정동의', ag:ag, tx:ta.value.trim(), st:'대기'});
   ta.value=''; document.getElementById('qLen').textContent='0';
+  document.getElementById('qAgree').checked=false;
   document.getElementById('qSubmit').disabled=true;
-  closeM('qOvl'); renderQ(); renderAm();
+  closeM('qOvl'); renderQ(); renderAm(); if(via==='발언') renderSp();
   toast(pr ? '의사진행 동의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.' : kind ? '동의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.'
              : '질의가 접수되었습니다. 운영진 검토 후 의장에게 전달됩니다.');
 });
@@ -1292,7 +1334,7 @@ renderQ();
 function renderAm(){
   var host=document.getElementById('amList');
   var list=QUES.filter(function(x){ return x.kind && x.mine; });
-  if(!list.length){ host.innerHTML='<div class="qempty">제출한 동의가 없습니다</div>'; return; }
+  if(!list.length){ host.innerHTML='<div class="empty">제출한 동의가 없습니다.<br>동의를 원하시면 \'동의 신청\'을 눌러주세요.</div>'; return; }
   host.innerHTML=list.map(function(x){
     return '<div class="qitem"><div class="m"><span class="who">'+qAvatar()
       +'<span class="nm">'+x.name+'</span><span>'+(x.date||x.time)+'</span>'

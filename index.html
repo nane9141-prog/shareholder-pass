@@ -314,7 +314,8 @@ render(COMPANIES);
   window.__myApplyDone=function(){ var c=findCo(pendingKey); if(c){ c.apply='applied'; draw(); } pendingKey=null; };
   var row=document.getElementById('mygrid');
   function arrows(){
-    var atStart=row.scrollLeft<=2, atEnd=row.scrollLeft+row.clientWidth>=row.scrollWidth-2;
+    var TOL=12;   /* 좌측 패딩 8px + scroll-snap 보정 — 시작 위치가 0이 아니라 8 이다 */
+    var atStart=row.scrollLeft<=TOL, atEnd=row.scrollLeft+row.clientWidth>=row.scrollWidth-TOL;
     document.getElementById('myPrev').disabled=atStart;
     document.getElementById('myNext').disabled=atEnd;
     /* 더 볼 카드가 있는 방향만 흐린다 — 다 보이면(스크롤 불필요) 양쪽 다 선명 */

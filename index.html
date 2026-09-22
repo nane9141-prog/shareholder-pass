@@ -62,6 +62,9 @@
   .mrow{--fl:0px;--fr:0px;
     -webkit-mask-image:linear-gradient(to right,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%);
             mask-image:linear-gradient(to right,transparent 0,#000 var(--fl),#000 calc(100% - var(--fr)),transparent 100%)}
+  /* 오른쪽은 콘텐츠 박스에서 끊지 않고 화면 끝까지 흘려보낸다 — 넓은 화면에서 '박스 안에서 잘린' 느낌 제거.
+     끝까지 스크롤하면 마지막 카드는 다시 콘텐츠 우측선에 맞는다(padding-right 만큼 여유). */
+  .mrow{--bleed:0px;margin-right:calc(-1 * var(--bleed));padding-right:calc(var(--bleed) + 8px)}
   .mrow.fade-l{--fl:112px}
   .mrow.fade-r{--fr:140px}          /* 오른쪽은 더 넓게 — 경계에서 잘리지 않고 서서히 사라지게 */
   .mrow::after{content:'';flex:none;width:8px}   /* 끝 카드가 경계에 딱 붙지 않도록 여유 */
@@ -314,7 +317,15 @@ render(COMPANIES);
   });
   window.__myApplyDone=function(){ var c=findCo(pendingKey); if(c){ c.apply='applied'; draw(); } pendingKey=null; };
   var row=document.getElementById('mygrid');
+  /* 콘텐츠 우측선 ~ 화면 우측 끝 사이 여백을 재서 그만큼 오른쪽으로 확장한다(스크롤바 폭 제외) */
+  function setBleed(){
+    var host=row.parentElement; if(!host) return;
+    var docW=document.documentElement.clientWidth;
+    var gap=Math.max(0, Math.round(docW - host.getBoundingClientRect().right));
+    row.style.setProperty('--bleed', gap+'px');
+  }
   function arrows(){
+    setBleed();
     var TOL=12;   /* 좌측 패딩 8px + scroll-snap 보정 — 시작 위치가 0이 아니라 8 이다 */
     var atStart=row.scrollLeft<=TOL, atEnd=row.scrollLeft+row.clientWidth>=row.scrollWidth-TOL;
     document.getElementById('myPrev').disabled=atStart;

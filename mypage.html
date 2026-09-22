@@ -101,6 +101,34 @@
   .obtn.brand{border-color:var(--brand);color:var(--brand)}
   .obtn.dim{border-color:#B2D5FF;color:#B2D5FF;cursor:default}     /* 신청 마감 */
   .obtn.off{border-color:#EEF0F2;color:#CBCDD2;cursor:default}     /* 종료된 총회 */
+  /* 주주총회 타임라인 모달 */
+  .tlov{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:16px}
+  .tlov.on{display:flex}
+  .tlbox{box-sizing:border-box;width:500px;max-width:100%;max-height:calc(100vh - 32px);background:#fff;border-radius:16px;
+    box-shadow:0 2px 6px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:16px;padding:32px 28px;overflow:hidden}
+  .tlhd{display:flex;align-items:center;justify-content:space-between;gap:8px;height:26px;flex:none}
+  .tlhd b{font-size:20px;line-height:26px;font-weight:700;color:var(--fg)}
+  .tlx{width:30px;height:30px;flex:none;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .tlx svg{width:24px;height:24px;stroke:var(--fg);fill:none;stroke-width:1.8;stroke-linecap:round}
+  .tlbody{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:12px}
+  .tlsum{background:var(--bg);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:4px}
+  .tlsum b{font-size:14px;line-height:21px;font-weight:700;color:var(--fg)}
+  .tlsum span{font-size:12px;line-height:18px;color:#4C4F54}
+  .tlday{display:flex;align-items:center;gap:8px;padding-bottom:12px}
+  .tlday i{flex:1;height:1px;background:var(--line)}
+  .tlday span{font-size:12px;line-height:18px;font-weight:500;color:#A7AAB1;white-space:nowrap}
+  .tlrow{display:flex;gap:20px;align-items:stretch;padding:0 8px}
+  .tlrail{display:flex;flex-direction:column;align-items:center;flex:none;width:8px}
+  .tlrail .sp{width:1px;height:6px;background:var(--line)}
+  .tlrow:first-of-type .tlrail .sp{background:none}
+  .tlrail .dot{width:8px;height:8px;border-radius:50%;background:#CBCDD2;flex:none}
+  .tlrow.vote .tlrail .dot{background:var(--fg)}
+  .tlrail .ln{flex:1;width:1px;background:var(--line);min-height:0}
+  .tlrow:last-of-type .tlrail .ln{background:none}
+  .tlct{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding-bottom:16px}
+  .tlct .t{display:flex;align-items:center;gap:4px;font-size:14px;line-height:21px;font-weight:500;color:var(--fg)}
+  .tlct .bg{padding:2px 4px;border-radius:6px;background:var(--soft);font-size:10px;line-height:15px;font-weight:500;color:var(--fg);white-space:nowrap}
+  .tlct .tm{font-size:12px;line-height:18px;color:var(--sub)}
   /* 페이지네이션 */
   .pg{display:flex;align-items:center;justify-content:center;gap:16px;padding-top:24px}
   .pg:empty{display:none}
@@ -208,6 +236,15 @@
     <div class="view" data-view="vote-detail" id="vd"></div>
   </section>
 </main>
+
+<!-- 주주총회 타임라인 -->
+<div class="tlov" id="tlOv" role="dialog" aria-modal="true" aria-labelledby="tlTitle">
+  <div class="tlbox">
+    <div class="tlhd"><b id="tlTitle">주주총회 타임라인</b>
+      <button class="tlx" type="button" id="tlClose" aria-label="닫기"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+    <div class="tlbody" id="tlBody"></div>
+  </div>
+</div>
 
 <script src="assets/companies.js?v=14"></script>
 <script>
@@ -408,12 +445,65 @@ function drawDetail(key){
       }).join('')
     +'</tbody></table></div>'
     +'<div style="height:24px"></div>'
-    +'<button class="wide" type="button" id="vdCert">의결권 행사 확인증 발급</button>';
+    +'<button class="wide" type="button" id="vdCert">주주총회 타임라인 보기</button>';
   $('vdBack').addEventListener('click', function(){ location.hash='#vote'; });
-  $('vdCert').addEventListener('click', function(){
-    alert('의결권 행사 확인증을 발급했습니다. 등록된 이메일로 보내 드립니다.');
-  });
+  $('vdCert').addEventListener('click', function(){ openTimeline(key); });
 }
+
+/* ---- 주주총회 타임라인 모달 ----
+   사전(참석 신청·전자투표·질의)과 당일(출석·질의·발언·현장투표·퇴장)을 날짜별로 묶어 보여 준다.
+   '의결권 행사'가 있는 줄만 점을 채우고 배지를 붙인다. */
+function tlDate(txt, off){
+  var m=/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/.exec(String(txt||''));
+  var d = m ? new Date(+m[1], +m[2]-1, +m[3]) : new Date();
+  if(off) d.setDate(d.getDate()+off);
+  function p(n){ return (n<10?'0':'')+n; }
+  return d.getFullYear()+'.'+p(d.getMonth()+1)+'.'+p(d.getDate());
+}
+function tlData(c){
+  var units=AGENDA.filter(function(a){ return !a.sub; }).slice(0,5);
+  return [
+    { d: tlDate(c.date,-6), items:[
+      { t:'사전 참석 신청', tm:'09:12' },
+      { t:'사전 전자투표 행사', tm:'09:21', vote:true }]},
+    { d: tlDate(c.date,-5), items:[
+      { t:'사전 질의 등록', tm:'09:34' }]},
+    { d: tlDate(c.date), items:[
+      { t:'주주총회 출석', tm:'09:04' },
+      { t:'사전 행사 철회', tm:'09:10' },
+      { t:'현장 질의 등록', tm:'09:10' },
+      { t:'현장 발언 등록', tm:'09:11' },
+      { t:'현장 발언', tm:'09:13 - 09:21 종료' }
+    ].concat(units.map(function(a,i){
+      return { t:'현장투표 행사・제'+a.no+'호', tm:'09:'+(25+i*2), vote:true };
+    })).concat([{ t:'주주총회 퇴장', tm:'09:45' }])}
+  ];
+}
+function openTimeline(key){
+  var c=co(key), ov=document.getElementById('tlOv');
+  document.getElementById('tlBody').innerHTML=
+    '<div class="tlsum"><b>'+esc(c.nm+' '+c.term)+'</b>'
+    +'<span>'+esc(tlDate(c.date))+' 개최 · 주주명부 기준일 '+esc(tlDate(c.date,-90))+'</span></div>'
+    + tlData(c).map(function(g){
+        return '<div class="tlday"><i></i><span>'+g.d+'</span><i></i></div>'
+          + g.items.map(function(it){
+              return '<div class="tlrow'+(it.vote?' vote':'')+'">'
+                +'<span class="tlrail"><i class="sp"></i><i class="dot"></i><i class="ln"></i></span>'
+                +'<span class="tlct"><span class="t">'+esc(it.t)
+                +(it.vote?'<span class="bg">의결권 행사</span>':'')+'</span>'
+                +'<span class="tm">'+esc(it.tm)+'</span></span></div>';
+            }).join('');
+      }).join('');
+  ov.classList.add('on');
+}
+(function(){
+  var ov=document.getElementById('tlOv');
+  if(!ov) return;
+  function close(){ ov.classList.remove('on'); }
+  document.getElementById('tlClose').addEventListener('click', close);
+  ov.addEventListener('click', function(e){ if(e.target===ov) close(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+})();
 
 /* ---- 화면 전환 — 주소의 # 이 어느 화면인지 정한다 ---- */
 function show(){

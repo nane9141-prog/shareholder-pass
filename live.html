@@ -1881,20 +1881,108 @@ document.getElementById('vSnd').addEventListener('click',function(){
   document.getElementById('exitGo').addEventListener('click',function(){ location.href='index.html'; });
 })();
 </script>
-<!-- 채널톡 (demo.iroffice.co.kr 과 동일 채널) — 기본 런처 숨기고 블랙 커스텀 런처 사용 -->
-<button id="chatLauncher" class="ch-launcher" type="button" aria-label="채널톡 상담">
+<!-- 고객센터 문의 패널 (데모용 화면 구현 — 실제 채팅 연동 없음) -->
+<style>
+  .ch-launcher{position:fixed;right:20px;bottom:20px;width:56px;height:56px;border-radius:50%;background:#0a0a0a;border:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:70;padding:0;
+    transition:transform .12s ease,box-shadow .12s ease}
+  .ch-launcher:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(0,0,0,.28)}
+  .ch-launcher svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .ch-launcher.hide{display:none}
+  /* 패널 — 런처와 같은 자리(우하단)에서 열리고 닫기 버튼도 그 자리에 둔다 */
+  .chp{position:fixed;right:20px;bottom:20px;width:376px;max-width:calc(100vw - 32px);height:600px;max-height:calc(100vh - 40px);
+    box-sizing:border-box;display:none;flex-direction:column;overflow:hidden;background:#fff;border-radius:20px;
+    box-shadow:0 12px 40px rgba(0,0,0,.24);z-index:71;font-family:inherit}
+  .chp.on{display:flex}
+  .chp-hd{flex:none;padding:20px 20px 16px;background:#0a0a0a;color:#fff;display:flex;align-items:flex-start;gap:12px}
+  .chp-hd .av{width:40px;height:40px;flex:none;border-radius:12px;background:#fff;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .chp-hd .av img{width:100%;height:100%;object-fit:contain}
+  .chp-hd .who{flex:1;min-width:0}
+  .chp-hd .nm{font-size:15px;font-weight:700;line-height:1.4;letter-spacing:-.01em}
+  .chp-hd .st{margin-top:2px;font-size:12px;line-height:1.5;color:rgba(255,255,255,.72);display:flex;align-items:center;gap:5px}
+  .chp-hd .st i{width:5px;height:5px;border-radius:50%;background:#22c55e;flex:none}
+  .chp-x{width:28px;height:28px;flex:none;border:none;background:rgba(255,255,255,.12);border-radius:8px;color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;padding:0}
+  .chp-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+  .chp-bd{flex:1;min-height:0;overflow-y:auto;padding:20px;background:#f7f8fa}
+  .chp-msg{display:flex;gap:8px;align-items:flex-start}
+  .chp-msg .mav{width:28px;height:28px;flex:none;border-radius:9px;background:#fff;border:1px solid #eef0f2;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .chp-msg .mav img{width:100%;height:100%;object-fit:contain}
+  .chp-bub{max-width:264px;padding:12px 14px;border-radius:14px;border-top-left-radius:4px;background:#fff;border:1px solid #eef0f2;
+    font-size:14px;line-height:1.6;letter-spacing:-.01em;color:#151419}
+  .chp-bub b{display:block;font-weight:700;margin-bottom:2px}
+  .chp-tm{margin:4px 0 0 36px;font-size:11px;color:#a1a1aa}
+  .chp-ask{margin:16px 0 0 36px;font-size:12px;font-weight:700;color:#8a8a8f;letter-spacing:-.01em}
+  .chp-opts{margin:8px 0 0 36px;display:flex;flex-direction:column;gap:8px}
+  .chp-opt{width:100%;box-sizing:border-box;text-align:left;padding:11px 14px;border:1px solid #d9dde3;border-radius:12px;background:#fff;
+    font-family:inherit;font-size:13px;line-height:1.5;font-weight:500;letter-spacing:-.01em;color:#151419;cursor:pointer;
+    transition:border-color .12s ease,background .12s ease}
+  .chp-opt:hover{border-color:#0a0a0a;background:#fafafa}
+  .chp-opt.on{border-color:#0a0a0a;background:#0a0a0a;color:#fff}
+  .chp-ft{flex:none;border-top:1px solid #eef0f2;background:#fff;padding:12px 16px 10px}
+  .chp-in{display:flex;align-items:center;gap:8px;height:44px;padding:0 6px 0 14px;border:1px solid #eef0f2;border-radius:12px;background:#f7f8fa}
+  .chp-in input{flex:1;min-width:0;border:none;outline:none;background:none;font-family:inherit;font-size:14px;color:#151419}
+  .chp-in input::placeholder{color:#a1a1aa}
+  .chp-send{width:32px;height:32px;flex:none;border:none;border-radius:9px;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+  .chp-send svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .chp-brand{margin-top:8px;text-align:center;font-size:11px;color:#a1a1aa;letter-spacing:-.01em}
+  @media(max-width:520px){ .chp{right:12px;bottom:12px;width:calc(100vw - 24px);height:calc(100vh - 24px)} }
+</style>
+<button id="chatLauncher" class="ch-launcher" type="button" aria-label="고객센터 문의">
   <svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-8 8H8l-4 3v-5.2A8 8 0 0 1 3 12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/><circle cx="9" cy="12" r=".6"/><circle cx="12" cy="12" r=".6"/><circle cx="15" cy="12" r=".6"/></svg>
 </button>
+<div class="chp" id="chPanel" role="dialog" aria-label="주주PASS 고객센터" aria-modal="false">
+  <div class="chp-hd">
+    <span class="av"><img src="assets/fav-pass.svg" alt="주주PASS" width="40" height="40"></span>
+    <div class="who">
+      <div class="nm">주주PASS 고객센터</div>
+      <div class="st"><i></i>평일 09:00 ~ 18:00 상담</div>
+    </div>
+    <button class="chp-x" id="chClose" type="button" aria-label="닫기"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="chp-bd">
+    <div class="chp-msg">
+      <span class="mav"><img src="assets/fav-pass.svg" alt="" width="28" height="28"></span>
+      <div class="chp-bub"><b>안녕하세요, 주주PASS입니다.</b>주주총회 참여에 대해 궁금한 점을 알려주세요. 평일 09:00~18:00에 순차적으로 답변드립니다.</div>
+    </div>
+    <div class="chp-tm">지금</div>
+    <div class="chp-ask">어떤 도움이 필요하신가요?</div>
+    <div class="chp-opts" id="chOpts">
+      <button class="chp-opt" type="button">사전 참석 신청 · 철회</button>
+      <button class="chp-opt" type="button">전자투표 방법</button>
+      <button class="chp-opt" type="button">대리인(위임) 지정</button>
+      <button class="chp-opt" type="button">주주 인증 · 로그인</button>
+      <button class="chp-opt" type="button">의안 내용 문의</button>
+      <button class="chp-opt" type="button">기타 문의</button>
+    </div>
+  </div>
+  <div class="chp-ft">
+    <div class="chp-in">
+      <input id="chInput" type="text" placeholder="메시지를 입력해 주세요" autocomplete="off">
+      <button class="chp-send" id="chSend" type="button" aria-label="전송"><svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </div>
+    <div class="chp-brand">주주PASS</div>
+  </div>
+</div>
 <script>
-(function(){var w=window;if(w.ChannelIO){return w.console.error("ChannelIO script included twice.");}var ch=function(){ch.c(arguments);};ch.q=[];ch.c=function(args){ch.q.push(args);};w.ChannelIO=ch;function l(){if(w.ChannelIOInitialized){return;}w.ChannelIOInitialized=true;var s=document.createElement("script");s.type="text/javascript";s.async=true;s.src="https://cdn.channel.io/plugin/ch-plugin-web.js";var x=document.getElementsByTagName("script")[0];if(x.parentNode){x.parentNode.insertBefore(s,x);}}if(document.readyState==="complete"){l();}else{w.addEventListener("DOMContentLoaded",l);w.addEventListener("load",l);}})();
-ChannelIO('boot', {
-  pluginKey: '893190f3-0451-41b6-afe9-9da13375a7b5',
-  hideChannelButtonOnBoot: true,          /* 기본 런처 숨김 */
-  customLauncherSelector: '#chatLauncher' /* 블랙 커스텀 런처로 열기 */
-});
-/* 메신저가 열리면 커스텀 런처를 숨겨 닫기 버튼과 겹치지 않게, 닫히면 다시 표시 */
-ChannelIO('onShowMessenger', function(){ var b=document.getElementById('chatLauncher'); if(b) b.style.display='none'; });
-ChannelIO('onHideMessenger', function(){ var b=document.getElementById('chatLauncher'); if(b) b.style.display=''; });
+/* 문의 패널 — 데모용 화면. 진입 화면(문의 유형 선택)까지만 동작한다. */
+(function(){
+  var btn=document.getElementById('chatLauncher'), p=document.getElementById('chPanel');
+  if(!btn||!p) return;
+  function open(){ p.classList.add('on'); btn.classList.add('hide'); }
+  function close(){ p.classList.remove('on'); btn.classList.remove('hide'); }
+  btn.addEventListener('click',open);
+  document.getElementById('chClose').addEventListener('click',close);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && p.classList.contains('on')) close(); });
+  /* 문의 유형 선택 — 선택 표시만 하고 입력창으로 포커스를 넘긴다 */
+  document.getElementById('chOpts').addEventListener('click',function(e){
+    var o=e.target.closest('.chp-opt'); if(!o) return;
+    this.querySelectorAll('.chp-opt').forEach(function(x){ x.classList.toggle('on', x===o); });
+    var inp=document.getElementById('chInput');
+    inp.value=o.textContent.trim()+' 관련해서 문의드립니다. ';
+    try{ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }catch(err){}
+  });
+})();
 </script>
 </body>
 </html>

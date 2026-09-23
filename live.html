@@ -205,6 +205,15 @@
 
   /* voting card */
   /* 의안 투표 카드 — 본문과 아래 행사 바가 한 장을 이룬다 */
+  /* 긴급 표결 모달 — 투표 카드 한 장만 단독으로 */
+  .uvov{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px}
+  .uvov.on{display:flex}
+  .uvbox{box-sizing:border-box;width:460px;max-width:100%;max-height:calc(100vh - 32px);overflow-y:auto;
+    overscroll-behavior:contain;display:flex;flex-direction:column;gap:12px}
+  .uvh{font-size:14px;line-height:21px;font-weight:700;color:#fff;text-align:center}
+  .uvf{font-size:12px;line-height:18px;color:rgba(255,255,255,.75);text-align:center}
+  .uvd{font-size:14px;line-height:21px;color:#4C4F54;white-space:pre-wrap}
+  .uvd.mut{font-size:12px;line-height:18px;color:#6B7078}
   .vc{padding:0;border:1px solid #272929;border-radius:12px;background:#fff;overflow:hidden}
   .vc .body{display:flex;flex-direction:column;gap:12px;padding:20px}
   .vc .cat{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -650,6 +659,9 @@
   </div>
 </main>
 
+<!-- 긴급 표결(총회 지연 의안) -->
+<div class="uvov" id="uvOv" role="dialog" aria-modal="true"><div class="uvbox" id="uvBox"></div></div>
+
 <!-- 의결권 행사현황 오버레이 -->
 <div class="ovl" id="exOvl">
   <div class="sheet">
@@ -1074,6 +1086,58 @@ function renderVote(){
     });
   });
 }
+/* ---- 긴급 표결(총회 지연 의안) ----
+   현장 제어가 연기·속행 의안을 상정하면 시청 화면에 단독 카드로 띄운다.
+   필수 표결이라 투표를 마치기 전에는 닫을 수 없다. */
+var UV = { no:null, cast:null, data:null };
+function uvEsc(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function renderUrgent(u){
+  var ov=document.getElementById('uvOv'); if(!ov) return;
+  if(!u){ ov.classList.remove('on'); UV.data=null; return; }
+  if(UV.no!==u.no){ UV.no=u.no; UV.cast=null; }   /* 새 긴급 의안이면 표를 비운다 */
+  UV.data=u;
+  var done=!!UV.cast, box=document.getElementById('uvBox');
+  var body='<div class="body">'
+    +'<div class="cat"><span class="no3">긴급 표결</span>'+statDot(done?'cnt':'vote')+'</div>'
+    +'<div class="nm">'+uvEsc(u.nm)+'</div>'
+    +'<div class="base">'+uvEsc(u.type||'보통결의')+'</div>'
+    +(u.body?'<div class="uvd">'+uvEsc(u.body)+'</div>':'')
+    +(u.why?'<div class="uvd mut">사유 · '+uvEsc(u.why)+'</div>':'')
+    +'</div>';
+  var act = done
+    ? '<div class="act2">'+statDot('cnt')
+      +'<span class="note2">'+uvEsc(UV.cast)+' 행사가 완료되었습니다</span>'
+      +'<button class="done" id="uvClose" type="button">확인</button></div>'
+    : '<div class="act2"><div class="choices" id="uvChoices">'
+      +Object.keys(CHOICE).map(function(k){
+          return '<button class="choice" type="button" data-c="'+k+'">'+CHOICE[k]+'</button>';
+        }).join('')
+      +'</div><button class="done" id="uvDone" type="button" disabled>투표하기</button></div>';
+  box.innerHTML='<div class="uvh">의장이 긴급 안건을 상정했습니다</div>'
+    +'<div class="box vc">'+body+act+'</div>'
+    +(done?'':'<div class="uvf">표결을 마치기 전에는 닫을 수 없습니다</div>');
+  ov.classList.add('on');
+  var picked=null;
+  box.querySelectorAll('.choice').forEach(function(c){
+    c.addEventListener('click',function(){
+      box.querySelectorAll('.choice').forEach(function(x){x.classList.remove('sel');});
+      c.classList.add('sel'); picked=c.dataset.c;
+      document.getElementById('uvDone').disabled=false;
+    });
+  });
+  var d1=document.getElementById('uvDone');
+  if(d1) d1.addEventListener('click',function(){
+    if(!picked) return;
+    askAuth(function(){
+      UV.cast=CHOICE[picked];
+      renderUrgent(UV.data);
+      toast('긴급 안건 — '+CHOICE[picked]+' 행사가 완료되었습니다');
+    });
+  });
+  var c1=document.getElementById('uvClose');
+  if(c1) c1.addEventListener('click',function(){ ov.classList.remove('on'); });
+}
+
 function normalResult(d){
   var base=d.for+d.against+d.abs, fp=pct(d.for,base);
   return '<div style="margin-top:16px" class="res">'
@@ -1840,6 +1904,8 @@ function applyLive(s){
   /* 총회가 아직 시작되지 않았으면(영상 재생 전) 의안 진행 상태는 반영하지 않는다 —
      지난 회차의 남은 값 때문에 제1호가 진행 중처럼 보이면 안 된다 */
   if(window.__PRE || !STARTED) return;
+  /* 긴급 표결(총회 지연 의안) — 상정되어 있는 동안 카드 모달로 띄운다 */
+  if(typeof renderUrgent==='function') renderUrgent((s.urgent && s.ag===s.urgent.no) ? s.urgent : null);
   if(!s.ag) return;
   var nos=units.map(function(a){return a.no;});
   var i=nos.indexOf(s.ag);

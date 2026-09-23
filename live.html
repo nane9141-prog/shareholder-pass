@@ -1816,6 +1816,7 @@ if(window.__CO && window.__CO.key!=='kakaobank') SCRIPT.forEach(function(c){ var
 if(window.__CO && window.__CO.key==='kudoselectric' && window.CAP_KUDOS && window.CAP_KUDOS.length) SCRIPT=window.CAP_KUDOS;
 var CAPLBL={ko:['AI 자막 ON','AI 자막 OFF'],en:['AI Subtitles ON','AI Subtitles OFF'],
   ja:['AI字幕 ON','AI字幕 OFF'],zh:['AI字幕 ON','AI字幕 OFF']};
+var CAP_LAG=0.4;   /* 문장이 끝나고 자막이 올라오기까지의 한 박자(초) */
 var CAP={on:false, auto:1, hold:null, lang:'ko'};   /* 진입 시엔 꺼 둔 채로 — 영상이 실제로 재생되면 자동으로 켠다 */   /* hold — 현장 제어가 내려보낸 메시지는 대본보다 앞선다 */
 function capLines(){
   if(CAP.hold) return CAP.hold;
@@ -1823,9 +1824,15 @@ function capLines(){
   /* 대본은 받아 적은 초에 맞춰 두었다. 길이를 아직 모르면 경과 시간으로 대신 흘려 준다 */
   var dur=(v&&v.duration)||90;
   var at=(v&&v.duration) ? (v.currentTime%dur) : (CLOCK.t%dur);
-  var cue=SCRIPT[0];
-  SCRIPT.forEach(function(c){ if(at>=c[0]) cue=c; });
-  var t=cue[1][CAP.lang]||cue[1].ko;
+  /* 말이 끝난 뒤에 그 문장이 올라오도록 — 한 문장이 끝나는 시점(다음 문장의 시작)을
+     지나야 그 문장을 띄운다. CAP_LAG 만큼 한 박자 더 둔다. */
+  var idx=-1;
+  for(var i=0;i<SCRIPT.length;i++){
+    var end=(i+1<SCRIPT.length) ? SCRIPT[i+1][0] : dur;
+    if(at >= end + CAP_LAG) idx=i;
+  }
+  if(idx<0) return ['',''];            /* 첫 문장이 아직 끝나지 않았다 */
+  var t=SCRIPT[idx][1][CAP.lang]||SCRIPT[idx][1].ko;
   return [t[0], t[1]];
 }
 function paintCap(){

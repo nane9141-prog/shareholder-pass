@@ -458,6 +458,15 @@
     padding:12px 16px 8px;font-family:inherit;font-size:16px;line-height:24px;letter-spacing:inherit;color:#151419}
   .tabox .ta::placeholder{color:#A7AAB1}
   .tabox .cnt{padding:8px 16px;font-size:12px;line-height:16px;font-weight:500;color:#151419}
+  /* 입력 포커스 — 안쪽 요소가 아니라 감싼 박스 전체에 테두리가 잡힌다 */
+  .tabox{transition:border-color .12s}
+  .tabox:focus-within{border-color:#151419}
+  .tabox .ta:focus{outline:none;box-shadow:none}
+  #spOvl .fld select.sel:focus,#qOvl .fld select.sel:focus,
+  #spOvl .fld .ta:focus,#qOvl .fld .ta:focus,
+  #spOvl .fld input:focus,#qOvl .fld input:focus{outline:none;border-color:#151419}
+  #spOvl .fselb:focus-visible,#qOvl .fselb:focus-visible,
+  #spOvl .fsel:focus-within .fselb,#qOvl .fsel:focus-within .fselb{outline:none;border-color:#151419}
   .rules{font-size:14px;line-height:21px;color:#4C4F54;margin:0 0 16px}
   /* 동의 체크 — 네모를 눌러도 글씨를 눌러도 켜진다 */
   .chk{display:flex;align-items:flex-start;gap:4px;margin:0 0 2px;cursor:pointer}

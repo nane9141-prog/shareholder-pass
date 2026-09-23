@@ -6,6 +6,15 @@
 <title>카카오뱅크 · 제10기 정기주주총회 LIVE — 주주PASS</title>
 <link rel="icon" href="assets/fav-pass.png?v=2">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>html:not(.co-ready) body{visibility:hidden}</style>
+<script>
+/* 회사 정보를 갈아 끼우기 전에 기본값(카카오뱅크)이 잠깐 비치지 않게 가려 둔다.
+   스크립트가 막히더라도 화면이 빈 채로 남지 않도록 여러 갈래로 풀어 준다. */
+(function(){ function show(){ document.documentElement.classList.add("co-ready"); }
+  window.__coReady=show;
+  document.addEventListener("DOMContentLoaded",function(){ setTimeout(show,0); });
+  window.addEventListener("load",show); setTimeout(show,1500); })();
+</script>
 <style>
   :root{--fg:#0a0a0a;--muted:#737373;--border:#e8e8ea;--line:#f1f1f3;--bg:#fff;--card:#fff;
     --brand:#2563eb;--brand-ink:#1d4ed8;--brand-50:#eff5ff;--ink:#171717;
@@ -846,6 +855,7 @@ function typeLabel(no){
   document.querySelectorAll('.stat .h b').forEach(function(e){ e.textContent=co.nm; });
   document.querySelectorAll('.vid .scene .t2').forEach(function(e){ e.textContent=co.nm+' · 생중계'; });
   window.__CO=co;
+  if(window.__coReady) __coReady();   /* 교체가 끝났으니 화면을 보여 준다 */
   /* 중계 영상이 있는 기업(카카오뱅크 · 큐더스전자)만 생중계 — 나머지는 시작 전으로 보인다 */
   if(co.video){ var vv=document.getElementById('vid'); if(vv && vv.getAttribute('src')!==co.video){ vv.src=co.video; } }
   if(!co.video){
